@@ -3,474 +3,491 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SimplyWhy — Simplifying Your Journey to Why</title>
-  <meta name="description" content="SimplyWhy is the product analytics intelligence platform with a living neural engine that turns user traces and friction patterns into verified root causes.">
+  <title>SimplyWhy — Root Cause Intelligence</title>
+  <meta name="description" content="SimplyWhy connects user behavior, support conversations, product analytics and engineering activity to uncover the root cause behind your biggest product problems.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="tracemint-app">
+<body>
 
-  <!-- BACKGROUND MESH -->
-  <div class="tracemint-bg-mesh">
-    <div class="mesh-layer"></div>
-    <div class="soft-grid-overlay"></div>
-  </div>
-
-  <div class="ambient-particles" id="ambient-particles"></div>
-
-  <!-- ============ NAV ============ -->
+  <!-- ============ NAVBAR ============ -->
   <header class="nav" id="main-nav">
     <div class="container nav-inner">
-      <a href="#" class="brand-serif">
-        SimplyWhy
-      </a>
-      <a href="#join" class="btn-waitlist-pill">
-        Join waitlist
-      </a>
+      <a href="#" class="nav-brand">SimplyWhy</a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#signals">Product</a></li>
+          <li><a href="#evidence">How it works</a></li>
+          <li><a href="#why-section">Use cases</a></li>
+          <li><a href="#cta">Pricing</a></li>
+        </ul>
+      </nav>
+      <button class="nav-cta" onclick="openNeuralScan()">Run a diagnosis →</button>
     </div>
   </header>
 
   <main>
 
-    <!-- ==========================================================================
-         SECTION 1 [WHITE]: HERO TOP
-         ========================================================================== -->
-    <section class="section section-white hero" id="hero">
-      <div class="container hero-container">
-        
-        <!-- LEFT COLUMN: CONTENT -->
-        <div class="hero-content-col">
+    <!-- ================================================================
+         HERO
+         ================================================================ -->
+    <section class="section hero" id="hero">
+      <div class="container hero-grid">
 
-          <h1 class="hero-h1">
-            <span class="reveal-line" data-delay="100">See why users <em>actually</em> drop off.</span>
+        <!-- LEFT: Copy -->
+        <div class="hero-content">
+          <div class="hero-eyebrow">
+            <span class="eyebrow">✦ Root Cause Intelligence</span>
+          </div>
+
+          <h1 class="hero-h1 reveal">
+            Don't just find<br>the problem.<br><span class="dim">Find the why.</span>
           </h1>
 
-          <p class="hero-sub reveal" data-delay="400">
-            SimplyWhy analyzes product behavior, replay context, and friction patterns to uncover the real reason users hesitate, abandon, or fail to convert.
+          <p class="hero-sub reveal" style="transition-delay:100ms">
+            SimplyWhy connects user behavior, support conversations, product analytics and engineering activity to uncover the root cause behind your biggest product problems.
           </p>
 
-          <div class="hero-actions reveal" data-delay="550">
-            <a href="#join" class="btn btn-teal-primary">Join the waitlist</a>
-            <a href="#brain-stage" class="btn btn-outline-soft">Watch the diagnosis unfold ↓</a>
+          <div class="hero-actions reveal" style="transition-delay:200ms">
+            <button class="btn-primary" onclick="openNeuralScan()">Run a Neural Scan →</button>
+            <a href="#why-section" class="btn-ghost">See how it works ↓</a>
           </div>
         </div>
 
-        <!-- RIGHT COLUMN: TERMINAL UI -->
-        <div class="hero-terminal-col reveal" data-delay="300" data-story="slide-up">
-          <div class="hero-terminal" id="hero-terminal">
-            <div class="terminal-header">
-              <span class="term-dot red"></span>
-              <span class="term-dot yellow"></span>
-              <span class="term-dot green"></span>
-              <span class="term-title">simplywhy investigate</span>
+        <!-- RIGHT: Product Visualization -->
+        <div class="hero-viz reveal-scale" style="transition-delay:300ms">
+          <div class="viz-header">
+            <span class="viz-brand">SimplyWhy</span>
+            <span class="viz-status">
+              <span class="viz-status-dot"></span>
+              Analyzing
+            </span>
+          </div>
+          <div class="viz-body">
+            <div class="viz-section-label">Product Health</div>
+            <div class="viz-metrics">
+              <div class="viz-metric-row">
+                <span class="viz-metric-name">Conversion</span>
+                <span class="viz-metric-val down" id="viz-conv">↓ 18.4%</span>
+              </div>
+              <div class="viz-metric-row">
+                <span class="viz-metric-name">Checkout failures</span>
+                <span class="viz-metric-val up" id="viz-checkout">↑ 31.2%</span>
+              </div>
+              <div class="viz-metric-row">
+                <span class="viz-metric-name">Rage clicks</span>
+                <span class="viz-metric-val up" id="viz-rage">↑ 42.1%</span>
+              </div>
             </div>
-            
-            <div class="terminal-body" id="term-logs-container">
-              <!-- Logs will be dynamically injected here by JS -->
-            </div>
-            
-            <div class="term-line visible" style="margin-top:12px;">
-              <span class="term-cursor"></span>
+            <div class="viz-graph">
+              <canvas id="vizCanvas"></canvas>
             </div>
           </div>
-        </div>
-
-      </div>
-    </section>
-
-
-
-    <!-- ==========================================================================
-         SECTION 3 [WHITE]: NEURAL BRAIN CONSOLE — fits 100vh
-         ========================================================================== -->
-    <section class="section section-white section-brain-viewport" id="brain-stage">
-      <div class="container brain-viewport-container">
-        
-        <div class="brain-section-header story-reveal" data-story="fade-up">
-          <span class="eyebrow">Neural Core Intelligence</span>
-          <h2 class="section-title">Feed Signals. <span class="text-gradient-inline">Synthesize Root Causes.</span></h2>
-        </div>
-
-        <div class="brain-console-card story-reveal" data-story="scale-in">
-          
-          <!-- Top Console Bar -->
-          <div class="console-topbar">
-            <div class="console-controls">
-              <span class="c-dot red"></span>
-              <span class="c-dot yellow"></span>
-              <span class="c-dot green"></span>
-            </div>
-            <div class="console-title">
-              <span class="console-tag">SIMPLYWHY NEURAL CONSOLE v2.6</span>
-              <span class="console-status-live"><span class="live-dot"></span>CALM SYNTHESIS STREAM</span>
-            </div>
-            <div class="console-time" id="console-time">00:00:12.4s</div>
-          </div>
-
-          <!-- 3-COLUMN GRID — NO SVG, connectors drawn via JS on a canvas overlay -->
-          <div class="brain-tri-grid" id="brain-tri-grid">
-            
-            <!-- CANVAS OVERLAY FOR CONNECTOR LINES (drawn dynamically by JS) -->
-            <canvas class="connector-canvas" id="connectorCanvas"></canvas>
-            
-            <!-- COLUMN 1: INPUT TELEMETRY SIGNALS -->
-            <div class="grid-col col-traces" id="col-input">
-              <div class="col-header">
-                <span class="col-num">01</span>
-                <h4>INPUT SIGNALS</h4>
-              </div>
-
-              <div class="trace-nodes-stack compact-stack">
-                <div class="trace-node-card active" id="tn-replays" data-node-idx="0" onclick="triggerBrainSignal('replays')">
-                  <div class="tn-icon icon-cyan">📹</div>
-                  <div class="tn-info">
-                    <span class="tn-name">Session Replays</span>
-                    <span class="tn-meta">Rage & Hesitation Clicks</span>
-                  </div>
-                  <span class="tn-status-pill">Active</span>
-                </div>
-
-                <div class="trace-node-card active" id="tn-tickets" data-node-idx="1" onclick="triggerBrainSignal('tickets')">
-                  <div class="tn-icon icon-amber">💬</div>
-                  <div class="tn-info">
-                    <span class="tn-name">Support Tickets</span>
-                    <span class="tn-meta">19 Zendesk Billing Complaints</span>
-                  </div>
-                  <span class="tn-status-pill">Active</span>
-                </div>
-
-                <div class="trace-node-card active" id="tn-funnel" data-node-idx="2" onclick="triggerBrainSignal('funnel')">
-                  <div class="tn-icon icon-violet">📊</div>
-                  <div class="tn-info">
-                    <span class="tn-name">Funnel Analytics</span>
-                    <span class="tn-meta">-32.4% Drop Step 3</span>
-                  </div>
-                  <span class="tn-status-pill">Active</span>
-                </div>
-
-                <div class="trace-node-card active" id="tn-deploys" data-node-idx="3" onclick="triggerBrainSignal('deploys')">
-                  <div class="tn-icon icon-mint">⚡</div>
-                  <div class="tn-info">
-                    <span class="tn-name">Git Deploys</span>
-                    <span class="tn-meta">Commit #b7a9 (Annual Copy)</span>
-                  </div>
-                  <span class="tn-status-pill">Active</span>
-                </div>
-              </div>
-
-              <button class="btn trigger-brain-btn btn-sm" onclick="runNeuralSynthesis()">
-                ⚡ Trigger Neural Scan
-              </button>
-            </div>
-
-            <!-- COLUMN 2: CENTER CANVAS STAGE -->
-            <div class="grid-col col-brain-stage">
-              
-              <div class="brain-canvas-container" id="canvas-wrapper">
-                <canvas id="brainCanvas" width="460" height="340"></canvas>
-
-                <div class="brain-status-dock" id="brain-status-dock">
-                  <span class="dock-pulse"></span>
-                  <span id="brain-status-text">Synthesizing Signal Traces...</span>
-                </div>
-
-                <div class="clue-tags-dock">
-                  <span class="c-tag tag-cyan">📹 Rage Click</span>
-                  <span class="c-tag tag-amber">⏱ Mouse Pause</span>
-                  <span class="c-tag tag-violet">💬 Billing Ticket</span>
-                  <span class="c-tag tag-mint">⚡ Commit #b7a9</span>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- COLUMN 3: AI DIAGNOSIS EXPLANATION CARD -->
-            <div class="grid-col col-diagnosis" id="col-output">
-              <div class="col-header">
-                <span class="col-num">02</span>
-                <h4>SYNTHESIZED "WHY" ANSWERS</h4>
-              </div>
-
-              <div class="diagnosis-card-console" id="diag-console-card">
-                <div class="diag-top">
-                  <span class="badge-mint-diag">CORRELATED CAUSES</span>
-                  <span class="diag-conf-val" id="diag-conf">94% Confidence</span>
-                </div>
-
-                <div class="diag-body">
-                  <span class="diag-label">PRIMARY ROOT CAUSE:</span>
-                  <h3 class="diag-title" id="diag-title">Pricing Expectation Mismatch</h3>
-                  <p class="diag-desc" id="diag-desc">
-                    Users hesitate at checkout step 3 because the <code>[Bill Annually]</code> default creates an expectation mismatch regarding trial billing.
-                  </p>
-                </div>
-
-                <!-- MULTIPLE WHY BREAKDOWN LIST -->
-                <div class="why-breakdown-list" id="why-breakdown-list">
-                  <div class="why-item" data-why-idx="0">
-                    <span class="why-num text-cyan">WHY 1</span>
-                    <div class="why-info">
-                      <strong>Replay Friction</strong>
-                      <p>61% mouse pause over annual badge before exit.</p>
-                    </div>
-                  </div>
-
-                  <div class="why-item" data-why-idx="1">
-                    <span class="why-num text-amber">WHY 2</span>
-                    <div class="why-info">
-                      <strong>Support Ticket Spike</strong>
-                      <p>19 tickets asking "Am I charged immediately?".</p>
-                    </div>
-                  </div>
-
-                  <div class="why-item" data-why-idx="2">
-                    <span class="why-num text-mint">WHY 3</span>
-                    <div class="why-info">
-                      <strong>Code Deployment Trigger</strong>
-                      <p>Commit #b7a9 defaulted toggle to Annual plan.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Cause Selector Chips -->
-                <div class="cause-chips-bar">
-                  <button class="cause-chip active" onclick="switchBrainCause('pricing')">Pricing confusion</button>
-                  <button class="cause-chip" onclick="switchBrainCause('onboarding')">Onboarding hesitation</button>
-                  <button class="cause-chip" onclick="switchBrainCause('discoverability')">Discoverability failure</button>
-                  <button class="cause-chip" onclick="switchBrainCause('form')">Form friction</button>
-                </div>
-
-                <div class="diag-fix-box">
-                  <span class="fix-icon">💡</span>
-                  <span id="diag-fix-text">Recommended Fix: <em>"Bill Annually (starts after trial)"</em> → <strong>+28% recovery</strong></span>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- BOTTOM METRICS STRIP -->
-          <div class="console-bottom-metrics">
-            <div class="metric-cell">
-              <span class="m-val text-teal">12s</span>
-              <span class="m-lbl">Diagnosis Time</span>
-            </div>
-            <div class="metric-cell">
-              <span class="m-val text-white">0</span>
-              <span class="m-lbl">Manual Replays Watched</span>
-            </div>
-            <div class="metric-cell">
-              <span class="m-val text-teal">+28%</span>
-              <span class="m-lbl">Projected Recovery</span>
-            </div>
-            <div class="metric-cell">
-              <span class="m-val text-blue">100%</span>
-              <span class="m-lbl">Evidence Transparency</span>
-            </div>
-          </div>
-
         </div>
 
       </div>
     </section>
 
 
-    <!-- ==========================================================================
-         SECTION 4 [WHITE]: COMPARISON BLOCK
-         ========================================================================== -->
-    <section class="section section-white" id="compare" style="overflow:visible">
+    <!-- ================================================================
+         WHY CHAIN — Interactive drill-down
+         ================================================================ -->
+    <section class="section section-why" id="why-section">
+      <div class="why-container reveal">
+        <h2 class="why-heading">Start with a symptom.<br><span class="text-accent">We'll find the why.</span></h2>
+
+        <div class="why-chain-wrapper" id="why-chain">
+          <button class="why-step" id="why-current" type="button" onclick="advanceWhyChain()">
+            WHY DID REVENUE DROP?
+          </button>
+          <div class="why-step-hint visible" id="why-hint">Click to investigate deeper →</div>
+          <div class="why-result-detail" id="why-detail"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         SIGNALS — 5 data source cards
+         ================================================================ -->
+    <section class="section section-signals" id="signals">
       <div class="container">
-        
-        <div class="section-header story-reveal" data-story="fade-up">
-          <span class="eyebrow">The Paradigm Shift</span>
-          <h2 class="section-title">Debugging Everything Today<br>vs. With SimplyWhy.</h2>
-          <p class="section-desc">Stop wasting developer hours piecing together fragmented analytics dashboards.</p>
+        <div class="signals-header reveal">
+          <span class="eyebrow">Signal Sources</span>
+          <h2 class="section-heading" style="margin-top:16px">Your product is already<br>telling you why.</h2>
+          <p class="section-sub">The problem is that the evidence lives in different places.</p>
         </div>
 
-
-        <div class="compelling-compare-grid">
-
-          <!-- ANIMATED COMPARISON BARS -->
-          <div class="compare-bars story-reveal" data-story="fade-up" id="compare-bars">
-            <div class="compare-bars-header">
-              <span class="cb-old">Traditional Analytics</span>
-              <span class="cb-vs">VS</span>
-              <span class="cb-new">SimplyWhy</span>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Time to Root Cause</span>
-              <div class="bar-tracks"><div class="bar-track bar-track-old"><div class="bar-fill bar-fill-old" style="--bar-w:55%"></div></div><span class="bar-vs">vs</span><div class="bar-track"><div class="bar-fill bar-fill-new" style="--bar-w:12%"></div></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Manual Effort</span>
-              <div class="bar-tracks"><div class="bar-track bar-track-old"><div class="bar-fill bar-fill-old" style="--bar-w:85%"></div></div><span class="bar-vs">vs</span><div class="bar-track"><div class="bar-fill bar-fill-new" style="--bar-w:5%"></div></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Evidence Quality</span>
-              <div class="bar-tracks"><div class="bar-track bar-track-old"><div class="bar-fill bar-fill-old" style="--bar-w:30%"></div></div><span class="bar-vs">vs</span><div class="bar-track"><div class="bar-fill bar-fill-new" style="--bar-w:95%"></div></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Guesswork</span>
-              <div class="bar-tracks"><div class="bar-track bar-track-old"><div class="bar-fill bar-fill-old" style="--bar-w:70%"></div></div><span class="bar-vs">vs</span><div class="bar-track"><div class="bar-fill bar-fill-new" style="--bar-w:0%"></div></div></div>
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">Fix Confidence</span>
-              <div class="bar-tracks"><div class="bar-track bar-track-old"><div class="bar-fill bar-fill-old" style="--bar-w:20%"></div></div><span class="bar-vs">vs</span><div class="bar-track"><div class="bar-fill bar-fill-new" style="--bar-w:92%"></div></div></div>
-            </div>
+        <div class="signals-grid reveal" style="transition-delay:200ms">
+          <div class="signal-card" data-signal="sessions">
+            <span class="signal-type">Session Replays</span>
+            <span class="signal-value">12,481</span>
+            <span class="signal-label">sessions analyzed</span>
+            <span class="signal-change bad">1,842 rage clicks</span>
           </div>
-
-          <div class="compare-cards-row" style="display:none">
-          <div class="compare-card-light compare-today-light story-reveal" data-story="slide-left">
-            <div class="compare-card-header-l">
-              <span class="compare-tag-l tag-old-l">TODAY'S FRAGMENTED STACK</span>
-              <h3>Traditional Analytics</h3>
-              <p class="compare-desc-l">Hotjar + PostHog + Zendesk + Datadog</p>
-            </div>
-            <ul class="compare-list-l">
-              <li>
-                <span class="icon-bad-l">✕</span>
-                <div>
-                  <strong>Shows <em>where</em> users leave, never why</strong>
-                  <p>You see a drop on Step 3, but zero context on what caused it.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon-bad-l">✕</span>
-                <div>
-                  <strong>Endless manual replay watching</strong>
-                  <p>Engineers waste 10+ hours sifting through recordings.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon-bad-l">✕</span>
-                <div>
-                  <strong>Sprint debates based on opinions</strong>
-                  <p>Roadmaps devolve into loud arguments without proof.</p>
-                </div>
-              </li>
-            </ul>
+          <div class="signal-card" data-signal="support">
+            <span class="signal-type">Support</span>
+            <span class="signal-value">283</span>
+            <span class="signal-label">checkout complaints</span>
+            <span class="signal-change bad">↑ 37%</span>
           </div>
-
-          <div class="compare-card-light compare-tm-light story-reveal" data-story="slide-right">
-            <div class="compare-card-header-l">
-              <span class="compare-tag-l tag-new-l">WITH SIMPLYWHY ENGINE</span>
-              <h3>Autonomous Root Cause Intelligence</h3>
-              <p class="compare-desc-l">All Sources of Truth → Instant Answers</p>
-            </div>
-            <ul class="compare-list-l">
-              <li>
-                <span class="icon-good-l">✓</span>
-                <div>
-                  <strong>Explains the exact <em>WHY</em> in seconds</strong>
-                  <p>Correlates hesitations, tickets, and deploys into verified root causes.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon-good-l">✓</span>
-                <div>
-                  <strong>Zero manual replay watching</strong>
-                  <p>Autonomous AI scans DOM mutations and mouse friction for you.</p>
-                </div>
-              </li>
-              <li>
-                <span class="icon-good-l">✓</span>
-                <div>
-                  <strong>1-click recommended fixes with ROI</strong>
-                  <p>Actionable code or copy patches with projected recovery.</p>
-                </div>
-              </li>
-            </ul>
-            <div class="compare-cta-banner-l">
-              <a href="#join" class="btn btn-teal-primary btn-full">Join Waitlist & Transform Your Workflow →</a>
-            </div>
+          <div class="signal-card" data-signal="funnel">
+            <span class="signal-type">Funnel</span>
+            <span class="signal-value">68% → 47%</span>
+            <span class="signal-label">checkout completion</span>
+            <span class="signal-change bad">↓ 21pts</span>
           </div>
-
-          </div><!-- end compare-cards-row -->
-
-          <!-- PIPELINE TIMELINE -->
-          <div class="pipeline-timeline story-reveal" data-story="fade-up" id="pipeline-timeline">
-            <div class="pipeline-track-bg"></div>
-            <div class="pipeline-track-fill" id="pipeline-track-fill"></div>
-            <div class="pipeline-step" data-step="1">
-              <div class="pipe-icon-ring pipe-cyan" data-icon="1"><span>📡</span></div>
-              <h4>Collect</h4>
-              <p>Ingests session replays, support tickets, funnel data, deploy logs, and UX signals — all in real time.</p>
-            </div>
-            <div class="pipeline-step" data-step="2">
-              <div class="pipe-icon-ring pipe-violet" data-icon="2"><span>🧠</span></div>
-              <h4>Analyze</h4>
-              <p>AI cross-references behavioral patterns, friction clusters, and cohort anomalies across every data stream.</p>
-            </div>
-            <div class="pipeline-step" data-step="3">
-              <div class="pipe-icon-ring pipe-amber" data-icon="3"><span>🔍</span></div>
-              <h4>Reflect</h4>
-              <p>Surfaces the verified root cause — not just what broke, but exactly <em>why</em> users hesitated and left.</p>
-            </div>
-            <div class="pipeline-step" data-step="4">
-              <div class="pipe-icon-ring pipe-mint" data-icon="4"><span>💡</span></div>
-              <h4>Suggest</h4>
-              <p>Delivers actionable fixes with projected recovery — ready to ship in your next sprint.</p>
-            </div>
+          <div class="signal-card" data-signal="deploys">
+            <span class="signal-type">Deployments</span>
+            <span class="signal-value">#2841</span>
+            <span class="signal-label">payment validation</span>
+            <span class="signal-change bad">suspect commit</span>
           </div>
-
+          <div class="signal-card" data-signal="errors">
+            <span class="signal-type">Errors</span>
+            <span class="signal-value">Safari</span>
+            <span class="signal-label">validation failures</span>
+            <span class="signal-change bad">↑ 412%</span>
+          </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ==========================================================================
-         SECTION 5 [DARK]: WAITLIST
-         ========================================================================== -->
-    <section class="section section-dark section-waitlist" id="join">
-      <div class="dark-glow-orb d-orb-mint"></div>
-      <div class="dark-grid-overlay"></div>
 
-      <div class="container waitlist-container-centered">
-        
-        <div class="waitlist-card-dark story-reveal" data-story="scale-in">
-          
-          <div class="waitlist-brand-title">
-            <span class="w-mint-dot"></span>
-            <span class="w-brand-text">SimplyWhy</span>
-          </div>
-          
-          <p class="waitlist-tagline">Simplifying your journey to why.</p>
-
-          <form class="waitlist-form-dark" onsubmit="handleWaitlistSubmit(event)">
-            <div class="input-field-group">
-              <input type="email" id="w-email" placeholder="you@company.com" required>
-            </div>
-            
-            <div class="input-field-group">
-              <input type="text" id="w-role" placeholder="Your role" required>
-            </div>
-
-            <button type="submit" class="btn-solid-mint-pill">
-              Join the waitlist
-            </button>
-          </form>
-
-          <div class="waitlist-footer-note">
-            CURRENTLY IN BUILD · EARLY ACCESS ROLLING OUT SOON
-          </div>
-
+    <!-- ================================================================
+         EVIDENCE GRAPH — Interactive node canvas
+         ================================================================ -->
+    <section class="section section-evidence" id="evidence">
+      <div class="container">
+        <div class="evidence-header reveal">
+          <span class="eyebrow">Evidence Graph</span>
+          <h2 class="section-heading" style="margin-top:16px">Correlation,<br>not guesswork.</h2>
+          <p class="section-sub">SimplyWhy connects signals that traditional analytics keep separate.</p>
         </div>
 
+        <div class="evidence-canvas-wrap reveal-scale" style="transition-delay:200ms">
+          <canvas id="evidenceCanvas"></canvas>
+          <div class="evidence-tooltip" id="evidence-tooltip">
+            <div class="evidence-tooltip-title" id="tooltip-title"></div>
+            <div id="tooltip-rows"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         INCIDENT TIMELINE
+         ================================================================ -->
+    <section class="section section-timeline" id="timeline">
+      <div class="container">
+        <div class="timeline-header reveal">
+          <span class="eyebrow">Incident Timeline</span>
+          <h2 class="section-heading" style="margin-top:16px">See exactly when<br>things went wrong.</h2>
+        </div>
+
+        <div class="timeline-track" id="timeline-track">
+          <div class="timeline-line"></div>
+          <div class="timeline-line-fill" id="timeline-fill"></div>
+
+          <div class="timeline-event" data-index="0">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">09:41 AM</div>
+            <div class="timeline-label">Normal conversion rate</div>
+            <div class="timeline-detail">Checkout funnel performing at baseline</div>
+          </div>
+
+          <div class="timeline-event critical" data-index="1">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:12 AM</div>
+            <div class="timeline-label">Deployment #2841</div>
+            <div class="timeline-detail">Payment validation update pushed to production</div>
+          </div>
+
+          <div class="timeline-event critical" data-index="2">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:18 AM</div>
+            <div class="timeline-label">First Safari failures</div>
+            <div class="timeline-detail">Validation loop triggered on Safari autofill</div>
+          </div>
+
+          <div class="timeline-event" data-index="3">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:23 AM</div>
+            <div class="timeline-label">Rage clicks ↑ 42%</div>
+            <div class="timeline-detail">Users repeatedly clicking payment submit button</div>
+          </div>
+
+          <div class="timeline-event critical" data-index="4">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:27 AM</div>
+            <div class="timeline-label">Checkout conversion ↓ 31%</div>
+            <div class="timeline-detail">Conversion drops from 68% to 47%</div>
+          </div>
+
+          <div class="timeline-event" data-index="5">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:31 AM</div>
+            <div class="timeline-label">Support tickets ↑ 283</div>
+            <div class="timeline-detail">Users reporting checkout failures</div>
+          </div>
+
+          <div class="timeline-event root-cause" data-index="6">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">10:34 AM</div>
+            <div class="timeline-label">SimplyWhy detects root cause</div>
+            <div class="timeline-detail">94% confidence — deployment #2841 identified</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         AI DIAGNOSIS CARD
+         ================================================================ -->
+    <section class="section section-diagnosis" id="diagnosis">
+      <div class="container">
+        <div class="diagnosis-wrapper reveal-scale">
+          <div class="diagnosis-card">
+            <div class="diagnosis-card-header">
+              <span class="eyebrow">✦ SimplyWhy Diagnosis</span>
+            </div>
+            <div class="diagnosis-card-body">
+
+              <div class="diag-section">
+                <div class="diag-label">Incident</div>
+                <div class="diag-value">Checkout Conversion Drop</div>
+              </div>
+
+              <div class="diag-section">
+                <div class="diag-label">Root Cause</div>
+                <div class="diag-value">Payment validation loop introduced in deployment <code>#2841</code></div>
+              </div>
+
+              <div class="diag-section">
+                <div class="diag-label">Confidence</div>
+                <div class="diag-value" style="font-size:1rem">94%</div>
+                <div class="diag-confidence-bar">
+                  <div class="diag-confidence-fill" id="confidence-fill"></div>
+                </div>
+              </div>
+
+              <div class="diag-section">
+                <div class="diag-label">Evidence</div>
+                <div class="diag-evidence-list">
+                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Session behavior correlation</div>
+                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Support ticket correlation</div>
+                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Deployment correlation</div>
+                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Error spike detected</div>
+                </div>
+              </div>
+
+              <div class="diag-section">
+                <div class="diag-label">Estimated Impact</div>
+                <div class="diag-impact">$42,800 revenue at risk</div>
+              </div>
+
+              <div class="diag-section">
+                <div class="diag-actions">
+                  <button class="diag-btn diag-btn-outline" onclick="scrollToSection('#evidence')">View evidence</button>
+                  <button class="diag-btn diag-btn-primary" onclick="scrollToSection('#recommendation')">Fix this →</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         RECOMMENDATION
+         ================================================================ -->
+    <section class="section section-recommendation" id="recommendation">
+      <div class="container">
+        <div class="rec-wrapper reveal">
+          <div class="rec-header">
+            <span class="eyebrow">Recommended Action</span>
+            <h2 class="section-heading" style="margin-top:16px">What should you do?</h2>
+          </div>
+
+          <div class="rec-fix-box">
+            <div class="rec-fix-label">Recommended Fix</div>
+            <p class="rec-fix-text">Roll back deployment <code>#2841</code> and deploy the validation patch to restore Safari checkout functionality.</p>
+          </div>
+
+          <div class="rec-metrics-grid">
+            <div class="rec-metric">
+              <div class="rec-metric-label">Expected Recovery</div>
+              <div class="rec-metric-value">47% → 66–69%</div>
+              <div class="rec-metric-detail">Checkout conversion</div>
+            </div>
+            <div class="rec-metric">
+              <div class="rec-metric-label">Estimated Revenue</div>
+              <div class="rec-metric-value">$38K – $44K</div>
+              <div class="rec-metric-detail">Recovered revenue</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================
+         FINAL CTA + WAITLIST
+         ================================================================ -->
+    <section class="section section-cta" id="cta">
+      <div class="container cta-container">
+        <span class="eyebrow cta-eyebrow reveal">Root Cause Intelligence</span>
+        <h2 class="cta-heading reveal" style="transition-delay:100ms">
+          Stop guessing.<br><span class="text-accent">Start knowing why.</span>
+        </h2>
+        <p class="cta-sub reveal" style="transition-delay:200ms">Turn scattered product signals into one clear answer.</p>
+
+        <div class="reveal" style="transition-delay:300ms" id="waitlist-container">
+          <form class="waitlist-form" id="waitlist-form" onsubmit="handleWaitlistSubmit(event)">
+            <input type="email" class="waitlist-input" id="w-email" placeholder="you@company.com" required>
+            <input type="text" class="waitlist-input" id="w-role" placeholder="Your role" required>
+            <button type="submit" class="waitlist-submit" id="waitlist-btn">Run your first diagnosis →</button>
+          </form>
+          <p class="waitlist-note">No credit card required.</p>
+        </div>
       </div>
     </section>
 
   </main>
 
-  <footer class="foot">
-    <div class="container foot-inner">
-      <span class="foot-brand">SimplyWhy</span>
-      <span>&copy; 2026 SimplyWhy Inc. Simplifying your journey to why.</span>
+
+  <!-- ================================================================
+       NEURAL SCAN OVERLAY
+       ================================================================ -->
+  <div class="neural-scan-overlay" id="neural-scan">
+    <button class="neural-scan-close" onclick="closeNeuralScan()">✕</button>
+
+    <!-- Stage 1: Scanning -->
+    <div class="scan-stage" id="scan-stage-1">
+      <span class="eyebrow">Neural Scan</span>
+      <h2 class="scan-title">Analyzing your product</h2>
+      <div class="scan-checklist" id="scan-checklist">
+        <div class="scan-check-item" data-check="0">
+          <span class="check-icon">✓</span>
+          <span>Session behavior</span>
+        </div>
+        <div class="scan-check-item" data-check="1">
+          <span class="check-icon">✓</span>
+          <span>Funnel analytics</span>
+        </div>
+        <div class="scan-check-item" data-check="2">
+          <span class="check-icon">✓</span>
+          <span>Support conversations</span>
+        </div>
+        <div class="scan-check-item" data-check="3">
+          <span class="check-icon">✓</span>
+          <span>Git activity</span>
+        </div>
+        <div class="scan-check-item" data-check="4">
+          <span class="check-icon">✓</span>
+          <span>Deployments</span>
+        </div>
+        <div class="scan-check-item" data-check="5">
+          <span class="check-icon">✓</span>
+          <span>Error patterns</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Correlating -->
+    <div class="scan-stage" id="scan-stage-2">
+      <canvas class="scan-canvas" id="scanCanvas"></canvas>
+      <span class="eyebrow">Correlating Signals</span>
+      <h2 class="scan-title" style="margin-bottom:48px">Connecting the dots</h2>
+      <div class="scan-stats">
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="stat-sessions">0</span>
+          <span class="scan-stat-label">Sessions</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="stat-conversations">0</span>
+          <span class="scan-stat-label">Conversations</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="stat-deploys">0</span>
+          <span class="scan-stat-label">Deployments</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="stat-anomalies">0</span>
+          <span class="scan-stat-label">Anomalies</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Anomaly Detected -->
+    <div class="scan-stage" id="scan-stage-3">
+      <span class="eyebrow" style="color:var(--red)">⚠ Anomaly Detected</span>
+      <div style="margin-top:16px">
+        <div class="scan-anomaly-label">Checkout conversion</div>
+        <div class="scan-anomaly-metric">↓ 31.2%</div>
+      </div>
+    </div>
+
+    <!-- Stage 4: Chain -->
+    <div class="scan-stage" id="scan-stage-4">
+      <div class="scan-chain" id="scan-chain">
+        <div class="scan-chain-item" data-chain="0">Checkout drop</div>
+        <div class="scan-chain-arrow">↓</div>
+        <div class="scan-chain-item" data-chain="1">Safari users</div>
+        <div class="scan-chain-arrow">↓</div>
+        <div class="scan-chain-item" data-chain="2">Payment validation</div>
+        <div class="scan-chain-arrow">↓</div>
+        <div class="scan-chain-item highlight" data-chain="3">Deployment #2841</div>
+      </div>
+    </div>
+
+    <!-- Stage 5: Root Cause Found -->
+    <div class="scan-stage" id="scan-stage-5">
+      <h2 class="scan-title-huge">ROOT CAUSE<br><span class="text-accent">FOUND.</span></h2>
+      <p class="scan-result-cause">
+        Deployment <code>#2841</code> introduced a payment validation loop affecting Safari users, causing checkout failures for 31.2% of transactions.
+      </p>
+      <div class="scan-confidence">94% confidence</div>
+      <button class="scan-evidence-btn" onclick="closeNeuralScanAndScroll('#evidence')">View evidence ↓</button>
+    </div>
+  </div>
+
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">SimplyWhy</div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <a href="#signals">Product</a>
+            <a href="#evidence">How it works</a>
+            <a href="#why-section">Use cases</a>
+          </div>
+          <div class="footer-col">
+            <a href="#">Docs</a>
+            <a href="#">Security</a>
+            <a href="#">Pricing</a>
+          </div>
+          <div class="footer-col">
+            <a href="#">X</a>
+            <a href="#">LinkedIn</a>
+            <a href="#">GitHub</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copy">© 2026 SimplyWhy Inc.</div>
     </div>
   </footer>
 
