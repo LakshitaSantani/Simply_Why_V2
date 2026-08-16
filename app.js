@@ -1,6 +1,6 @@
 /**
  * SIMPLYWHY — ROOT CAUSE INTELLIGENCE
- * Intelligence Core Centerpiece, Causal Graph & Investigation Engine
+ * Visual-First Architecture, Intelligence Core Centerpiece, Causal Graph & Investigation Engine
  */
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
@@ -73,7 +73,6 @@ async function handleWaitlistSubmit(e) {
 document.addEventListener("DOMContentLoaded", () => {
   initNavbarScroll();
   initScrollReveals();
-  initProductHealthSparklines();
   initHeroIntelligenceCoreCanvas();
   initCinemaEvidenceCanvas();
   initCinemaRecoveryCanvas();
@@ -107,74 +106,8 @@ function initScrollReveals() {
 }
 
 /* ==========================================================================
-   1. HERO PRODUCT HEALTH & HERO INTELLIGENCE CORE
+   1. HERO INTELLIGENCE CORE (5 Streams -> Central Processor)
    ========================================================================== */
-function initProductHealthSparklines() {
-  drawSparkline('spark-conv', [22, 21, 20, 19.5, 19, 18.4], '#EF4444');
-  drawSparkline('spark-checkout', [12, 14, 15, 18, 25, 31.2], '#EF4444');
-  drawSparkline('spark-rage', [8, 9, 11, 16, 28, 42.1], '#F59E0B');
-}
-
-function drawSparkline(canvasId, dataPoints, strokeColor) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const width = 90;
-  const height = 24;
-
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.scale(dpr, dpr);
-
-  const min = Math.min(...dataPoints) * 0.9;
-  const max = Math.max(...dataPoints) * 1.1;
-  const stepX = (width - 8) / (dataPoints.length - 1);
-
-  ctx.clearRect(0, 0, width, height);
-
-  const grad = ctx.createLinearGradient(0, 0, 0, height);
-  grad.addColorStop(0, strokeColor === '#EF4444' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(245, 158, 11, 0.25)');
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
-
-  ctx.beginPath();
-  dataPoints.forEach((val, i) => {
-    const x = 4 + i * stepX;
-    const y = height - 4 - ((val - min) / (max - min)) * (height - 8);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.strokeStyle = strokeColor;
-  ctx.lineWidth = 1.8;
-  ctx.stroke();
-
-  ctx.lineTo(4 + (dataPoints.length - 1) * stepX, height);
-  ctx.lineTo(4, height);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  const lastX = 4 + (dataPoints.length - 1) * stepX;
-  const lastY = height - 4 - ((dataPoints[dataPoints.length - 1] - min) / (max - min)) * (height - 8);
-  ctx.fillStyle = strokeColor;
-  ctx.beginPath();
-  ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function handleMetricHover(metricType) {
-  const rows = document.querySelectorAll('.viz-metric-row');
-  rows.forEach(row => {
-    row.classList.toggle('active-highlight', row.getAttribute('data-metric') === metricType);
-  });
-}
-
-function handleMetricLeave() {
-  handleMetricHover('checkout');
-}
-
-/* HERO INTELLIGENCE CORE CANVAS (5 Streams -> Central Processor) */
 function initHeroIntelligenceCoreCanvas() {
   const canvas = document.getElementById("heroCoreCanvas");
   if (!canvas) return;
@@ -216,13 +149,12 @@ function initHeroIntelligenceCoreCanvas() {
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.quadraticCurveTo(sx, coreY, coreX, coreY);
-      ctx.strokeStyle = `rgba(255, 255, 255, 0.07)`;
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.08)`;
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
       // Traveling Data Particles
       const progress = (t * 0.8 + idx * 0.2) % 1;
-      // Quadratic bezier calculation
       const px = (1 - progress) * (1 - progress) * sx + 2 * (1 - progress) * progress * sx + progress * progress * coreX;
       const py = (1 - progress) * (1 - progress) * sy + 2 * (1 - progress) * progress * coreY + progress * progress * coreY;
 
@@ -771,6 +703,14 @@ function initConvergenceCanvas() {
   draw();
 }
 
+function showSignalTooltip(type) {
+  // Handled by CSS hover, interactive function available if needed
+}
+
+function hideSignalTooltip() {
+  // Handled by CSS
+}
+
 /* ==========================================================================
    RECOVERY PROJECTION CANVAS
    ========================================================================== */
@@ -839,34 +779,30 @@ const USE_CASES_DATA = {
   signups: {
     badge: "AUTHENTICATION DIAGNOSIS",
     conf: "96% CONFIDENCE",
-    symptom: "Signup completion fell 28.4% within 90 seconds of release",
-    cause: "OAuth callback domain whitelist mismatch in deployment #2839",
-    signals: "Google OAuth 400 errors + Form abandonments + Commit #2839 auth secret update",
-    action: "Revert OAuth client configuration in deployment #2839 and refresh callback domains"
+    symptom: "Signup completion fell 28.4%",
+    signals: "OAuth 400 errors + Form abandonment + Deploy #2839",
+    cause: "OAuth callback domain whitelist mismatch"
   },
   support: {
     badge: "ONBOARDING FLOW DIAGNOSIS",
     conf: "92% CONFIDENCE",
-    symptom: "Support ticket volume surged 410% on invitation links",
-    cause: "Workspace invitation JWT token expiration bug in deployment #2835",
-    signals: "401 Token Expired logs + Zendesk keyword 'invite broken' + Git commit #2835",
-    action: "Deploy JWT expiration tolerance patch and reissue pending workspace invitations"
+    symptom: "Support ticket volume surged 410%",
+    signals: "401 Token Expired logs + Zendesk 'invite broken' + Commit #2835",
+    cause: "Workspace invitation JWT expiration bug"
   },
   revenue: {
     badge: "PAYMENT PROCESSING DIAGNOSIS",
     conf: "95% CONFIDENCE",
-    symptom: "Daily GMV fell $34K across European localized checkout tiers",
-    cause: "Currency rounding overflow on localized VAT calculation engine",
-    signals: "Stripe API 422 Unprocessable Entity + EUR checkout dropoff + Deploy #2828",
-    action: "Patch decimal precision handler in billing microservice"
+    symptom: "Daily GMV fell $34K across European tiers",
+    signals: "Stripe 422 Unprocessable + EUR dropoff + Deploy #2828",
+    cause: "Currency rounding overflow on VAT calculation engine"
   },
   latency: {
     badge: "INFRASTRUCTURE DIAGNOSIS",
     conf: "93% CONFIDENCE",
-    symptom: "API p99 latency spiked from 120ms to 4,200ms during peak load",
-    cause: "Unindexed database query migration in release #2830",
-    signals: "Postgres slow query log spike + Connection pool exhaustion + Migration commit #2830",
-    action: "Execute concurrent index creation on workspace_id foreign key column"
+    symptom: "API p99 latency spiked 120ms → 4,200ms",
+    signals: "Slow query log spike + Connection pool exhaustion + Commit #2830",
+    cause: "Unindexed database query migration in release #2830"
   }
 };
 
@@ -884,14 +820,12 @@ function selectUseCase(key) {
   const symptom = document.getElementById("uc-symptom");
   const cause = document.getElementById("uc-cause");
   const signals = document.getElementById("uc-signals");
-  const action = document.getElementById("uc-action");
 
   if (badge) badge.textContent = data.badge;
   if (conf) conf.textContent = data.conf;
   if (symptom) symptom.textContent = data.symptom;
   if (cause) cause.textContent = data.cause;
   if (signals) signals.textContent = data.signals;
-  if (action) action.textContent = data.action;
 }
 
 /* ==========================================================================
@@ -933,11 +867,11 @@ function askAIAssistant(prompt) {
     if (responseArea) responseArea.style.display = "block";
 
     if (prompt.includes("conversion")) {
-      responseText.textContent = "ROOT CAUSE: Payment validation loop in deployment #2841 (94% confidence). 78% of affected checkout drops are isolated to Safari 17.2 WebKit regex handler.";
+      responseText.innerHTML = "CHECKOUT CONVERSION ↓18.4%<br><br><strong>ROOT CAUSE:</strong> Payment validation loop in deployment #2841 (94% confidence). 78% of affected checkout drops are isolated to Safari 17.2 WebKit regex handler.";
     } else if (prompt.includes("today")) {
-      responseText.textContent = "7 deployments pushed across core services. 1 active critical anomaly: checkout validation loop (#2841). Recommended action: Rollback commit #2841.";
+      responseText.innerHTML = "7 deployments pushed today across core services.<br><br><strong>CRITICAL ANOMALY:</strong> Checkout validation loop (#2841). Recommended action: Rollback commit #2841.";
     } else {
-      responseText.textContent = "Priority investigation: Checkout Conversion drop (-18.4%). Causal vector resolved to deployment #2841 with 94% attribution confidence.";
+      responseText.innerHTML = "PRIORITY INVESTIGATION: Checkout Conversion drop (-18.4%).<br><br><strong>ATTRIBUTION:</strong> Causal vector resolved to deployment #2841 with 94% attribution confidence.";
     }
   }, 1350);
 }
