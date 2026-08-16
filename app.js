@@ -1,6 +1,6 @@
 /**
  * SIMPLYWHY — ROOT CAUSE INTELLIGENCE
- * Unified Interactive Investigation Engine & Visualizations (V3 Consolidation)
+ * Visual-First Product Demo, Autonomous Scroll Controller & Visualizations
  */
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
@@ -24,7 +24,7 @@ async function handleWaitlistSubmit(e) {
   const email = emailInput ? emailInput.value.trim() : "";
   const role = roleInput ? roleInput.value.trim() : "";
   const submitBtn = document.getElementById("waitlist-btn") || e.target.querySelector('button[type="submit"]');
-  const originalBtnText = submitBtn ? submitBtn.innerText : "Run your first diagnosis →";
+  const originalBtnText = submitBtn ? submitBtn.innerText : "Get early access →";
 
   if (!email || !email.includes("@")) return;
 
@@ -75,10 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
   initScrollReveals();
   initProductHealthSparklines();
   initHeroVizCanvas();
-  initSignalNetworkCanvas();
-  initEvidenceCanvas();
-  initRecoveryCanvas();
+  initCinematicScrollEngine();
+  initCinemaEvidenceCanvas();
+  initCinemaRecoveryCanvas();
   initLiveTelemetryTicker();
+  playSessionReplayLoop();
 });
 
 /* ---------- NAVBAR SCROLL ---------- */
@@ -133,7 +134,6 @@ function drawSparkline(canvasId, dataPoints, strokeColor) {
 
   ctx.clearRect(0, 0, width, height);
 
-  // Gradient fill under line
   const grad = ctx.createLinearGradient(0, 0, 0, height);
   grad.addColorStop(0, strokeColor === '#EF4444' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(245, 158, 11, 0.25)');
   grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
@@ -159,12 +159,9 @@ function drawSparkline(canvasId, dataPoints, strokeColor) {
   const lastX = 4 + (dataPoints.length - 1) * stepX;
   const lastY = height - 4 - ((dataPoints[dataPoints.length - 1] - min) / (max - min)) * (height - 8);
   ctx.fillStyle = strokeColor;
-  ctx.shadowColor = strokeColor;
-  ctx.shadowBlur = 6;
   ctx.beginPath();
   ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.shadowBlur = 0;
 }
 
 function handleMetricHover(metricType) {
@@ -201,7 +198,7 @@ function initHeroVizCanvas() {
     const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    // Draw baseline grid
+    // Baseline grid lines
     ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
     ctx.lineWidth = 1;
     for (let y = 15; y < h; y += 20) {
@@ -211,11 +208,11 @@ function initHeroVizCanvas() {
       ctx.stroke();
     }
 
-    // Sine wave telemetry
+    // Telemetry wave
     ctx.beginPath();
     for (let x = 0; x <= w; x += 3) {
-      const dropoffWeight = x > w * 0.5 ? Math.sin((x - w * 0.5) / (w * 0.5) * Math.PI) * 16 : 0;
-      const y = h * 0.5 + Math.sin((x * 0.04) + t) * 8 + dropoffWeight;
+      const dropWeight = x > w * 0.5 ? Math.sin((x - w * 0.5) / (w * 0.5) * Math.PI) * 16 : 0;
+      const y = h * 0.5 + Math.sin((x * 0.04) + t) * 8 + dropWeight;
       if (x === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
@@ -229,94 +226,177 @@ function initHeroVizCanvas() {
   draw();
 }
 
+function scrollToInvestigation() {
+  const el = document.getElementById("investigation");
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 /* ==========================================================================
-   2. MASTER INTERACTIVE INVESTIGATION CONTROLLER ("LET'S FIND OUT WHY")
+   2. CINEMATIC STICKY SCROLL ENGINE & FRAME CONTROLLER
    ========================================================================== */
-let currentInvestigationStep = 0;
-let isAutoInvestigating = false;
-let autoTimer = null;
+let currentCinemaStep = 0;
 
-function setInvestigationStep(stepIndex) {
-  currentInvestigationStep = stepIndex;
+function setCinematicStep(stepIndex) {
+  currentCinemaStep = stepIndex;
 
-  // Update tabs
-  const tabs = document.querySelectorAll(".inv-tab");
-  tabs.forEach((tab, idx) => {
-    tab.classList.toggle("active", idx === stepIndex);
+  const frame = document.getElementById("cinema-app-frame");
+  const scrubSteps = document.querySelectorAll(".scrub-step");
+  const urlText = document.getElementById("frame-url-text");
+  const statusText = document.getElementById("frame-status-text");
+
+  // Update Scrubber Pills
+  scrubSteps.forEach((step, idx) => {
+    step.classList.toggle("active", idx === stepIndex);
   });
 
-  // Update view panes
-  for (let i = 0; i <= 6; i++) {
-    const pane = document.getElementById(`inv-view-${i}`);
-    if (pane) {
-      pane.classList.toggle("active", i === stepIndex);
-    }
-  }
+  if (!frame) return;
 
-  // Trigger tab-specific initialization & canvas redrawing
-  if (stepIndex === 1) {
-    if (typeof resizeSignalCanvas === 'function') resizeSignalCanvas();
+  // State Transitions
+  if (stepIndex === 0) {
+    // 01: Full Session Replay Focus
+    frame.classList.remove("view-split", "view-verdict");
+    if (urlText) urlText.textContent = "store.acme.com/checkout/pay";
+    if (statusText) statusText.textContent = "Step 1/5: Session playback active";
+  } else if (stepIndex === 1) {
+    // 02: Anomaly & Rage Click Freeze
+    frame.classList.remove("view-split", "view-verdict");
+    const banner = document.getElementById("rage-click-banner");
+    if (banner) banner.classList.add("visible");
+    if (urlText) urlText.textContent = "simplywhy.ai/anomaly-alert/SAFARI-CHK";
+    if (statusText) statusText.textContent = "Step 2/5: Rage clicks detected · Freezing session";
   } else if (stepIndex === 2) {
-    renderWhyLayer(currentWhyLayerIndex);
+    // 03: Split Replay + Neural Causal Graph
+    frame.classList.add("view-split");
+    frame.classList.remove("view-verdict");
+    if (urlText) urlText.textContent = "simplywhy.ai/causal-graph/INC-2841";
+    if (statusText) statusText.textContent = "Step 3/5: Cross-stream causal vector isolated";
+    if (typeof resizeCinemaEvidence === 'function') resizeCinemaEvidence();
   } else if (stepIndex === 3) {
-    if (typeof resizeEvidenceCanvas === 'function') resizeEvidenceCanvas();
-  } else if (stepIndex === 5) {
-    setTimeout(runSessionReplayAnimation, 200);
-  } else if (stepIndex === 6) {
-    if (typeof resizeRecoveryCanvas === 'function') resizeRecoveryCanvas();
-    const confFill = document.getElementById("confidence-fill");
-    if (confFill) confFill.style.width = "94%";
+    // 04: Root Cause Found
+    frame.classList.remove("view-split");
+    frame.classList.add("view-verdict");
+    if (urlText) urlText.textContent = "simplywhy.ai/diagnosis/INC-2841";
+    if (statusText) statusText.textContent = "Step 4/5: Root cause identified with 94% confidence";
+  } else if (stepIndex === 4) {
+    // 05: Projected Recovery
+    frame.classList.remove("view-split");
+    frame.classList.add("view-verdict");
+    if (urlText) urlText.textContent = "simplywhy.ai/recovery-projection/INC-2841";
+    if (statusText) statusText.textContent = "Step 5/5: Remediation projected (+21.0 pts conversion)";
+    if (typeof animateRecoveryCurve === 'function') animateRecoveryCurve();
   }
 }
 
-function startMasterInvestigation() {
-  const invSection = document.getElementById("investigation");
-  if (invSection) {
-    invSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-  setInvestigationStep(0);
-}
+/* Scroll Listener for Milestone Progression */
+function initCinematicScrollEngine() {
+  const container = document.getElementById("cinematic-container");
+  if (!container) return;
 
-function runAutomatedInvestigation() {
-  const btn = document.getElementById("btn-auto-investigate");
-  if (isAutoInvestigating) {
-    clearInterval(autoTimer);
-    isAutoInvestigating = false;
-    if (btn) btn.innerHTML = `<span class="bolt-icon">⚡</span> Run Full Investigation`;
-    return;
-  }
+  window.addEventListener("scroll", () => {
+    const rect = container.getBoundingClientRect();
+    const totalHeight = rect.height - window.innerHeight;
+    if (totalHeight <= 0) return;
 
-  isAutoInvestigating = true;
-  if (btn) {
-    btn.classList.add("is-running");
-    btn.innerHTML = `<span>⏳</span> Investigating...`;
-  }
+    // Relative scroll progress through the container: 0 to 1
+    const progress = Math.max(0, Math.min(1, -rect.top / totalHeight));
 
-  let step = 0;
-  setInvestigationStep(step);
-
-  autoTimer = setInterval(() => {
-    step++;
-    if (step <= 6) {
-      setInvestigationStep(step);
-    } else {
-      clearInterval(autoTimer);
-      isAutoInvestigating = false;
-      if (btn) {
-        btn.classList.remove("is-running");
-        btn.innerHTML = `<span class="bolt-icon">✓</span> Investigation Complete`;
-      }
+    const stepIndex = Math.min(4, Math.floor(progress * 5));
+    if (stepIndex !== currentCinemaStep) {
+      setCinematicStep(stepIndex);
     }
-  }, 2200);
+  }, { passive: true });
 }
 
 /* ==========================================================================
-   STAGE 2: SIGNAL NETWORK TOPOLOGY CANVAS
+   REALISTIC SIMULATED BROWSER SESSION REPLAY
    ========================================================================== */
-let signalCanvasResize = null;
+let replayTimer = null;
 
-function initSignalNetworkCanvas() {
-  const canvas = document.getElementById("signalNetworkCanvas");
+function playSessionReplayLoop() {
+  const cursor = document.getElementById("virtual-cursor");
+  const pulse = document.getElementById("cursor-pulse");
+  const btn = document.getElementById("demo-pay-btn");
+  const spinner = document.getElementById("demo-btn-spinner");
+  const banner = document.getElementById("rage-click-banner");
+  const playhead = document.getElementById("scrubber-playhead");
+  const progress = document.getElementById("scrubber-progress");
+
+  if (!cursor || !btn) return;
+
+  // Reset initial positions
+  cursor.style.top = "50px";
+  cursor.style.left = "40px";
+  btn.classList.remove("btn-stuck", "btn-clicked");
+  if (spinner) spinner.style.display = "none";
+  if (banner && currentCinemaStep === 0) banner.classList.remove("visible");
+  if (playhead) playhead.style.left = "15%";
+  if (progress) progress.style.width = "15%";
+
+  // Step 1: Glide cursor towards payment button
+  setTimeout(() => {
+    cursor.style.top = `${btn.offsetTop + 14}px`;
+    cursor.style.left = `${btn.offsetLeft + btn.offsetWidth / 2}px`;
+    if (playhead) playhead.style.left = "45%";
+    if (progress) progress.style.width = "45%";
+  }, 600);
+
+  // Step 2: First click on payment button
+  setTimeout(() => {
+    if (pulse) {
+      pulse.classList.remove("pulse-active");
+      void pulse.offsetWidth;
+      pulse.classList.add("pulse-active");
+    }
+    btn.classList.add("btn-clicked");
+    if (spinner) spinner.style.display = "inline-block";
+  }, 1400);
+
+  // Step 3: Button unresponsiveness & rapid frustrated clicks
+  setTimeout(() => {
+    btn.classList.add("btn-stuck");
+    if (pulse) {
+      pulse.classList.remove("pulse-active");
+      void pulse.offsetWidth;
+      pulse.classList.add("pulse-active");
+    }
+  }, 2100);
+
+  setTimeout(() => {
+    if (pulse) {
+      pulse.classList.remove("pulse-active");
+      void pulse.offsetWidth;
+      pulse.classList.add("pulse-active");
+    }
+    if (banner) banner.classList.add("visible");
+    if (playhead) playhead.style.left = "75%";
+    if (progress) progress.style.width = "75%";
+  }, 2600);
+}
+
+function replaySessionAnimation() {
+  playSessionReplayLoop();
+}
+
+/* ==========================================================================
+   NEURAL EVIDENCE GRAPH CANVAS
+   ========================================================================== */
+let resizeCinemaEvidence = null;
+
+const cinemaNodes = [
+  { id: 'safari', label: 'Safari 17.2', x: 0.18, y: 0.35, radius: 18, color: '#22D3EE', isCausal: true },
+  { id: 'checkout', label: 'Checkout Failures', x: 0.45, y: 0.45, radius: 22, color: '#EF4444', isCausal: true },
+  { id: 'validation', label: 'Validation Loop', x: 0.72, y: 0.45, radius: 24, color: '#F59E0B', isCausal: true },
+  { id: 'deploy', label: 'Deploy #2841', x: 0.90, y: 0.75, radius: 20, color: '#00F5A0', isCausal: true }
+];
+
+const cinemaEdges = [
+  { from: 'safari', to: 'checkout' },
+  { from: 'checkout', to: 'validation' },
+  { from: 'validation', to: 'deploy' }
+];
+
+function initCinemaEvidenceCanvas() {
+  const canvas = document.getElementById("cinemaEvidenceCanvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let t = 0;
@@ -330,18 +410,9 @@ function initSignalNetworkCanvas() {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
   }
-  signalCanvasResize = resize;
+  resizeCinemaEvidence = resize;
   resize();
   window.addEventListener("resize", resize);
-
-  const nodes = [
-    { id: "support", x: 0.5, y: 0.16, color: "#8B5CF6" },
-    { id: "session", x: 0.2, y: 0.40, color: "#38BDF8" },
-    { id: "funnel", x: 0.8, y: 0.40, color: "#F59E0B" },
-    { id: "deployments", x: 0.32, y: 0.82, color: "#F43F5E" },
-    { id: "errors", x: 0.68, y: 0.82, color: "#EF4444" }
-  ];
-  const core = { x: 0.5, y: 0.48 };
 
   function draw() {
     const rect = canvas.getBoundingClientRect();
@@ -349,31 +420,55 @@ function initSignalNetworkCanvas() {
     const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    const corePx = { x: core.x * w, y: core.y * h };
+    // Draw Causal Links
+    cinemaEdges.forEach((edge, idx) => {
+      const src = cinemaNodes.find(n => n.id === edge.from);
+      const dst = cinemaNodes.find(n => n.id === edge.to);
+      if (!src || !dst) return;
 
-    nodes.forEach((n, idx) => {
-      const nodePx = { x: n.x * w, y: n.y * h };
+      const sx = src.x * w;
+      const sy = src.y * h;
+      const dx = dst.x * w;
+      const dy = dst.y * h;
 
-      // Link line
       ctx.beginPath();
-      ctx.moveTo(nodePx.x, nodePx.y);
-      ctx.lineTo(corePx.x, corePx.y);
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
-      ctx.lineWidth = 1.5;
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(dx, dy);
+      ctx.strokeStyle = "rgba(0, 245, 160, 0.4)";
+      ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Traveling photon particle
-      const progress = ((t * 0.8 + idx * 0.2) % 1);
-      const px = nodePx.x + (corePx.x - nodePx.x) * progress;
-      const py = nodePx.y + (corePx.y - nodePx.y) * progress;
+      // Traveling photon particle along link
+      const progress = ((t * 0.8 + idx * 0.3) % 1);
+      const px = sx + (dx - sx) * progress;
+      const py = sy + (dy - sy) * progress;
 
       ctx.beginPath();
       ctx.arc(px, py, 3, 0, Math.PI * 2);
-      ctx.fillStyle = n.color;
-      ctx.shadowColor = n.color;
+      ctx.fillStyle = "#00F5A0";
+      ctx.shadowColor = "#00F5A0";
       ctx.shadowBlur = 8;
       ctx.fill();
       ctx.shadowBlur = 0;
+    });
+
+    // Draw Nodes
+    cinemaNodes.forEach(n => {
+      const x = n.x * w;
+      const y = n.y * h;
+
+      ctx.beginPath();
+      ctx.arc(x, y, n.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(14, 16, 22, 0.9)";
+      ctx.strokeStyle = n.color;
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#FAFAFA";
+      ctx.font = "9px JetBrains Mono, monospace";
+      ctx.textAlign = "center";
+      ctx.fillText(n.label, x, y + n.radius + 12);
     });
 
     t += 0.015;
@@ -382,201 +477,13 @@ function initSignalNetworkCanvas() {
   draw();
 }
 
-function resizeSignalCanvas() {
-  if (signalCanvasResize) signalCanvasResize();
-}
-
-function handleSignalNodeHover(sourceKey) {
-  const hubs = document.querySelectorAll(".sig-node-hub");
-  hubs.forEach(hub => {
-    const isTarget = hub.getAttribute("data-source") === sourceKey;
-    hub.classList.toggle("is-active", isTarget);
-    hub.classList.toggle("is-dimmed", !isTarget);
-  });
-}
-
-function handleSignalNodeLeave() {
-  const hubs = document.querySelectorAll(".sig-node-hub");
-  hubs.forEach(hub => {
-    hub.classList.remove("is-active", "is-dimmed");
-  });
-}
-
-function triggerSignalCorrelationDemo() {
-  const btn = document.getElementById("btn-correlate-signals");
-  const coreStatus = document.getElementById("core-status-text");
-  if (btn) btn.classList.add("is-active");
-  if (coreStatus) coreStatus.textContent = "SYNTHESIZING (94%)";
-
-  const hubs = document.querySelectorAll(".sig-node-hub");
-  hubs.forEach(hub => hub.classList.add("is-active"));
-
-  setTimeout(() => {
-    if (coreStatus) coreStatus.textContent = "CORRELATED";
-  }, 1200);
-}
-
 /* ==========================================================================
-   STAGE 3: WHY → WHY → WHY DRILLDOWN ENGINE
+   RECOVERY PROJECTION CANVAS
    ========================================================================== */
-const whyLayers = [
-  {
-    stepNum: "01",
-    phase: "01 · SYMPTOM ISOLATION",
-    question: "WHY DID REVENUE DROP?",
-    depthLabel: "DEPTH LEVEL 01 / 04",
-    summary: "Revenue trajectory fell below baseline across the primary payment funnel.",
-    evidenceList: [
-      { tag: "SIGNAL", tagClass: "tag-signal", text: "Daily GMV run-rate dropped from $142K → $99.2K at 10:18 AM" },
-      { tag: "IMPACT", tagClass: "tag-impact", text: "Isolated to new subscription checkout flow" }
-    ],
-    hint: "Click to correlate behavioral signals →",
-    isFinal: false
-  },
-  {
-    stepNum: "02",
-    phase: "02 · FUNNEL ANALYSIS",
-    question: "WHY DID CHECKOUT CONVERSION DROP?",
-    depthLabel: "DEPTH LEVEL 02 / 04",
-    summary: "Step 1 & Step 2 remained constant. Step 3 (Payment Form) experienced a 31.2% dropoff spike.",
-    evidenceList: [
-      { tag: "FUNNEL", tagClass: "tag-funnel", text: "Cart → Checkout: 94% (Normal baseline)" },
-      { tag: "FUNNEL", tagClass: "tag-funnel", text: "Checkout → Form Submit: 47% (Anomaly -21pts)" },
-      { tag: "SUPPORT", tagClass: "tag-support", text: "283 customer tickets: 'Payment submit button unresponsive'" }
-    ],
-    hint: "Click to isolate user cohort →",
-    isFinal: false
-  },
-  {
-    stepNum: "03",
-    phase: "03 · COHORT ISOLATION",
-    question: "WHY ARE SAFARI USERS FAILING?",
-    depthLabel: "DEPTH LEVEL 03 / 04",
-    summary: "Cross-cohort dimensional analysis isolates 88% of checkout failures to Safari macOS & iOS.",
-    evidenceList: [
-      { tag: "COHORT", tagClass: "tag-cohort", text: "Chrome & Firefox completion: 74% (Normal)" },
-      { tag: "COHORT", tagClass: "tag-cohort", text: "Safari completion: 18.2% (Critical Failure)" },
-      { tag: "GIT", tagClass: "tag-git", text: "Deploy #2841 pushed at 10:12 AM by @payments-core" }
-    ],
-    hint: "Click to isolate root cause verdict →",
-    isFinal: false
-  },
-  {
-    stepNum: "04",
-    phase: "04 · ROOT CAUSE FOUND",
-    question: "PAYMENT VALIDATION LOOP",
-    depthLabel: "DEPTH LEVEL 04 / 04 (VERIFIED)",
-    summary: "Payment validation loop introduced in deployment #2841 is affecting Safari users.",
-    evidenceList: [
-      { tag: "VERIFIED", tagClass: "tag-verified", text: "Root cause: Regex validation recursion on Safari autofill event" },
-      { tag: "IMPACT", tagClass: "tag-impact", text: "$42,800 revenue at risk across 1,842 affected users" }
-    ],
-    hint: "Investigation complete · Click to restart ↺",
-    isFinal: true
-  }
-];
+let recoveryAnimationProgress = 0;
 
-let currentWhyLayerIndex = 0;
-let isWhyTransitioning = false;
-
-function goToWhyLayer(targetIndex, e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  if (isWhyTransitioning || targetIndex === currentWhyLayerIndex) return;
-  renderWhyLayer(targetIndex);
-}
-
-function advanceWhyLayer(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  if (isWhyTransitioning) return;
-  const nextIndex = (currentWhyLayerIndex < whyLayers.length - 1) ? currentWhyLayerIndex + 1 : 0;
-  renderWhyLayer(nextIndex);
-}
-
-function renderWhyLayer(index) {
-  isWhyTransitioning = true;
-  currentWhyLayerIndex = index;
-  const layer = whyLayers[index];
-
-  const panel = document.getElementById("why-central-panel");
-  const depthLabel = document.getElementById("why-depth-label");
-  const badge = document.getElementById("why-badge");
-  const question = document.getElementById("why-question");
-  const summary = document.getElementById("why-summary");
-  const evidenceGrid = document.getElementById("why-evidence-grid");
-  const hint = document.getElementById("why-action-hint");
-  const confPill = document.getElementById("why-confidence-pill");
-  const pills = document.querySelectorAll(".why-pill");
-
-  if (panel) panel.style.opacity = "0.4";
-
-  // Update pills
-  pills.forEach((pill, i) => {
-    pill.classList.toggle("active", i === index);
-  });
-
-  setTimeout(() => {
-    if (depthLabel) depthLabel.textContent = layer.depthLabel;
-    if (badge) badge.textContent = layer.phase;
-    if (question) question.textContent = layer.question;
-    if (summary) summary.textContent = layer.summary;
-
-    if (confPill) {
-      confPill.style.display = layer.isFinal ? "inline-flex" : "none";
-    }
-
-    if (hint) {
-      hint.textContent = layer.hint;
-    }
-
-    if (evidenceGrid) {
-      evidenceGrid.innerHTML = layer.evidenceList.map(ev => `
-        <div class="why-evidence-chip">
-          <span class="chip-tag ${ev.tagClass}">${ev.tag}</span>
-          <span class="chip-desc">${ev.text}</span>
-        </div>
-      `).join("");
-    }
-
-    if (panel) panel.style.opacity = "1";
-    isWhyTransitioning = false;
-  }, 120);
-}
-
-/* ==========================================================================
-   STAGE 4: NEURAL EVIDENCE GRAPH CANVAS
-   ========================================================================== */
-let evidenceMode = 'all';
-let evidenceCanvasResize = null;
-
-const evidenceNodes = [
-  { id: 'safari', label: 'Safari Users', type: 'frontend', x: 0.18, y: 0.28, radius: 24, isCausal: true },
-  { id: 'ios', label: 'iOS Cohort', type: 'frontend', x: 0.18, y: 0.72, radius: 20, isCausal: false },
-  { id: 'checkout', label: 'Checkout Failures', type: 'frontend', x: 0.42, y: 0.35, radius: 28, isCausal: true },
-  { id: 'dropoff', label: 'Dropoff Spike', type: 'frontend', x: 0.40, y: 0.78, radius: 20, isCausal: false },
-  { id: 'validation', label: 'Payment Validation Loop', type: 'backend', x: 0.68, y: 0.38, radius: 30, isCausal: true },
-  { id: 'regex', label: 'Autofill Regex Bug', type: 'backend', x: 0.65, y: 0.78, radius: 22, isCausal: false },
-  { id: 'deploy', label: 'Deployment #2841', type: 'git', x: 0.88, y: 0.42, radius: 26, isCausal: true },
-  { id: 'pr', label: '@payments-core PR', type: 'git', x: 0.88, y: 0.80, radius: 20, isCausal: false }
-];
-
-const evidenceEdges = [
-  { from: 'safari', to: 'checkout', isCausal: true },
-  { id: 'ios_chk', from: 'ios', to: 'checkout', isCausal: false },
-  { id: 'chk_drop', from: 'checkout', to: 'dropoff', isCausal: false },
-  { from: 'checkout', to: 'validation', isCausal: true },
-  { from: 'validation', to: 'deploy', isCausal: true },
-  { id: 'val_reg', from: 'validation', to: 'regex', isCausal: false },
-  { id: 'dep_pr', from: 'deploy', to: 'pr', isCausal: false }
-];
-
-function initEvidenceCanvas() {
-  const canvas = document.getElementById("evidenceCanvas");
+function initCinemaRecoveryCanvas() {
+  const canvas = document.getElementById("cinemaRecoveryCanvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
@@ -589,150 +496,6 @@ function initEvidenceCanvas() {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
   }
-  evidenceCanvasResize = resize;
-  resize();
-  window.addEventListener("resize", resize);
-
-  function draw() {
-    const rect = canvas.getBoundingClientRect();
-    const w = rect.width;
-    const h = rect.height;
-    ctx.clearRect(0, 0, w, h);
-
-    // Edges
-    evidenceEdges.forEach(edge => {
-      const src = evidenceNodes.find(n => n.id === edge.from);
-      const dst = evidenceNodes.find(n => n.id === edge.to);
-      if (!src || !dst) return;
-
-      const isHighlight = evidenceMode === 'all' || (evidenceMode === 'causal' && edge.isCausal);
-      ctx.beginPath();
-      ctx.moveTo(src.x * w, src.y * h);
-      ctx.lineTo(dst.x * w, dst.y * h);
-      ctx.strokeStyle = isHighlight ? (edge.isCausal ? '#00F5A0' : 'rgba(255,255,255,0.12)') : 'rgba(255,255,255,0.03)';
-      ctx.lineWidth = edge.isCausal && isHighlight ? 2.5 : 1;
-      ctx.stroke();
-    });
-
-    // Nodes
-    evidenceNodes.forEach(n => {
-      const isHighlight = evidenceMode === 'all' || (evidenceMode === 'causal' && n.isCausal);
-      const x = n.x * w;
-      const y = n.y * h;
-
-      ctx.beginPath();
-      ctx.arc(x, y, n.radius, 0, Math.PI * 2);
-      ctx.fillStyle = isHighlight ? (n.isCausal ? 'rgba(0,245,160,0.15)' : 'rgba(255,255,255,0.05)') : 'rgba(255,255,255,0.02)';
-      ctx.strokeStyle = isHighlight ? (n.isCausal ? '#00F5A0' : 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.05)';
-      ctx.lineWidth = n.isCausal && isHighlight ? 2 : 1;
-      ctx.fill();
-      ctx.stroke();
-
-      // Label
-      ctx.fillStyle = isHighlight ? '#FAFAFA' : '#52525B';
-      ctx.font = '10px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(n.label, x, y + n.radius + 14);
-    });
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-function setEvidenceMode(mode) {
-  evidenceMode = mode;
-  const btnAll = document.getElementById("ev-tab-all");
-  const btnCausal = document.getElementById("ev-tab-causal");
-  if (btnAll) btnAll.classList.toggle("active", mode === "all");
-  if (btnCausal) btnCausal.classList.toggle("active", mode === "causal");
-}
-
-function resizeEvidenceCanvas() {
-  if (evidenceCanvasResize) evidenceCanvasResize();
-}
-
-/* ==========================================================================
-   STAGE 5: INCIDENT TIMELINE REPLAY
-   ========================================================================== */
-function replayIncidentSequence() {
-  const events = document.querySelectorAll(".timeline-event");
-  events.forEach((ev, idx) => {
-    ev.style.opacity = "0.3";
-    setTimeout(() => {
-      ev.style.opacity = "1";
-      ev.style.transition = "opacity 0.3s ease";
-    }, idx * 250);
-  });
-}
-
-/* ==========================================================================
-   STAGE 6: SIMULATED BROWSER SESSION REPLAY
-   ========================================================================== */
-function runSessionReplayAnimation() {
-  const cursor = document.getElementById("virtual-cursor");
-  const pulse = document.getElementById("cursor-pulse");
-  const btn = document.getElementById("replay-submit-btn");
-  const spinner = document.getElementById("btn-spinner");
-  const alertBox = document.getElementById("rage-click-alert");
-
-  if (!cursor || !btn) return;
-
-  // Reset
-  cursor.style.top = "60px";
-  cursor.style.left = "40px";
-  if (alertBox) alertBox.classList.remove("visible");
-  btn.classList.remove("btn-stuck", "btn-clicked");
-  if (spinner) spinner.style.display = "none";
-
-  // Step 1: Cursor moves to payment submit button
-  setTimeout(() => {
-    const btnRect = btn.getBoundingClientRect();
-    const parentRect = btn.parentElement.getBoundingClientRect();
-    cursor.style.top = `${btn.offsetTop + 18}px`;
-    cursor.style.left = `${btn.offsetLeft + btn.offsetWidth / 2}px`;
-  }, 400);
-
-  // Step 2: Click pulse and spinner stall
-  setTimeout(() => {
-    if (pulse) {
-      pulse.classList.remove("pulse-active");
-      void pulse.offsetWidth;
-      pulse.classList.add("pulse-active");
-    }
-    btn.classList.add("btn-clicked");
-    if (spinner) spinner.style.display = "inline-block";
-  }, 1100);
-
-  // Step 3: Rapid rage click simulation
-  setTimeout(() => {
-    btn.classList.add("btn-stuck");
-    if (alertBox) alertBox.classList.add("visible");
-  }, 1800);
-}
-
-/* ==========================================================================
-   STAGE 7: RECOVERY SIMULATION ENGINE & TRAJECTORY CANVAS
-   ========================================================================== */
-let recoveryCanvasResize = null;
-let recoveryProgress = 0;
-let isSimulatingRecovery = false;
-
-function initRecoveryCanvas() {
-  const canvas = document.getElementById("recoveryCanvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-
-  function resize() {
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const rect = parent.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-  }
-  recoveryCanvasResize = resize;
   resize();
   window.addEventListener("resize", resize);
 
@@ -754,9 +517,9 @@ function initRecoveryCanvas() {
     // Curve
     ctx.beginPath();
     ctx.moveTo(10, h * 0.75);
-    const endY = h * 0.75 - (recoveryProgress * (h * 0.5));
+    const endY = h * 0.75 - (recoveryAnimationProgress * (h * 0.55));
     ctx.bezierCurveTo(w * 0.35, h * 0.75, w * 0.65, endY, w - 10, endY);
-    ctx.strokeStyle = recoveryProgress > 0.05 ? "#00F5A0" : "rgba(255,255,255,0.2)";
+    ctx.strokeStyle = "#00F5A0";
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
@@ -765,42 +528,14 @@ function initRecoveryCanvas() {
   draw();
 }
 
-function resizeRecoveryCanvas() {
-  if (recoveryCanvasResize) recoveryCanvasResize();
-}
-
-function runRecoverySimulation() {
-  if (isSimulatingRecovery) return;
-  isSimulatingRecovery = true;
-
-  const convVal = document.getElementById("sim-conversion-val");
-  const revVal = document.getElementById("sim-revenue-val");
-  const statusPill = document.getElementById("recovery-status-pill");
-
+function animateRecoveryCurve() {
   let step = 0;
-  const totalSteps = 40;
-
+  const total = 30;
   const interval = setInterval(() => {
     step++;
-    const t = step / totalSteps;
-    recoveryProgress = t;
-
-    // Increment conversion 47% -> 68%
-    const currentConv = Math.round(47 + (68 - 47) * t);
-    if (convVal) convVal.textContent = `${currentConv}%`;
-
-    // Increment revenue $0 -> $42,800
-    const currentRev = Math.round(42800 * t);
-    if (revVal) revVal.textContent = `$${currentRev.toLocaleString()}`;
-
-    if (step >= totalSteps) {
-      clearInterval(interval);
-      isSimulatingRecovery = false;
-      if (convVal) convVal.classList.add("recovered");
-      if (revVal) revVal.classList.add("recovered");
-      if (statusPill) statusPill.classList.add("visible");
-    }
-  }, 30);
+    recoveryAnimationProgress = step / total;
+    if (step >= total) clearInterval(interval);
+  }, 25);
 }
 
 /* ==========================================================================
@@ -845,13 +580,11 @@ function selectUseCase(key) {
   const data = USE_CASES_DATA[key];
   if (!data) return;
 
-  // Update tabs
   const buttons = document.querySelectorAll(".uc-btn");
   buttons.forEach(btn => {
     btn.classList.toggle("active", btn.textContent.toLowerCase().includes(key));
   });
 
-  // Update card
   const badge = document.getElementById("uc-badge");
   const conf = document.getElementById("uc-conf");
   const symptom = document.getElementById("uc-symptom");
@@ -884,7 +617,7 @@ function askAIAssistant(prompt) {
   } else if (prompt.includes("today")) {
     text.textContent = "7 deployments pushed across core services. 3 correlated anomalies detected: checkout payment loop, OAuth whitelist mismatch, and invite token expiration.";
   } else {
-    text.textContent = "Start by investigating the primary checkout drop. SimplyWhy has already isolated the culprit to deployment #2841 with 94% attribution confidence.";
+    text.textContent = "Watch the live investigation above. SimplyWhy has already isolated the culprit to deployment #2841 with 94% attribution confidence.";
   }
 }
 
@@ -901,7 +634,7 @@ function initLiveTelemetryTicker() {
   const scanTime = document.getElementById("live-scan-time");
   if (!scanTime) return;
 
-  let seconds = 2.4;
+  let seconds = 1.8;
   setInterval(() => {
     seconds = (Math.random() * 2 + 1).toFixed(1);
     scanTime.textContent = `${seconds}s ago`;

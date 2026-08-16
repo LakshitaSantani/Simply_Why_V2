@@ -23,7 +23,7 @@
         <span class="telemetry-label">SIMPLYWHY ENGINE:</span> <strong class="text-accent">ONLINE</strong>
       </div>
       <div class="telemetry-item hide-mobile">
-        <span>Last scan: <strong id="live-scan-time">2.4s ago</strong></span>
+        <span>Last scan: <strong id="live-scan-time">1.8s ago</strong></span>
       </div>
       <div class="telemetry-item hide-mobile">
         <span>Signals monitored: <strong>24,381 traces/s</strong></span>
@@ -40,14 +40,14 @@
       <a href="#" class="nav-brand">SimplyWhy</a>
       <nav>
         <ul class="nav-links">
-          <li><a href="#investigation">Product</a></li>
+          <li><a href="#investigation">Live Demo</a></li>
           <li><a href="#how-it-works">How it works</a></li>
           <li><a href="#why-simplywhy">Why SimplyWhy</a></li>
           <li><a href="#use-cases">Use cases</a></li>
           <li><a href="#cta">Pricing</a></li>
         </ul>
       </nav>
-      <button class="nav-cta" onclick="startMasterInvestigation()">Run a diagnosis →</button>
+      <button class="nav-cta" onclick="scrollToInvestigation()">Watch live demo →</button>
     </div>
   </header>
 
@@ -74,8 +74,8 @@
           </p>
 
           <div class="hero-actions reveal" style="transition-delay:200ms">
-            <button class="btn-primary" onclick="startMasterInvestigation()" aria-label="Run Investigation">Run Investigation →</button>
-            <a href="#how-it-works" class="btn-ghost">See how it works ↓</a>
+            <button class="btn-primary" onclick="scrollToInvestigation()" aria-label="Watch Investigation Demo">Watch investigation ↓</button>
+            <a href="#how-it-works" class="btn-ghost">See how it works</a>
           </div>
         </div>
 
@@ -97,7 +97,7 @@
               <!-- Metric 1: Conversion -->
               <div class="viz-metric-row" data-metric="conversion" onmouseenter="handleMetricHover('conversion')" onmouseleave="handleMetricLeave()">
                 <div class="viz-metric-info">
-                  <span class="viz-metric-name">Conversion</span>
+                  <span class="viz-metric-name">Checkout Conversion</span>
                   <span class="viz-metric-val down">↓ 18.4%</span>
                 </div>
                 <div class="viz-sparkline-wrap">
@@ -145,8 +145,8 @@
                 <span class="dot-pulse-amber"></span>
                 <span>3 anomalies detected · Root cause unknown</span>
               </div>
-              <button class="btn-viz-investigate" onclick="startMasterInvestigation()">
-                Investigate why →
+              <button class="btn-viz-investigate" onclick="scrollToInvestigation()">
+                Scroll to investigate why ↓
               </button>
             </div>
           </div>
@@ -157,590 +157,276 @@
 
 
     <!-- ================================================================
-         2. MAIN INTERACTIVE INVESTIGATION CENTERPIECE — "LET'S FIND OUT WHY"
+         2. CINEMATIC STICKY PRODUCT DEMO — "WATCH IT FIND THE WHY"
          ================================================================ -->
-    <section class="section section-investigation" id="investigation">
-      <div class="container">
+    <section class="section section-cinematic" id="investigation">
+      
+      <!-- Section Intro (Minimal text) -->
+      <div class="container cinematic-intro-text reveal">
+        <span class="eyebrow">✦ Autonomous Investigation</span>
+        <h2 class="section-heading" style="margin-top:12px">Watch SimplyWhy find the why.</h2>
+        <p class="section-sub">Scroll to follow the investigation from live user frustration to root cause attribution and recovery.</p>
+      </div>
+
+      <!-- Cinematic Multi-Step Scroll Experience -->
+      <div class="cinematic-scroll-container" id="cinematic-container">
         
-        <!-- Header -->
-        <div class="inv-main-header reveal">
-          <span class="eyebrow">✦ Autonomous Investigation Centerpiece</span>
-          <h2 class="section-heading" style="margin-top:16px">Let's find out why.</h2>
-          <p class="section-sub">Watch SimplyWhy ingest telemetry, trace causal propagation across streams, and pinpoint the exact commit responsible.</p>
-        </div>
-
-        <!-- Master Investigation Stage Container -->
-        <div class="investigation-master-card" id="investigation-master">
-          
-          <!-- Top Intake Header -->
-          <div class="inv-intake-bar">
-            <div class="intake-left">
-              <span class="intake-tag">INCIDENT INTAKE</span>
-              <span class="intake-symptom">WHAT CHANGED?</span>
-              <span class="intake-metric">Checkout conversion <strong>68% → 47%</strong> <span class="text-red">(-21.0 pts)</span></span>
-            </div>
-            <button class="btn-run-auto-investigation" id="btn-auto-investigate" onclick="runAutomatedInvestigation()">
-              <span class="bolt-icon">⚡</span> Run Full Investigation
-            </button>
-          </div>
-
-          <!-- Step Navigation Tabs (7 Unified Stages) -->
-          <div class="inv-stepper-tabs" id="inv-stepper-tabs">
-            <button class="inv-tab active" data-step="0" onclick="setInvestigationStep(0)">01 SCAN</button>
-            <button class="inv-tab" data-step="1" onclick="setInvestigationStep(1)">02 CORRELATE</button>
-            <button class="inv-tab" data-step="2" onclick="setInvestigationStep(2)">03 WHY DRILLDOWN</button>
-            <button class="inv-tab" data-step="3" onclick="setInvestigationStep(3)">04 EVIDENCE GRAPH</button>
-            <button class="inv-tab" data-step="4" onclick="setInvestigationStep(4)">05 TIMELINE</button>
-            <button class="inv-tab" data-step="5" onclick="setInvestigationStep(5)">06 SESSION REPLAY</button>
-            <button class="inv-tab" data-step="6" onclick="setInvestigationStep(6)">07 ROOT CAUSE & RECOVERY</button>
-          </div>
-
-          <!-- Master Viewport Stage -->
-          <div class="inv-stage-viewport">
-
-            <!-- ================= STAGE 1: SCAN ================= -->
-            <div class="inv-view-pane active" id="inv-view-0">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 1 · SIGNAL INGESTION</span>
-                <h3 class="pane-title">Scanning telemetry across your engineering & product stack</h3>
+        <!-- STICKY SCREEN APPLICATION FRAME -->
+        <div class="sticky-frame-wrapper" id="sticky-frame-wrapper">
+          <div class="cinema-app-frame" id="cinema-app-frame">
+            
+            <!-- Frame Top Chrome -->
+            <div class="frame-chrome-bar">
+              <div class="frame-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
               </div>
-
-              <div class="scan-stage-grid">
-                <div class="scan-checklist-box">
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Session behavior telemetry</div>
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Funnel analytics & dropoffs</div>
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Support conversation tickets</div>
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Git activity & pull requests</div>
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Deployment release logs</div>
-                  <div class="scan-check-item done"><span class="check-icon">✓</span> Error stack trace patterns</div>
-                </div>
-
-                <div class="scan-metrics-summary">
-                  <div class="scan-stat-card">
-                    <span class="scan-stat-number" id="stat-sessions">12,481</span>
-                    <span class="scan-stat-name">Sessions Scanned</span>
-                  </div>
-                  <div class="scan-stat-card">
-                    <span class="scan-stat-number" id="stat-conversations">2,341</span>
-                    <span class="scan-stat-name">Support Tickets</span>
-                  </div>
-                  <div class="scan-stat-card">
-                    <span class="scan-stat-number" id="stat-deploys">7</span>
-                    <span class="scan-stat-name">Deployments</span>
-                  </div>
-                  <div class="scan-stat-card">
-                    <span class="scan-stat-number text-amber" id="stat-anomalies">43</span>
-                    <span class="scan-stat-name">Active Anomalies</span>
-                  </div>
-                </div>
+              <div class="frame-address">
+                <span class="lock-icon">🔒</span>
+                <span class="frame-url" id="frame-url-text">simplywhy.ai/investigate/INC-2841</span>
               </div>
-
-              <div class="inv-pane-footer">
-                <span class="inv-footer-status">✓ Telemetry ingested from 6 sources</span>
-                <button class="inv-next-btn" onclick="setInvestigationStep(1)">Next: Correlate Signals →</button>
+              <div class="frame-live-indicator">
+                <span class="pulse-dot-accent"></span>
+                <span>LIVE DEMO</span>
               </div>
             </div>
 
-            <!-- ================= STAGE 2: CORRELATE (SIGNAL NETWORK) ================= -->
-            <div class="inv-view-pane" id="inv-view-1">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 2 · CROSS-STREAM CORRELATION</span>
-                <h3 class="pane-title">Connecting siloed telemetry into a single causal network</h3>
-              </div>
-
-              <div class="signals-topology-viewport">
-                <canvas id="signalNetworkCanvas"></canvas>
-                
-                <!-- Satellite Hubs -->
-                <div class="sig-node-hub sig-pos-top" data-source="support" id="node-support" onmouseenter="handleSignalNodeHover('support')" onmouseleave="handleSignalNodeLeave()">
-                  <div class="sig-hub-header">
-                    <span class="sig-hub-badge badge-support">SUPPORT</span>
-                    <span class="sig-hub-status">STREAM</span>
-                  </div>
-                  <div class="sig-hub-value">283 complaints</div>
-                  <div class="sig-hub-detail">↑ 37% ticket volume</div>
-                </div>
-
-                <div class="sig-node-hub sig-pos-left" data-source="session" id="node-session" onmouseenter="handleSignalNodeHover('session')" onmouseleave="handleSignalNodeLeave()">
-                  <div class="sig-hub-header">
-                    <span class="sig-hub-badge badge-session">SESSION</span>
-                    <span class="sig-hub-status">REPLAYS</span>
-                  </div>
-                  <div class="sig-hub-value">12,481 sessions</div>
-                  <div class="sig-hub-detail">1,842 rage clicks</div>
-                </div>
-
-                <div class="sig-node-hub sig-pos-right" data-source="funnel" id="node-funnel" onmouseenter="handleSignalNodeHover('funnel')" onmouseleave="handleSignalNodeLeave()">
-                  <div class="sig-hub-header">
-                    <span class="sig-hub-badge badge-funnel">FUNNEL</span>
-                    <span class="sig-hub-status">ANALYTICS</span>
-                  </div>
-                  <div class="sig-hub-value">Checkout Drop</div>
-                  <div class="sig-hub-detail">68% → 47% dropoff</div>
-                </div>
-
-                <div class="sig-node-hub sig-pos-bottom-1" data-source="deployments" id="node-deployments" onmouseenter="handleSignalNodeHover('deployments')" onmouseleave="handleSignalNodeLeave()">
-                  <div class="sig-hub-header">
-                    <span class="sig-hub-badge badge-deploy">GIT</span>
-                    <span class="sig-hub-status">DEPLOY</span>
-                  </div>
-                  <div class="sig-hub-value">Deploy #2841</div>
-                  <div class="sig-hub-detail">Pushed at 10:12 AM</div>
-                </div>
-
-                <div class="sig-node-hub sig-pos-bottom-2" data-source="errors" id="node-errors" onmouseenter="handleSignalNodeHover('errors')" onmouseleave="handleSignalNodeLeave()">
-                  <div class="sig-hub-header">
-                    <span class="sig-hub-badge badge-errors">ERRORS</span>
-                    <span class="sig-hub-status">LOGS</span>
-                  </div>
-                  <div class="sig-hub-value">Validation Loop</div>
-                  <div class="sig-hub-detail">↑ 412% regex errors</div>
-                </div>
-
-                <!-- Central SimplyWhy Synthesis Core -->
-                <div class="sig-hub-core" id="node-core">
-                  <div class="core-pulse-ring"></div>
-                  <div class="core-inner-circle">
-                    <span class="core-symbol">✦</span>
-                    <span class="core-brand">SIMPLYWHY</span>
-                    <span class="core-status" id="core-status-text">CORRELATING</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="inv-pane-footer">
-                <button class="btn-correlate" id="btn-correlate-signals" onclick="triggerSignalCorrelationDemo()">
-                  ⚡ Auto-Correlate Streams
-                </button>
-                <button class="inv-next-btn" onclick="setInvestigationStep(2)">Next: Why Drilldown →</button>
-              </div>
+            <!-- Frame Stepper Navigation Scrubber -->
+            <div class="frame-timeline-scrubber" id="frame-scrubber">
+              <button class="scrub-step active" data-step="0" onclick="setCinematicStep(0)">
+                <span class="step-idx">01</span> SESSION REPLAY
+              </button>
+              <span class="scrub-arrow">→</span>
+              <button class="scrub-step" data-step="1" onclick="setCinematicStep(1)">
+                <span class="step-idx">02</span> ANOMALY & MORPH
+              </button>
+              <span class="scrub-arrow">→</span>
+              <button class="scrub-step" data-step="2" onclick="setCinematicStep(2)">
+                <span class="step-idx">03</span> CAUSAL EVIDENCE
+              </button>
+              <span class="scrub-arrow">→</span>
+              <button class="scrub-step" data-step="3" onclick="setCinematicStep(3)">
+                <span class="step-idx">04</span> ROOT CAUSE
+              </button>
+              <span class="scrub-arrow">→</span>
+              <button class="scrub-step" data-step="4" onclick="setCinematicStep(4)">
+                <span class="step-idx">05</span> RECOVERY
+              </button>
             </div>
 
-            <!-- ================= STAGE 3: WHY DRILLDOWN ================= -->
-            <div class="inv-view-pane" id="inv-view-2">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 3 · AI REASONING LAYERS</span>
-                <h3 class="pane-title">Drilling from symptom to root cause layer by layer</h3>
-              </div>
-
-              <!-- Depth Progress Pills -->
-              <div class="why-tracker-header">
-                <div class="why-depth-indicator">
-                  <span class="why-depth-dot"></span>
-                  <span class="why-depth-label" id="why-depth-label">DEPTH LEVEL 01 / 04</span>
-                </div>
-                <div class="why-progress-pills" id="why-progress-pills">
-                  <button class="why-pill active" type="button" onclick="goToWhyLayer(0, event)" data-step="0">01 SYMPTOM</button>
-                  <span class="why-pill-arrow">→</span>
-                  <button class="why-pill" type="button" onclick="goToWhyLayer(1, event)" data-step="1">02 SIGNAL</button>
-                  <span class="why-pill-arrow">→</span>
-                  <button class="why-pill" type="button" onclick="goToWhyLayer(2, event)" data-step="2">03 COHORT</button>
-                  <span class="why-pill-arrow">→</span>
-                  <button class="why-pill" type="button" onclick="goToWhyLayer(3, event)" data-step="3">04 CAUSE</button>
-                </div>
-              </div>
-
-              <div class="why-stage-viewport">
-                <!-- Concentric Rings -->
-                <div class="why-depth-rings">
-                  <div class="why-ring ring-1"></div>
-                  <div class="why-ring ring-2"></div>
-                  <div class="why-ring ring-3"></div>
-                </div>
-
-                <!-- Central Question Card -->
-                <div class="why-central-panel" id="why-central-panel" onclick="advanceWhyLayer(event)" role="button" tabindex="0" aria-label="Advance investigation">
-                  <div class="why-phase-badge" id="why-badge">01 · SYMPTOM ISOLATION</div>
-                  <div class="why-question-text" id="why-question">WHY DID REVENUE DROP?</div>
-                  <div class="why-summary-text" id="why-summary">Revenue trajectory fell below baseline across the primary payment funnel.</div>
-                  
-                  <div class="why-evidence-grid" id="why-evidence-grid">
-                    <div class="why-evidence-chip">
-                      <span class="chip-tag tag-signal">SIGNAL</span>
-                      <span class="chip-desc">Daily GMV run-rate dropped from $142K → $99.2K at 10:18 AM</span>
-                    </div>
-                    <div class="why-evidence-chip">
-                      <span class="chip-tag tag-impact">IMPACT</span>
-                      <span class="chip-desc">Isolated to new subscription checkout flow</span>
-                    </div>
+            <!-- Frame Main Content Stage -->
+            <div class="frame-stage-viewport" id="frame-stage-viewport">
+              
+              <!-- LEFT / PRIMARY: Simulated Session Recording Browser -->
+              <div class="stage-sub-panel panel-session-replay" id="panel-session">
+                <div class="mini-browser-card">
+                  <div class="mini-browser-header">
+                    <div class="rec-badge"><span class="rec-dot"></span> REC · 00:14</div>
+                    <div class="mini-browser-url">https://store.acme.com/checkout/pay</div>
+                    <div class="session-user-tag">Safari 17.2 · macOS</div>
                   </div>
 
-                  <div class="why-footer-action">
-                    <button class="why-action-btn" id="why-action-btn" type="button" onclick="advanceWhyLayer(event)">
-                      <span id="why-action-hint">Click to investigate deeper layer →</span>
-                    </button>
-                    <span class="why-confidence-pill" id="why-confidence-pill" style="display:none;">94% Confidence</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="inv-pane-footer">
-                <span class="inv-footer-status">Click inside card to drill down</span>
-                <button class="inv-next-btn" onclick="setInvestigationStep(3)">Next: Evidence Graph →</button>
-              </div>
-            </div>
-
-            <!-- ================= STAGE 4: EVIDENCE GRAPH ================= -->
-            <div class="inv-view-pane" id="inv-view-3">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 4 · NEURAL EVIDENCE GRAPH</span>
-                <h3 class="pane-title">8 correlated nodes across telemetry, code, and user activity</h3>
-              </div>
-
-              <div class="evidence-toolbar">
-                <div class="ev-mode-toggle">
-                  <button class="ev-tab active" id="ev-tab-all" onclick="setEvidenceMode('all')">All Signals & Links</button>
-                  <button class="ev-tab" id="ev-tab-causal" onclick="setEvidenceMode('causal')">
-                    <span class="pulse-dot-mini"></span> Isolate Causal Vector (94%)
-                  </button>
-                </div>
-                <div class="ev-legend">
-                  <span class="legend-item"><span class="legend-dot dot-cyan"></span> Frontend</span>
-                  <span class="legend-item"><span class="legend-dot dot-amber"></span> Backend</span>
-                  <span class="legend-item"><span class="legend-dot dot-mint"></span> Git & Code</span>
-                </div>
-              </div>
-
-              <div class="evidence-canvas-wrap">
-                <canvas id="evidenceCanvas"></canvas>
-                <div class="evidence-tooltip" id="evidence-tooltip"></div>
-              </div>
-
-              <div class="inv-pane-footer">
-                <span class="inv-footer-status">Hover nodes to trace dependencies</span>
-                <button class="inv-next-btn" onclick="setInvestigationStep(4)">Next: Timeline →</button>
-              </div>
-            </div>
-
-            <!-- ================= STAGE 5: TIMELINE ================= -->
-            <div class="inv-view-pane" id="inv-view-4">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 5 · INCIDENT TIMELINE</span>
-                <h3 class="pane-title">Chronological reconstruction of how the incident unfolded</h3>
-              </div>
-
-              <div class="timeline-container-wrap">
-                <div class="timeline-track" id="timeline-track">
-                  <div class="timeline-line-bg"></div>
-                  <div class="timeline-line-fill" id="timeline-fill"></div>
-
-                  <!-- Event 0 -->
-                  <div class="timeline-event" data-step="0">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-time">09:41 AM</div>
-                    <div class="timeline-content">
-                      <strong>Normal conversion baseline</strong>
-                      <p>Checkout funnel operating at standard 68% completion rate.</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 1: Deploy Culprit -->
-                  <div class="timeline-event event-culprit" data-step="1">
-                    <div class="timeline-marker marker-alert"></div>
-                    <div class="timeline-time text-accent">10:12 AM</div>
-                    <div class="timeline-content">
-                      <div class="event-badge badge-deploy">DEPLOYMENT #2841</div>
-                      <strong>Payment validation update pushed to production</strong>
-                      <p>Release pushed by @payments-core containing regex validation overhaul.</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 2 -->
-                  <div class="timeline-event" data-step="2">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-time">10:18 AM</div>
-                    <div class="timeline-content">
-                      <strong>First Safari failures recorded</strong>
-                      <p>Validation regex loop triggered on Safari native autofill synthetic events.</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 3 -->
-                  <div class="timeline-event" data-step="3">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-time">10:23 AM</div>
-                    <div class="timeline-content">
-                      <div class="event-badge badge-amber">RAGE CLICKS ↑ 42%</div>
-                      <strong>Rage clicks increase rapidly</strong>
-                      <p>1,842 users repeatedly clicking unresponsive payment submit button.</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 4 -->
-                  <div class="timeline-event" data-step="4">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-time">10:27 AM</div>
-                    <div class="timeline-content">
-                      <strong>Checkout conversion drops (68% → 47%)</strong>
-                      <p>Funnel completion plunges (-$42,800 GMV run-rate impact).</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 5 -->
-                  <div class="timeline-event" data-step="5">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-time">10:31 AM</div>
-                    <div class="timeline-content">
-                      <div class="event-badge badge-support">+283 TICKETS</div>
-                      <strong>Support tickets surge</strong>
-                      <p>Customer complaints flood in: "Payment submit button unresponsive".</p>
-                    </div>
-                  </div>
-
-                  <!-- Event 6: Correlation Found -->
-                  <div class="timeline-event event-identified" data-step="6">
-                    <div class="timeline-marker marker-success"></div>
-                    <div class="timeline-time text-accent">10:34 AM</div>
-                    <div class="timeline-content">
-                      <div class="event-badge badge-mint">ROOT CAUSE IDENTIFIED</div>
-                      <strong>SimplyWhy detects cross-stream correlation</strong>
-                      <p>Attributed to Deployment #2841 with 94% confidence.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Moment Culprit Card -->
-                <div class="timeline-moment-card visible" id="timeline-moment-card">
-                  <span class="moment-eyebrow">CULPRIT COMMIT IDENTIFIED</span>
-                  <h4 class="moment-title">"This is the moment the product broke."</h4>
-                  <div class="moment-detail">
-                    <code>Deployment #2841</code> · Pushed at 10:12 AM by @payments-core
-                  </div>
-                </div>
-              </div>
-
-              <div class="inv-pane-footer">
-                <button class="btn-replay-incident" id="btn-replay-incident" onclick="replayIncidentSequence()">
-                  ▶ Replay this incident
-                </button>
-                <button class="inv-next-btn" onclick="setInvestigationStep(5)">Next: Session Replay →</button>
-              </div>
-            </div>
-
-            <!-- ================= STAGE 6: SESSION REPLAY ================= -->
-            <div class="inv-view-pane" id="inv-view-5">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 6 · SIMULATED SESSION REPLAY</span>
-                <h3 class="pane-title">Watch the exact failure mode experienced by users</h3>
-              </div>
-
-              <div class="session-replay-container">
-                <div class="mac-browser-window" id="session-browser-window">
-                  <div class="browser-chrome">
-                    <div class="browser-dots">
-                      <span class="dot-red"></span>
-                      <span class="dot-yellow"></span>
-                      <span class="dot-green"></span>
-                    </div>
-                    <div class="browser-address">
-                      <span class="lock-icon">🔒</span>
-                      <span>https://store.acme.com/checkout/pay</span>
-                    </div>
-                    <div class="session-tag">SESSION #8491 · SAFARI 17.2</div>
-                  </div>
-
-                  <div class="browser-viewport" id="browser-viewport">
-                    <!-- Virtual Cursor -->
+                  <div class="mini-browser-content" id="session-recording-viewport">
+                    <!-- Virtual Mouse Cursor -->
                     <div class="virtual-cursor" id="virtual-cursor">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                         <path d="M4 3L18 13L11 15L8 21L4 3Z" fill="#00F5A0" stroke="#000" stroke-width="1.5"/>
                       </svg>
                       <div class="cursor-click-pulse" id="cursor-pulse"></div>
                     </div>
 
-                    <div class="replay-form-card">
-                      <div class="replay-form-header">
-                        <span class="replay-title">PAYMENT AUTHORIZATION</span>
-                        <span class="replay-total">$149.00 USD</span>
-                      </div>
-
-                      <div class="replay-field">
-                        <label class="replay-label">Card Number</label>
-                        <div class="replay-input">•••• •••• •••• 4218</div>
-                      </div>
-
-                      <div class="replay-row">
-                        <div class="replay-field">
-                          <label class="replay-label">Expiry</label>
-                          <div class="replay-input">09 / 28</div>
+                    <!-- Checkout Form Demo Content -->
+                    <div class="checkout-demo-card">
+                      <div class="checkout-demo-header">
+                        <div>
+                          <div class="demo-plan-name">Premium Plan</div>
+                          <div class="demo-plan-sub">Annual Billing</div>
                         </div>
-                        <div class="replay-field">
-                          <label class="replay-label">CVV</label>
-                          <div class="replay-input">•••</div>
+                        <div class="demo-plan-price">$99.00</div>
+                      </div>
+
+                      <div class="demo-field">
+                        <label class="demo-label">Cardholder Name</label>
+                        <div class="demo-input-box filled">Alex Morgan</div>
+                      </div>
+
+                      <div class="demo-field">
+                        <label class="demo-label">Card Number</label>
+                        <div class="demo-input-box filled">•••• •••• •••• 4218</div>
+                      </div>
+
+                      <div class="demo-row">
+                        <div class="demo-field">
+                          <label class="demo-label">Expires</label>
+                          <div class="demo-input-box filled">09/28</div>
+                        </div>
+                        <div class="demo-field">
+                          <label class="demo-label">CVC</label>
+                          <div class="demo-input-box filled">•••</div>
                         </div>
                       </div>
 
-                      <button class="replay-submit-btn" id="replay-submit-btn" type="button">
-                        <span class="btn-text">COMPLETE PAYMENT</span>
-                        <span class="btn-spinner" id="btn-spinner"></span>
+                      <button class="demo-submit-btn" id="demo-pay-btn" type="button">
+                        <span class="btn-label">Continue to payment →</span>
+                        <span class="btn-spinner" id="demo-btn-spinner"></span>
                       </button>
 
-                      <div class="rage-click-alert" id="rage-click-alert">
+                      <!-- In-Screen Anomaly / Rage Click Alert Banner -->
+                      <div class="rage-click-banner" id="rage-click-banner">
                         <span class="alert-icon">⚠️</span>
-                        <div class="alert-content">
+                        <div class="alert-text">
                           <strong>RAGE CLICK DETECTED</strong>
-                          <span>Button unresponsive after multiple rapid submissions.</span>
+                          <span>3 rapid clicks · Validation handler unresponsive</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div class="session-replay-footer">
-                    <div class="replay-stat-row">
-                      <span class="stat-icon">👥</span>
-                      <span class="stat-text"><strong>1,842 users</strong> experienced this exact behavior.</span>
+                  <!-- Video Scrubber Bar at Bottom -->
+                  <div class="video-scrubber-bar">
+                    <span class="time-label">00:08</span>
+                    <div class="scrubber-track">
+                      <div class="scrubber-progress" id="scrubber-progress"></div>
+                      <div class="scrubber-playhead" id="scrubber-playhead"></div>
                     </div>
-                    <button class="btn-trigger-replay" onclick="runSessionReplayAnimation()">
-                      <span>↺</span> Re-run Replay
-                    </button>
+                    <span class="time-label">00:18</span>
+                    <button class="btn-mini-replay" onclick="replaySessionAnimation()" title="Replay">↺</button>
                   </div>
                 </div>
               </div>
 
-              <div class="inv-pane-footer">
-                <button class="btn-trigger-replay" onclick="runSessionReplayAnimation()">▶ Watch session replay</button>
-                <button class="inv-next-btn" onclick="setInvestigationStep(6)">Next: Root Cause & Recovery →</button>
+              <!-- RIGHT / SECONDARY: Neural Evidence & Causal Vector Graph -->
+              <div class="stage-sub-panel panel-evidence-graph" id="panel-evidence">
+                <div class="evidence-graph-card">
+                  <div class="graph-card-header">
+                    <div class="graph-header-title">
+                      <span class="pulse-dot-cyan"></span>
+                      <span>CAUSAL VECTOR ISOLATION</span>
+                    </div>
+                    <div class="graph-header-conf" id="graph-conf-badge">94% CONFIDENCE</div>
+                  </div>
+
+                  <div class="graph-canvas-box">
+                    <canvas id="cinemaEvidenceCanvas"></canvas>
+                  </div>
+
+                  <div class="graph-causal-chain">
+                    <div class="chain-node active">Safari 17.2</div>
+                    <span class="chain-arrow">→</span>
+                    <div class="chain-node active">Checkout Failure</div>
+                    <span class="chain-arrow">→</span>
+                    <div class="chain-node active">Validation Loop</div>
+                    <span class="chain-arrow">→</span>
+                    <div class="chain-node culprit">Deploy #2841</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BOTTOM / OVERLAY: Root Cause Verdict & Projected Recovery -->
+              <div class="stage-sub-panel panel-diagnosis-recovery" id="panel-diagnosis">
+                <div class="diag-recovery-card">
+                  <div class="diag-split-grid">
+                    <!-- Left: Root Cause -->
+                    <div class="diag-verdict-box">
+                      <div class="verdict-tag">ROOT CAUSE FOUND</div>
+                      <h4 class="verdict-title">Payment validation loop in deployment <code>#2841</code></h4>
+                      
+                      <div class="verdict-metric-row">
+                        <div class="v-metric">
+                          <span class="v-label">CONFIDENCE</span>
+                          <span class="v-val text-accent">94%</span>
+                        </div>
+                        <div class="v-metric">
+                          <span class="v-label">REVENUE AT RISK</span>
+                          <span class="v-val text-amber">$42,800</span>
+                        </div>
+                        <div class="v-metric">
+                          <span class="v-label">AFFECTED USERS</span>
+                          <span class="v-val">1,842</span>
+                        </div>
+                      </div>
+
+                      <div class="action-box">
+                        <span class="action-tag">RECOMMENDED ACTION</span>
+                        <div class="action-desc">Roll back deployment #2841 and deploy validation regex patch.</div>
+                      </div>
+                    </div>
+
+                    <!-- Right: Projected Recovery -->
+                    <div class="recovery-projection-box">
+                      <div class="rec-header">
+                        <span class="rec-tag">PROJECTED RECOVERY</span>
+                        <span class="rec-diff text-accent">47% → 68% (+21.0 pts)</span>
+                      </div>
+
+                      <div class="recovery-mini-chart">
+                        <canvas id="cinemaRecoveryCanvas"></canvas>
+                      </div>
+
+                      <div class="rec-stats-footer">
+                        <div>
+                          <span class="r-label">ESTIMATED RECOVERED</span>
+                          <span class="r-val text-accent" id="cinema-rec-val">$38,000 – $44,000</span>
+                        </div>
+                        <div class="rec-conclusion-tag">
+                          <span>✦ That's the why.</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Frame Bottom Status -->
+            <div class="frame-bottom-bar">
+              <div class="frame-stat-item">
+                <span>Traces analyzed: <strong>12,481 sessions</strong></span>
+              </div>
+              <div class="frame-stat-item hide-mobile">
+                <span>Signal sources: <strong>6 connected</strong></span>
+              </div>
+              <div class="frame-stat-item">
+                <span class="text-accent" id="frame-status-text">Step 1/5: Session playback active</span>
               </div>
             </div>
 
-            <!-- ================= STAGE 7: ROOT CAUSE & RECOVERY ================= -->
-            <div class="inv-view-pane" id="inv-view-6">
-              <div class="inv-pane-header">
-                <span class="pane-eyebrow">STEP 7 · ROOT CAUSE & RECOVERY</span>
-                <h3 class="pane-title">Attribution diagnosis, reasoning, and projected remediation</h3>
-              </div>
+          </div>
+        </div>
 
-              <div class="diagnosis-grid-layout">
-                <!-- Diagnosis Card -->
-                <div class="diagnosis-card" id="diagnosis-card">
-                  <div class="diagnosis-card-header">
-                    <div class="diag-header-left">
-                      <span class="diag-status-dot"></span>
-                      <span class="eyebrow" style="margin:0;">✦ SIMPLYWHY DIAGNOSIS</span>
-                    </div>
-                    <span class="diag-id-tag">INCIDENT #INC-2841</span>
-                  </div>
-
-                  <div class="diagnosis-card-body">
-                    <div class="diag-section">
-                      <div class="diag-label">INCIDENT CLASSIFICATION</div>
-                      <div class="diag-title">CHECKOUT CONVERSION DROP</div>
-                    </div>
-
-                    <div class="diag-section">
-                      <div class="diag-label">IDENTIFIED ROOT CAUSE</div>
-                      <div class="diag-value">Payment validation loop introduced in deployment <code>#2841</code></div>
-                    </div>
-
-                    <div class="diag-section">
-                      <div class="diag-header-flex">
-                        <div class="diag-label">ATTRIBUTION CONFIDENCE</div>
-                        <div class="diag-confidence-score" id="diag-confidence-score">94%</div>
-                      </div>
-                      <div class="diag-confidence-bar">
-                        <div class="diag-confidence-fill" id="confidence-fill" style="width: 94%;"></div>
-                      </div>
-                    </div>
-
-                    <!-- AI Reasoning Box -->
-                    <div class="diag-reasoning-box">
-                      <div class="reasoning-header">
-                        <span class="reasoning-icon">✦</span>
-                        <span class="reasoning-title">WHY WE'RE CONFIDENT</span>
-                      </div>
-                      <p class="reasoning-text">
-                        "The failure began 6 minutes after deployment #2841, is concentrated among Safari users, appears in session replays, and matches a 412% increase in validation errors."
-                      </p>
-                    </div>
-
-                    <!-- Expandable Evidence Drawer (Why 94%?) -->
-                    <div class="diag-evidence-drawer expanded" id="diag-evidence-drawer">
-                      <div class="drawer-inner-header">
-                        <span class="drawer-breakdown-title">WHY 94% CONFIDENCE BREAKDOWN?</span>
-                        <span class="drawer-total-tag">TOTAL: 94%</span>
-                      </div>
-                      <div class="evidence-weight-rows">
-                        <div class="weight-row">
-                          <span class="weight-label">Session correlation</span>
-                          <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 31%;"></div></div>
-                          <span class="weight-val">+31%</span>
-                        </div>
-                        <div class="weight-row">
-                          <span class="weight-label">Support correlation</span>
-                          <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 26%;"></div></div>
-                          <span class="weight-val">+26%</span>
-                        </div>
-                        <div class="weight-row">
-                          <span class="weight-label">Deployment timing</span>
-                          <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 22%;"></div></div>
-                          <span class="weight-val">+22%</span>
-                        </div>
-                        <div class="weight-row">
-                          <span class="weight-label">Error correlation</span>
-                          <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 15%;"></div></div>
-                          <span class="weight-val">+15%</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="diag-section">
-                      <div class="diag-label">ESTIMATED REVENUE AT RISK</div>
-                      <div class="diag-impact">$42,800 revenue at risk</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Recovery Simulation Card -->
-                <div class="recovery-box-column">
-                  <div class="rec-fix-box">
-                    <div class="rec-fix-label">RECOMMENDED ACTION</div>
-                    <p class="rec-fix-text">Roll back deployment <code>#2841</code> and deploy the validation patch to restore Safari checkout functionality.</p>
-                    
-                    <div class="rec-fix-actions">
-                      <button class="btn-simulate-recovery" id="btn-simulate-recovery" onclick="runRecoverySimulation()">
-                        <span class="sim-icon">⚡</span> Simulate recovery →
-                      </button>
-                      <span class="recovery-status-pill" id="recovery-status-pill">
-                        <span class="rec-status-dot"></span> RECOVERY PROJECTED
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="rec-simulation-card" id="rec-simulation-card">
-                    <div class="rec-metrics-grid">
-                      <div class="rec-metric">
-                        <div class="rec-metric-label">CHECKOUT CONVERSION</div>
-                        <div class="rec-metric-value" id="sim-conversion-val">47%</div>
-                        <div class="rec-metric-detail" id="sim-conversion-status">Current degraded baseline</div>
-                      </div>
-                      <div class="rec-metric">
-                        <div class="rec-metric-label">ESTIMATED REVENUE RECOVERED</div>
-                        <div class="rec-metric-value" id="sim-revenue-val">$0</div>
-                        <div class="rec-metric-detail" id="sim-revenue-status">Projected recovery potential</div>
-                      </div>
-                    </div>
-
-                    <div class="recovery-canvas-wrap">
-                      <div class="recovery-canvas-header">
-                        <span class="canvas-tag">CONVERSION TRAJECTORY PROJECTION</span>
-                        <span class="canvas-legend">47% → 68% RESTORATION</span>
-                      </div>
-                      <canvas id="recoveryCanvas"></canvas>
-                    </div>
-
-                    <div class="recovery-final-tagline">
-                      <span>✦ That's the why.</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="inv-pane-footer">
-                <span class="inv-footer-status">✓ Complete causal chain identified and verified</span>
-                <button class="btn-primary" onclick="setInvestigationStep(0)">↺ Restart Investigation</button>
-              </div>
+        <!-- Scroll Milestones (Invisible scroll triggers that drive the sticky frame) -->
+        <div class="scroll-milestones-track">
+          <div class="scroll-milestone" data-milestone="0">
+            <div class="milestone-indicator">
+              <span class="milestone-num">01</span>
+              <span class="milestone-label">User experiences checkout freeze on Safari</span>
             </div>
-
+          </div>
+          <div class="scroll-milestone" data-milestone="1">
+            <div class="milestone-indicator">
+              <span class="milestone-num">02</span>
+              <span class="milestone-label">Rage clicks detected & recording freezes</span>
+            </div>
+          </div>
+          <div class="scroll-milestone" data-milestone="2">
+            <div class="milestone-indicator">
+              <span class="milestone-num">03</span>
+              <span class="milestone-label">SimplyWhy connects session to Git deployment</span>
+            </div>
+          </div>
+          <div class="scroll-milestone" data-milestone="3">
+            <div class="milestone-indicator">
+              <span class="milestone-num">04</span>
+              <span class="milestone-label">Root cause identified with 94% confidence</span>
+            </div>
+          </div>
+          <div class="scroll-milestone" data-milestone="4">
+            <div class="milestone-indicator">
+              <span class="milestone-num">05</span>
+              <span class="milestone-label">Recovery trajectory projected: 47% → 68%</span>
+            </div>
           </div>
         </div>
 
@@ -756,8 +442,20 @@
         
         <div class="how-header reveal">
           <span class="eyebrow">✦ Cross-Stream Causal Engine</span>
-          <h2 class="section-heading" style="margin-top:16px">Five signals. One answer.</h2>
-          <p class="section-sub">Traditional monitoring tools give you isolated alerts. SimplyWhy correlates the underlying telemetry across your entire stack.</p>
+          <h2 class="section-heading" style="margin-top:14px">Five signals. One answer.</h2>
+          <div class="how-formula-banner">
+            <span class="f-pill">BEHAVIOR</span>
+            <span class="f-op">+</span>
+            <span class="f-pill">SUPPORT</span>
+            <span class="f-op">+</span>
+            <span class="f-pill">PRODUCT</span>
+            <span class="f-op">+</span>
+            <span class="f-pill">ENGINEERING</span>
+            <span class="f-op">+</span>
+            <span class="f-pill">CONTEXT</span>
+            <span class="f-op">=</span>
+            <span class="f-pill highlight">WHY</span>
+          </div>
         </div>
 
         <div class="signals-pillars-grid reveal" style="transition-delay:100ms">
@@ -765,8 +463,8 @@
           <div class="pillar-card">
             <div class="pillar-icon">👤</div>
             <div class="pillar-tag">USER BEHAVIOR</div>
-            <h4 class="pillar-title">What users actually did</h4>
-            <p class="pillar-desc">Session replays, rage clicks, dead clicks, mouse stalls, and dropoff coordinates across every screen.</p>
+            <h4 class="pillar-title">What users did</h4>
+            <p class="pillar-desc">Session replays, rage clicks, cursor stalls, and dropoffs.</p>
           </div>
 
           <!-- Pillar 2 -->
@@ -774,41 +472,32 @@
             <div class="pillar-icon">💬</div>
             <div class="pillar-tag">SUPPORT</div>
             <h4 class="pillar-title">What users said</h4>
-            <p class="pillar-desc">Customer complaints, conversation tickets, recurring frustration patterns, and issue sentiment.</p>
+            <p class="pillar-desc">Customer complaints, tickets, and recurring frustration keywords.</p>
           </div>
 
           <!-- Pillar 3 -->
           <div class="pillar-card">
             <div class="pillar-icon">📊</div>
             <div class="pillar-tag">PRODUCT</div>
-            <h4 class="pillar-title">What changed in your metrics</h4>
-            <p class="pillar-desc">Funnel step dropoffs, conversion rates, cohort divergence, and revenue velocity anomalies.</p>
+            <h4 class="pillar-title">What changed</h4>
+            <p class="pillar-desc">Funnel conversion dropoffs and cohort anomalies.</p>
           </div>
 
           <!-- Pillar 4 -->
           <div class="pillar-card">
             <div class="pillar-icon">⚡</div>
             <div class="pillar-tag">ENGINEERING</div>
-            <h4 class="pillar-title">What changed in your code</h4>
-            <p class="pillar-desc">Git commits, pull requests, deployment metadata, release timing, and CI/CD pipelines.</p>
+            <h4 class="pillar-title">What deployed</h4>
+            <p class="pillar-desc">Git commits, pull requests, release metadata, and CI/CD timings.</p>
           </div>
 
           <!-- Pillar 5 -->
           <div class="pillar-card">
             <div class="pillar-icon">🌐</div>
             <div class="pillar-tag">CONTEXT</div>
-            <h4 class="pillar-title">What happened around it</h4>
-            <p class="pillar-desc">Error logs, browser engines, device cohorts, third-party API latency, and infrastructure status.</p>
+            <h4 class="pillar-title">What broke</h4>
+            <p class="pillar-desc">Error stack traces, browser engines, and third-party APIs.</p>
           </div>
-        </div>
-
-        <!-- Synthesis Pipeline Banner -->
-        <div class="system-synthesis-bar reveal" style="transition-delay:200ms">
-          <div class="syn-step">5 Signal Streams</div>
-          <div class="syn-arrow">→</div>
-          <div class="syn-step highlight">SimplyWhy AI Correlation Engine</div>
-          <div class="syn-arrow">→</div>
-          <div class="syn-step success">1 Root Cause Diagnosis</div>
         </div>
 
       </div>
@@ -823,23 +512,21 @@
         
         <div class="diff-header reveal">
           <span class="eyebrow">✦ Connected Intelligence vs. Siloed Tools</span>
-          <h2 class="section-heading" style="margin-top:16px">The problem isn't lack of data.<br><span class="text-accent">It's disconnected data.</span></h2>
-          <p class="section-sub">When your product breaks, the evidence is scattered across 5 different dashboards.</p>
+          <h2 class="section-heading" style="margin-top:14px">Data is everywhere.<br><span class="text-accent">The why isn't.</span></h2>
         </div>
 
         <div class="diff-comparison-grid reveal" style="transition-delay:150ms">
           <!-- Left: Traditional Tools -->
           <div class="diff-card traditional">
-            <div class="diff-card-badge text-muted">TRADITIONAL STACK</div>
+            <div class="diff-card-badge text-muted">TRADITIONAL MONITORING</div>
             <h3 class="diff-card-title">"What happened?"</h3>
-            <p class="diff-card-desc">Siloed tools alert you that metrics dropped, but leave your engineers digging through logs for hours.</p>
+            <p class="diff-card-desc">Siloed dashboards alert you that metrics fell, leaving your engineering team digging through logs for hours.</p>
 
             <div class="diff-silo-list">
               <div class="silo-item"><span class="silo-icon">✕</span> <span>Datadog alerts on error spikes</span></div>
               <div class="silo-item"><span class="silo-icon">✕</span> <span>Mixpanel shows conversion dropped</span></div>
               <div class="silo-item"><span class="silo-icon">✕</span> <span>Zendesk logs customer complaints</span></div>
               <div class="silo-item"><span class="silo-icon">✕</span> <span>FullStory captures rage clicks</span></div>
-              <div class="silo-item"><span class="silo-icon">✕</span> <span>GitHub logs deployment commits</span></div>
             </div>
 
             <div class="diff-verdict text-muted">
@@ -851,14 +538,13 @@
           <div class="diff-card simplywhy">
             <div class="diff-card-badge text-accent">SIMPLYWHY CAUSAL GRAPH</div>
             <h3 class="diff-card-title text-accent">"Why did it happen?"</h3>
-            <p class="diff-card-desc">SimplyWhy unifies every signal into one causal graph, mapping user pain directly to the offending commit.</p>
+            <p class="diff-card-desc">SimplyWhy unifies every signal into one causal graph, mapping user symptoms directly to the offending commit.</p>
 
             <div class="diff-silo-list">
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>One unified cross-stream ingestion</span></div>
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>Automatic symptom-to-code correlation</span></div>
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>Pinpoints exact PR & commit responsible</span></div>
-              <div class="silo-item success"><span class="silo-icon">✓</span> <span>Calculates exact revenue & user impact</span></div>
-              <div class="silo-item success"><span class="silo-icon">✓</span> <span>Generates instant remediation prescription</span></div>
+              <div class="silo-item success"><span class="silo-icon">✓</span> <span>Instant remediation prescription</span></div>
             </div>
 
             <div class="diff-verdict text-accent">
@@ -878,9 +564,8 @@
       <div class="container">
         
         <div class="usecases-header reveal">
-          <span class="eyebrow">✦ Breadth Across Your Entire Stack</span>
-          <h2 class="section-heading" style="margin-top:16px">What else can SimplyWhy answer?</h2>
-          <p class="section-sub">SimplyWhy diagnoses complex failure modes across auth, onboarding, payments, and infrastructure.</p>
+          <span class="eyebrow">✦ Breadth Across Your Stack</span>
+          <h2 class="section-heading" style="margin-top:14px">What else can SimplyWhy answer?</h2>
         </div>
 
         <div class="usecase-interactive-wrapper reveal" style="transition-delay:150ms">
@@ -909,19 +594,19 @@
 
             <div class="uc-card-body">
               <div class="uc-row">
-                <span class="uc-label">OBSERVED SYMPTOM:</span>
+                <span class="uc-label">OBSERVED SYMPTOM</span>
                 <span class="uc-val" id="uc-symptom">Signup completion fell 28.4% within 90 seconds of release</span>
               </div>
               <div class="uc-row">
-                <span class="uc-label">IDENTIFIED ROOT CAUSE:</span>
+                <span class="uc-label">IDENTIFIED ROOT CAUSE</span>
                 <span class="uc-val highlight" id="uc-cause">OAuth callback domain whitelist mismatch in deployment #2839</span>
               </div>
               <div class="uc-row">
-                <span class="uc-label">CORRELATED SIGNALS:</span>
+                <span class="uc-label">CORRELATED SIGNALS</span>
                 <span class="uc-val" id="uc-signals">Google OAuth 400 errors + Form abandonments + Commit #2839 auth secret update</span>
               </div>
               <div class="uc-row">
-                <span class="uc-label">RECOMMENDED ACTION:</span>
+                <span class="uc-label">RECOMMENDED ACTION</span>
                 <span class="uc-val" id="uc-action">Revert OAuth client configuration in deployment #2839 and refresh callback domains</span>
               </div>
             </div>
@@ -938,28 +623,23 @@
     <section class="section section-proof" id="proof">
       <div class="container">
         
-        <div class="proof-header reveal">
-          <span class="eyebrow">✦ Proven Engineering Velocity</span>
-          <h2 class="section-heading" style="margin-top:16px">Built for speed when every minute costs revenue.</h2>
-        </div>
-
-        <div class="proof-stats-row reveal" style="transition-delay:150ms">
+        <div class="proof-stats-row reveal">
           <div class="proof-stat-item">
             <div class="proof-stat-value">3h → 12m</div>
-            <div class="proof-stat-label">Mean time to root cause</div>
-            <div class="proof-stat-sub">From hours of log digging to instant answers</div>
+            <div class="proof-stat-label">Time to root cause</div>
+            <div class="proof-stat-sub">From log hunting to verified answer</div>
           </div>
 
           <div class="proof-stat-item">
             <div class="proof-stat-value">4+ tools → 1</div>
-            <div class="proof-stat-label">Unified causal investigation</div>
-            <div class="proof-stat-sub">Telemetry, session replays, support & git in one graph</div>
+            <div class="proof-stat-label">Unified causal graph</div>
+            <div class="proof-stat-sub">Telemetry, replays, support & git</div>
           </div>
 
           <div class="proof-stat-item">
             <div class="proof-stat-value">94%+</div>
-            <div class="proof-stat-label">Mean attribution confidence</div>
-            <div class="proof-stat-sub">Deterministic cross-stream correlation algorithms</div>
+            <div class="proof-stat-label">Attribution confidence</div>
+            <div class="proof-stat-sub">Deterministic correlation algorithms</div>
           </div>
         </div>
 
@@ -982,9 +662,9 @@
           <form class="waitlist-form" id="waitlist-form" onsubmit="handleWaitlistSubmit(event)">
             <input type="email" class="waitlist-input" id="w-email" placeholder="you@company.com" required>
             <input type="text" class="waitlist-input" id="w-role" placeholder="Your role (e.g. Lead Engineer, PM)" required>
-            <button type="submit" class="waitlist-submit" id="waitlist-btn">Run your first diagnosis →</button>
+            <button type="submit" class="waitlist-submit" id="waitlist-btn">Get early access →</button>
           </form>
-          <p class="waitlist-note">No credit card required · Instant setup in under 5 minutes</p>
+          <p class="waitlist-note">No credit card required · Setup in under 5 minutes</p>
         </div>
       </div>
     </section>
@@ -1038,7 +718,7 @@
             </div>
           </div>
           <div class="ai-action-row">
-            <button class="btn-ai-evidence" onclick="closeAIAndScroll('#investigation')">Open investigation →</button>
+            <button class="btn-ai-evidence" onclick="closeAIAndScroll('#investigation')">Watch live demo →</button>
           </div>
         </div>
       </div>
@@ -1055,7 +735,7 @@
         <div class="footer-brand">SimplyWhy</div>
         <div class="footer-links">
           <div class="footer-col">
-            <a href="#investigation">Product</a>
+            <a href="#investigation">Live Demo</a>
             <a href="#how-it-works">How it works</a>
             <a href="#why-simplywhy">Why SimplyWhy</a>
             <a href="#use-cases">Use cases</a>
