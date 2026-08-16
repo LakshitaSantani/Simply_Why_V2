@@ -140,19 +140,79 @@
 
 
     <!-- ================================================================
-         WHY CHAIN — Interactive drill-down
+         WHY INVESTIGATION — Interactive AI Deep Dive Layers
          ================================================================ -->
     <section class="section section-why" id="why-section">
-      <div class="why-container reveal">
-        <h2 class="why-heading">Start with a symptom.<br><span class="text-accent">We'll find the why.</span></h2>
-
-        <div class="why-chain-wrapper" id="why-chain">
-          <button class="why-step" id="why-current" type="button" onclick="advanceWhyChain()">
-            WHY DID REVENUE DROP?
-          </button>
-          <div class="why-step-hint visible" id="why-hint">Click to investigate deeper →</div>
-          <div class="why-result-detail" id="why-detail"></div>
+      <div class="container why-container reveal">
+        
+        <!-- Header -->
+        <div class="why-header">
+          <span class="eyebrow">✦ Autonomous Investigation</span>
+          <h2 class="why-heading">Start with a symptom.<br><span class="text-accent">We'll find the why.</span></h2>
         </div>
+
+        <!-- Investigation Layer Interface -->
+        <div class="why-investigator-card" id="why-investigator">
+          
+          <!-- Top Telemetry & Depth Progress Bar -->
+          <div class="why-tracker-header">
+            <div class="why-depth-indicator">
+              <span class="why-depth-dot"></span>
+              <span class="why-depth-label" id="why-depth-label">DEPTH LEVEL 01 / 05</span>
+            </div>
+            <div class="why-progress-pills" id="why-progress-pills">
+              <button class="why-pill active" onclick="goToWhyLayer(0)" data-step="0">01 SYMPTOM</button>
+              <span class="why-pill-arrow">→</span>
+              <button class="why-pill" onclick="goToWhyLayer(1)" data-step="1">02 SIGNAL</button>
+              <span class="why-pill-arrow">→</span>
+              <button class="why-pill" onclick="goToWhyLayer(2)" data-step="2">03 CORRELATION</button>
+              <span class="why-pill-arrow">→</span>
+              <button class="why-pill" onclick="goToWhyLayer(3)" data-step="3">04 ISOLATION</button>
+              <span class="why-pill-arrow">→</span>
+              <button class="why-pill" onclick="goToWhyLayer(4)" data-step="4">05 CAUSE</button>
+            </div>
+          </div>
+
+          <!-- Main Interactive Investigation Stage -->
+          <div class="why-stage-viewport">
+            <!-- Subtle Concentric Depth Rings -->
+            <div class="why-depth-rings">
+              <div class="why-ring ring-1"></div>
+              <div class="why-ring ring-2"></div>
+              <div class="why-ring ring-3"></div>
+            </div>
+
+            <!-- Central Question Display (Clickable) -->
+            <div class="why-central-panel" id="why-central-panel" onclick="advanceWhyLayer()" role="button" tabindex="0" aria-label="Advance investigation">
+              <div class="why-phase-badge" id="why-badge">01 · SYMPTOM ISOLATION</div>
+              <div class="why-question-text" id="why-question">WHY DID REVENUE DROP?</div>
+              
+              <div class="why-summary-text" id="why-summary">
+                Revenue trajectory fell below baseline across the primary payment funnel.
+              </div>
+
+              <!-- Contextual Evidence Tags Container -->
+              <div class="why-evidence-grid" id="why-evidence-grid">
+                <div class="why-evidence-chip">
+                  <span class="chip-tag tag-signal">SIGNAL</span>
+                  <span class="chip-desc">Daily GMV run-rate dropped from $142K → $99.2K at 10:18 AM</span>
+                </div>
+                <div class="why-evidence-chip">
+                  <span class="chip-tag tag-impact">IMPACT</span>
+                  <span class="chip-desc">Isolated to new subscription checkout flow</span>
+                </div>
+              </div>
+
+              <!-- Bottom Interactive Prompt -->
+              <div class="why-footer-action">
+                <span class="why-action-hint" id="why-action-hint">Click to investigate deeper layer →</span>
+                <span class="why-confidence-pill" id="why-confidence-pill" style="display:none;">94% Confidence</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
 

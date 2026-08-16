@@ -609,78 +609,232 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   WHY CHAIN SECTION
+   WHY INVESTIGATION SECTION — AI LAYER SYSTEM
    ========================================================================== */
 .section-why {
   padding: 160px 0;
-  display: flex; align-items: center; justify-content: center;
-  min-height: 80vh;
+  position: relative;
+  overflow: hidden;
 }
-.why-container { text-align: center; max-width: 800px; margin: 0 auto; }
-
+.why-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.why-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
 .why-heading {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700; letter-spacing: -0.03em;
-  margin-bottom: 60px; line-height: 1.2;
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 800; letter-spacing: -0.035em;
+  margin-top: 16px; line-height: 1.15;
 }
 
-.why-chain-wrapper {
+/* Master Investigator Card */
+.why-investigator-card {
   position: relative;
-  min-height: 120px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
-.why-step {
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-  font-weight: 700; letter-spacing: -0.02em;
-  color: var(--text-primary);
-  padding: 18px 36px;
-  border-radius: var(--radius-md);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  background: var(--bg-card);
-  cursor: pointer;
-  position: relative; z-index: 5;
-  transition: all var(--t-fast) var(--ease-out);
-  user-select: none;
-  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 1px 1px var(--border-subtle);
+  transition: all var(--t-med) ease;
 }
-.why-step:hover {
-  border-color: var(--accent); background: var(--accent-dim);
-  box-shadow: 0 0 30px var(--accent-dim);
+.why-investigator-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Header & Progress Tracker */
+.why-tracker-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.015);
+  flex-wrap: wrap; gap: 16px;
+}
+.why-depth-indicator {
+  display: flex; align-items: center; gap: 8px;
+}
+.why-depth-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.why-depth-label {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase;
+}
+
+.why-progress-pills {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.why-pill {
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+  cursor: pointer; transition: all var(--t-fast) ease;
+}
+.why-pill:hover {
+  color: var(--text-primary); border-color: rgba(255, 255, 255, 0.15);
+}
+.why-pill.active {
+  background: var(--accent-dim); border-color: var(--accent);
+  color: var(--accent); font-weight: 700;
+  box-shadow: 0 0 12px var(--accent-dim);
+}
+.why-pill.completed {
+  color: var(--text-secondary); border-color: var(--border);
+}
+.why-pill-arrow {
+  color: var(--text-muted); font-size: 0.75rem;
+}
+
+/* Stage Viewport with Concentric Depth Rings */
+.why-stage-viewport {
+  position: relative;
+  padding: 60px 48px;
+  min-height: 440px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.why-depth-rings {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0.4;
+}
+.why-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  transition: all var(--t-slow) var(--ease-smooth);
+}
+.why-ring.ring-1 { width: 320px; height: 320px; border-color: rgba(0, 245, 160, 0.06); }
+.why-ring.ring-2 { width: 560px; height: 560px; border-color: rgba(255, 255, 255, 0.03); }
+.why-ring.ring-3 { width: 800px; height: 800px; border-color: rgba(255, 255, 255, 0.02); }
+
+/* Central Interactive Question Panel */
+.why-central-panel {
+  position: relative; z-index: 10;
+  max-width: 780px; width: 100%;
+  text-align: center;
+  padding: 36px 32px;
+  border-radius: var(--radius-lg);
+  background: rgba(14, 16, 22, 0.7);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all var(--t-med) var(--ease-smooth);
+  user-select: none;
+}
+.why-central-panel:hover {
+  background: rgba(20, 22, 30, 0.85);
+  border-color: rgba(0, 245, 160, 0.35);
+  box-shadow: 0 12px 40px rgba(0, 245, 160, 0.1);
   transform: translateY(-2px);
 }
-.why-step:active {
-  transform: scale(0.97);
+.why-central-panel:active {
+  transform: scale(0.985);
 }
-.why-step.final {
-  color: var(--accent); border-color: var(--accent);
-  background: var(--accent-dim);
+.why-central-panel.is-transitioning {
+  opacity: 0.2;
+  transform: scale(0.95);
+  filter: blur(4px);
+}
+.why-central-panel.final-verdict {
+  border-color: var(--accent);
+  background: rgba(0, 245, 160, 0.04);
   box-shadow: 0 0 50px var(--accent-dim);
-  font-size: clamp(1.4rem, 3vw, 2.2rem);
-  cursor: pointer;
 }
-.why-step.final:hover {
-  box-shadow: 0 0 60px var(--accent-glow);
+
+.why-phase-badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-dim);
+  padding: 4px 12px; border-radius: var(--radius-pill);
+  margin-bottom: 24px;
 }
-.why-step-hint {
-  font-size: 0.82rem; color: var(--text-muted);
-  margin-top: 16px;
-  font-family: var(--font-mono);
-  opacity: 0; transition: opacity var(--t-med) ease;
+
+.why-question-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800; letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin-bottom: 18px;
+  transition: color var(--t-fast) ease;
 }
-.why-step-hint.visible { opacity: 1; }
-.why-result-detail {
-  font-size: 0.95rem; color: var(--text-secondary);
-  margin-top: 20px; line-height: 1.6;
-  opacity: 0; transform: translateY(10px);
-  transition: all var(--t-med) var(--ease-out);
+.why-central-panel.final-verdict .why-question-text {
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-dim);
 }
-.why-result-detail.visible { opacity: 1; transform: translateY(0); }
-.why-result-detail code {
-  font-family: var(--font-mono); color: var(--accent);
-  background: var(--bg-card); padding: 2px 6px; border-radius: 4px;
+
+.why-summary-text {
+  font-size: 1.05rem; color: var(--text-secondary);
+  max-width: 600px; margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+/* Dynamic Evidence Grid Chips */
+.why-evidence-grid {
+  display: flex; flex-direction: column; gap: 10px;
+  max-width: 640px; margin: 0 auto 32px;
+  text-align: left;
+}
+.why-evidence-chip {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  transition: all var(--t-fast) ease;
+}
+.why-evidence-chip:hover {
+  background: var(--bg-card-hover); border-color: var(--border);
+}
+.chip-tag {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px;
+  letter-spacing: 0.06em; flex-shrink: 0;
+  margin-top: 1px;
+}
+.tag-signal { background: rgba(56, 189, 248, 0.15); color: #38BDF8; }
+.tag-funnel { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+.tag-support { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; }
+.tag-cohort { background: rgba(244, 63, 94, 0.15); color: #FDA4AF; }
+.tag-replay { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+.tag-git { background: rgba(168, 85, 247, 0.15); color: #C084FC; }
+.tag-trace { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+.tag-verified { background: var(--accent-dim); color: var(--accent); }
+.tag-impact { background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); }
+.tag-action { background: var(--accent-dim); color: var(--accent); }
+
+.chip-desc {
+  font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+}
+
+/* Bottom Action & Hint */
+.why-footer-action {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; flex-wrap: wrap;
+}
+.why-action-hint {
+  font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600;
+  color: var(--accent);
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all var(--t-fast) ease;
+}
+.why-central-panel:hover .why-action-hint {
+  transform: translateX(4px);
+}
+.why-confidence-pill {
+  font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;
+  padding: 4px 14px; border-radius: var(--radius-pill);
+  background: var(--accent-dim); border: 1px solid var(--border-accent);
+  color: var(--accent);
+  box-shadow: 0 0 16px var(--accent-dim);
 }
 
 /* ==========================================================================

@@ -354,60 +354,153 @@ function initHeroVizCanvas() {
 }
 
 /* ==========================================================================
-   WHY CHAIN INTERACTIVE DRILL-DOWN
+   WHY INVESTIGATION — AI LAYER CONTROLLER
    ========================================================================== */
-const whySteps = [
-  { text: "WHY DID REVENUE DROP?", hint: "Click to investigate deeper →", final: false },
-  { text: "WHY DID CHECKOUT CONVERSION DROP?", hint: "Click to analyze user behavior →", final: false },
-  { text: "WHY ARE USERS ABANDONING CHECKOUT?", hint: "Click to isolate cohorts →", final: false },
-  { text: "WHY ARE SAFARI USERS FAILING?", hint: "Click to correlate engineering changes →", final: false },
-  { 
-    text: "PAYMENT VALIDATION BUG", 
-    hint: "Root cause verified.", 
-    final: true, 
-    detail: "Introduced in deployment <code>#2841</code>. Safari autofill triggered infinite validation loops on the payment submit handler." 
+const whyLayers = [
+  {
+    stepNum: "01",
+    phase: "01 · SYMPTOM ISOLATION",
+    question: "WHY DID REVENUE DROP?",
+    depthLabel: "DEPTH LEVEL 01 / 05",
+    summary: "Revenue trajectory fell below baseline across the primary payment funnel.",
+    evidenceList: [
+      { tag: "SIGNAL", tagClass: "tag-signal", text: "Daily GMV run-rate dropped from $142K → $99.2K at 10:18 AM" },
+      { tag: "IMPACT", tagClass: "tag-impact", text: "Isolated to new subscription checkout flow" }
+    ],
+    hint: "Click to correlate behavioral signals →",
+    isFinal: false
+  },
+  {
+    stepNum: "02",
+    phase: "02 · FUNNEL ANALYSIS",
+    question: "WHY DID CHECKOUT CONVERSION DROP?",
+    depthLabel: "DEPTH LEVEL 02 / 05",
+    summary: "Step 1 & Step 2 remained constant. Step 3 (Payment Form) experienced a 31.2% dropoff spike.",
+    evidenceList: [
+      { tag: "FUNNEL", tagClass: "tag-funnel", text: "Cart → Checkout: 94% (Normal baseline)" },
+      { tag: "FUNNEL", tagClass: "tag-funnel", text: "Checkout → Form Submit: 47% (Anomaly -21pts)" },
+      { tag: "SUPPORT", tagClass: "tag-support", text: "283 customer tickets: 'Payment submit button unresponsive'" }
+    ],
+    hint: "Click to isolate user cohort →",
+    isFinal: false
+  },
+  {
+    stepNum: "03",
+    phase: "03 · COHORT ISOLATION",
+    question: "WHY ARE USERS ABANDONING CHECKOUT?",
+    depthLabel: "DEPTH LEVEL 03 / 05",
+    summary: "Cross-cohort dimensional analysis isolates 88% of checkout failures to Safari macOS & iOS.",
+    evidenceList: [
+      { tag: "COHORT", tagClass: "tag-cohort", text: "Chrome & Firefox completion: 74% (Normal)" },
+      { tag: "COHORT", tagClass: "tag-cohort", text: "Safari completion: 18.2% (Critical Failure)" },
+      { tag: "REPLAY", tagClass: "tag-replay", text: "1,842 rage clicks on #btn-pay-now submit trigger" }
+    ],
+    hint: "Click to correlate engineering changes →",
+    isFinal: false
+  },
+  {
+    stepNum: "04",
+    phase: "04 · CODE ATTRIBUTION",
+    question: "WHY ARE SAFARI USERS FAILING?",
+    depthLabel: "DEPTH LEVEL 04 / 05",
+    summary: "Git commit history and error stack traces correlate with payment validation handler.",
+    evidenceList: [
+      { tag: "GIT", tagClass: "tag-git", text: "Deploy #2841 pushed at 10:12 AM by @payments-core" },
+      { tag: "TRACE", tagClass: "tag-trace", text: "TypeError: Safari autofill regex recursion in input listener" }
+    ],
+    hint: "Click to generate root cause verdict →",
+    isFinal: false
+  },
+  {
+    stepNum: "05",
+    phase: "05 · ROOT CAUSE FOUND",
+    question: "PAYMENT VALIDATION LOOP",
+    depthLabel: "DEPTH LEVEL 05 / 05 (VERIFIED)",
+    summary: "Payment validation loop introduced in deployment #2841 is affecting Safari users.",
+    evidenceList: [
+      { tag: "VERIFIED", tagClass: "tag-verified", text: "Root cause: Regex validation recursion on Safari autofill event" },
+      { tag: "IMPACT", tagClass: "tag-impact", text: "$42,800 revenue at risk across 1,842 affected users" },
+      { tag: "ACTION", tagClass: "tag-action", text: "Roll back deployment #2841 or deploy validation patch" }
+    ],
+    hint: "Investigation complete · Click to restart ↺",
+    isFinal: true
   }
 ];
 
-let currentWhyIndex = 0;
+let currentWhyLayerIndex = 0;
+let isWhyTransitioning = false;
 
-function advanceWhyChain() {
-  if (currentWhyIndex < whySteps.length - 1) {
-    currentWhyIndex++;
-  } else {
-    currentWhyIndex = 0;
-  }
+function goToWhyLayer(targetIndex) {
+  if (isWhyTransitioning || targetIndex === currentWhyLayerIndex) return;
+  renderWhyLayer(targetIndex);
+}
 
-  const step = whySteps[currentWhyIndex];
-  const button = document.getElementById("why-current");
-  const hint = document.getElementById("why-hint");
-  const detail = document.getElementById("why-detail");
+function advanceWhyLayer() {
+  if (isWhyTransitioning) return;
+  const nextIndex = (currentWhyLayerIndex < whyLayers.length - 1) ? currentWhyLayerIndex + 1 : 0;
+  renderWhyLayer(nextIndex);
+}
 
-  if (!button) return;
+function renderWhyLayer(index) {
+  isWhyTransitioning = true;
+  currentWhyLayerIndex = index;
+  const layer = whyLayers[index];
 
-  // Animation transition
-  button.style.transform = "scale(0.95)";
-  button.style.opacity = "0.4";
+  const panel = document.getElementById("why-central-panel");
+  const depthLabel = document.getElementById("why-depth-label");
+  const badge = document.getElementById("why-badge");
+  const question = document.getElementById("why-question");
+  const summary = document.getElementById("why-summary");
+  const evidenceGrid = document.getElementById("why-evidence-grid");
+  const hint = document.getElementById("why-action-hint");
+  const confPill = document.getElementById("why-confidence-pill");
+  const pills = document.querySelectorAll(".why-pill");
+
+  if (panel) panel.classList.add("is-transitioning");
+
+  // Update progress pills
+  pills.forEach((pill, i) => {
+    pill.classList.toggle("active", i === index);
+    pill.classList.toggle("completed", i < index);
+  });
+
+  // Scale depth rings dynamically
+  const rings = document.querySelectorAll(".why-ring");
+  rings.forEach((ring, rIdx) => {
+    const scaleFactor = 1 - (index * 0.05);
+    ring.style.transform = `scale(${scaleFactor})`;
+  });
 
   setTimeout(() => {
-    button.textContent = step.text;
-    button.className = step.final ? "why-step final" : "why-step";
-    button.style.transform = "scale(1)";
-    button.style.opacity = "1";
+    if (depthLabel) depthLabel.textContent = layer.depthLabel;
+    if (badge) badge.textContent = layer.phase;
+    if (question) question.textContent = layer.question;
+    if (summary) summary.textContent = layer.summary;
+
+    if (panel) {
+      panel.classList.toggle("final-verdict", layer.isFinal);
+    }
+
+    if (confPill) {
+      confPill.style.display = layer.isFinal ? "inline-flex" : "none";
+    }
 
     if (hint) {
-      hint.textContent = step.hint;
-      hint.className = step.final ? "why-step-hint" : "why-step-hint visible";
+      hint.textContent = layer.hint;
     }
 
-    if (detail) {
-      if (step.final && step.detail) {
-        detail.innerHTML = step.detail;
-        detail.classList.add("visible");
-      } else {
-        detail.classList.remove("visible");
-      }
+    // Render Evidence Chips
+    if (evidenceGrid) {
+      evidenceGrid.innerHTML = layer.evidenceList.map(ev => `
+        <div class="why-evidence-chip">
+          <span class="chip-tag ${ev.tagClass}">${ev.tag}</span>
+          <span class="chip-desc">${ev.text}</span>
+        </div>
+      `).join("");
     }
+
+    if (panel) panel.classList.remove("is-transitioning");
+    isWhyTransitioning = false;
   }, 180);
 }
 
@@ -686,6 +779,16 @@ function initScanKeyboardAccessibility() {
       }
     }
   });
+
+  const whyPanel = document.getElementById("why-central-panel");
+  if (whyPanel) {
+    whyPanel.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        advanceWhyLayer();
+      }
+    });
+  }
 
   // Close when clicking directly on the backdrop
   const overlay = document.getElementById("neural-scan");
