@@ -181,15 +181,15 @@
               <span class="why-depth-label" id="why-depth-label">DEPTH LEVEL 01 / 05</span>
             </div>
             <div class="why-progress-pills" id="why-progress-pills">
-              <button class="why-pill active" onclick="goToWhyLayer(0)" data-step="0">01 SYMPTOM</button>
+              <button class="why-pill active" type="button" onclick="goToWhyLayer(0, event)" data-step="0">01 SYMPTOM</button>
               <span class="why-pill-arrow">→</span>
-              <button class="why-pill" onclick="goToWhyLayer(1)" data-step="1">02 SIGNAL</button>
+              <button class="why-pill" type="button" onclick="goToWhyLayer(1, event)" data-step="1">02 SIGNAL</button>
               <span class="why-pill-arrow">→</span>
-              <button class="why-pill" onclick="goToWhyLayer(2)" data-step="2">03 CORRELATION</button>
+              <button class="why-pill" type="button" onclick="goToWhyLayer(2, event)" data-step="2">03 CORRELATION</button>
               <span class="why-pill-arrow">→</span>
-              <button class="why-pill" onclick="goToWhyLayer(3)" data-step="3">04 ISOLATION</button>
+              <button class="why-pill" type="button" onclick="goToWhyLayer(3, event)" data-step="3">04 ISOLATION</button>
               <span class="why-pill-arrow">→</span>
-              <button class="why-pill" onclick="goToWhyLayer(4)" data-step="4">05 CAUSE</button>
+              <button class="why-pill" type="button" onclick="goToWhyLayer(4, event)" data-step="4">05 CAUSE</button>
             </div>
           </div>
 
@@ -203,7 +203,7 @@
             </div>
 
             <!-- Central Question Display (Clickable) -->
-            <div class="why-central-panel" id="why-central-panel" onclick="advanceWhyLayer()" role="button" tabindex="0" aria-label="Advance investigation">
+            <div class="why-central-panel" id="why-central-panel" onclick="advanceWhyLayer(event)" role="button" tabindex="0" aria-label="Advance investigation">
               <div class="why-phase-badge" id="why-badge">01 · SYMPTOM ISOLATION</div>
               <div class="why-question-text" id="why-question">WHY DID REVENUE DROP?</div>
               
@@ -223,9 +223,11 @@
                 </div>
               </div>
 
-              <!-- Bottom Interactive Prompt -->
+              <!-- Bottom Interactive Prompt Button -->
               <div class="why-footer-action">
-                <span class="why-action-hint" id="why-action-hint">Click to investigate deeper layer →</span>
+                <button class="why-action-btn" id="why-action-btn" type="button" onclick="advanceWhyLayer(event)">
+                  <span id="why-action-hint">Click to investigate deeper layer →</span>
+                </button>
                 <span class="why-confidence-pill" id="why-confidence-pill" style="display:none;">94% Confidence</span>
               </div>
             </div>

@@ -697,7 +697,7 @@ img { max-width: 100%; display: block; }
 .why-stage-viewport {
   position: relative;
   padding: 60px 48px;
-  min-height: 440px;
+  min-height: 520px;
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
 }
@@ -720,6 +720,7 @@ img { max-width: 100%; display: block; }
 .why-central-panel {
   position: relative; z-index: 10;
   max-width: 780px; width: 100%;
+  min-height: 400px;
   text-align: center;
   padding: 36px 32px;
   border-radius: var(--radius-lg);
@@ -727,22 +728,19 @@ img { max-width: 100%; display: block; }
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all var(--t-med) var(--ease-smooth);
+  transition: opacity 0.14s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .why-central-panel:hover {
   background: rgba(20, 22, 30, 0.85);
   border-color: rgba(0, 245, 160, 0.35);
   box-shadow: 0 12px 40px rgba(0, 245, 160, 0.1);
-  transform: translateY(-2px);
-}
-.why-central-panel:active {
-  transform: scale(0.985);
 }
 .why-central-panel.is-transitioning {
-  opacity: 0.2;
-  transform: scale(0.95);
-  filter: blur(4px);
+  opacity: 0.35;
 }
 .why-central-panel.final-verdict {
   border-color: var(--accent);
@@ -757,6 +755,7 @@ img { max-width: 100%; display: block; }
   color: var(--accent); background: var(--accent-dim);
   padding: 4px 12px; border-radius: var(--radius-pill);
   margin-bottom: 24px;
+  align-self: center;
 }
 
 .why-question-text {
@@ -782,7 +781,7 @@ img { max-width: 100%; display: block; }
 /* Dynamic Evidence Grid Chips */
 .why-evidence-grid {
   display: flex; flex-direction: column; gap: 10px;
-  max-width: 640px; margin: 0 auto 32px;
+  max-width: 640px; width: 100%; margin: 0 auto 32px;
   text-align: left;
 }
 .why-evidence-chip {
@@ -815,19 +814,38 @@ img { max-width: 100%; display: block; }
   font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
 }
 
-/* Bottom Action & Hint */
+/* Bottom Action & Hint Button */
 .why-footer-action {
   display: flex; align-items: center; justify-content: center;
   gap: 14px; flex-wrap: wrap;
+  margin-top: auto;
+}
+.why-action-btn {
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--t-fast) ease;
+}
+.why-action-btn:hover {
+  background: var(--accent);
+  color: var(--bg-base);
+  box-shadow: 0 0 20px var(--accent-dim);
+  transform: translateY(-1px);
 }
 .why-action-hint {
   font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600;
-  color: var(--accent);
+  color: inherit;
   display: inline-flex; align-items: center; gap: 6px;
   transition: all var(--t-fast) ease;
-}
-.why-central-panel:hover .why-action-hint {
-  transform: translateX(4px);
 }
 .why-confidence-pill {
   font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700;

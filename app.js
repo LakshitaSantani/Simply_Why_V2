@@ -432,12 +432,20 @@ const whyLayers = [
 let currentWhyLayerIndex = 0;
 let isWhyTransitioning = false;
 
-function goToWhyLayer(targetIndex) {
+function goToWhyLayer(targetIndex, e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if (isWhyTransitioning || targetIndex === currentWhyLayerIndex) return;
   renderWhyLayer(targetIndex);
 }
 
-function advanceWhyLayer() {
+function advanceWhyLayer(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if (isWhyTransitioning) return;
   const nextIndex = (currentWhyLayerIndex < whyLayers.length - 1) ? currentWhyLayerIndex + 1 : 0;
   renderWhyLayer(nextIndex);
@@ -503,7 +511,7 @@ function renderWhyLayer(index) {
 
     if (panel) panel.classList.remove("is-transitioning");
     isWhyTransitioning = false;
-  }, 180);
+  }, 140);
 }
 
 /* ==========================================================================
