@@ -513,92 +513,177 @@
 
 
     <!-- ================================================================
-         AI DIAGNOSIS CARD
+         AI DIAGNOSIS & REASONING CARD
          ================================================================ -->
     <section class="section section-diagnosis" id="diagnosis">
       <div class="container">
         <div class="diagnosis-wrapper reveal-scale">
-          <div class="diagnosis-card">
+          
+          <!-- Master Product Diagnosis Card -->
+          <div class="diagnosis-card" id="diagnosis-card">
+            
+            <!-- Diagnosis Card Header -->
             <div class="diagnosis-card-header">
-              <span class="eyebrow">✦ SimplyWhy Diagnosis</span>
+              <div class="diag-header-left">
+                <span class="diag-status-dot"></span>
+                <span class="eyebrow" style="margin:0;">✦ SIMPLYWHY DIAGNOSIS</span>
+              </div>
+              <span class="diag-id-tag">INCIDENT #INC-2841</span>
             </div>
+
             <div class="diagnosis-card-body">
 
+              <!-- Incident Title -->
               <div class="diag-section">
-                <div class="diag-label">Incident</div>
-                <div class="diag-value">Checkout Conversion Drop</div>
+                <div class="diag-label">INCIDENT CLASSIFICATION</div>
+                <div class="diag-title">CHECKOUT CONVERSION DROP</div>
               </div>
 
+              <!-- Root Cause -->
               <div class="diag-section">
-                <div class="diag-label">Root Cause</div>
+                <div class="diag-label">IDENTIFIED ROOT CAUSE</div>
                 <div class="diag-value">Payment validation loop introduced in deployment <code>#2841</code></div>
               </div>
 
+              <!-- Confidence Score -->
               <div class="diag-section">
-                <div class="diag-label">Confidence</div>
-                <div class="diag-value" style="font-size:1rem">94%</div>
+                <div class="diag-header-flex">
+                  <div class="diag-label">ATTRIBUTION CONFIDENCE</div>
+                  <div class="diag-confidence-score" id="diag-confidence-score">94%</div>
+                </div>
                 <div class="diag-confidence-bar">
-                  <div class="diag-confidence-fill" id="confidence-fill"></div>
+                  <div class="diag-confidence-fill" id="confidence-fill" style="width: 94%;"></div>
                 </div>
               </div>
 
+              <!-- Core Evidence Checklist -->
               <div class="diag-section">
-                <div class="diag-label">Evidence</div>
+                <div class="diag-label">CORRELATED EVIDENCE STREAMS</div>
                 <div class="diag-evidence-list">
                   <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Session behavior correlation</div>
                   <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Support ticket correlation</div>
-                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Deployment correlation</div>
+                  <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Deployment timing correlation</div>
                   <div class="diag-evidence-item"><span class="diag-evidence-check">✓</span> Error spike detected</div>
                 </div>
               </div>
 
+              <!-- AI Reasoning Callout Box -->
+              <div class="diag-reasoning-box">
+                <div class="reasoning-header">
+                  <span class="reasoning-icon">✦</span>
+                  <span class="reasoning-title">WHY WE'RE CONFIDENT</span>
+                </div>
+                <p class="reasoning-text">
+                  "The failure began 6 minutes after deployment #2841, is concentrated among Safari users, appears in session replays, and matches a 412% increase in validation errors."
+                </p>
+              </div>
+
+              <!-- Expandable Evidence Drawer (Why 94%?) -->
+              <div class="diag-evidence-drawer" id="diag-evidence-drawer">
+                <div class="drawer-inner-header">
+                  <span class="drawer-breakdown-title">WHY 94% CONFIDENCE BREAKDOWN?</span>
+                  <span class="drawer-total-tag">TOTAL: 94%</span>
+                </div>
+
+                <div class="evidence-weight-rows">
+                  <div class="weight-row">
+                    <span class="weight-label">Session correlation</span>
+                    <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 31%;"></div></div>
+                    <span class="weight-val">+31%</span>
+                  </div>
+                  <div class="weight-row">
+                    <span class="weight-label">Support correlation</span>
+                    <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 26%;"></div></div>
+                    <span class="weight-val">+26%</span>
+                  </div>
+                  <div class="weight-row">
+                    <span class="weight-label">Deployment timing</span>
+                    <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 22%;"></div></div>
+                    <span class="weight-val">+22%</span>
+                  </div>
+                  <div class="weight-row">
+                    <span class="weight-label">Error correlation</span>
+                    <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: 15%;"></div></div>
+                    <span class="weight-val">+15%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Estimated Impact -->
               <div class="diag-section">
-                <div class="diag-label">Estimated Impact</div>
+                <div class="diag-label">ESTIMATED REVENUE AT RISK</div>
                 <div class="diag-impact">$42,800 revenue at risk</div>
               </div>
 
-              <div class="diag-section">
-                <div class="diag-actions">
-                  <button class="diag-btn diag-btn-outline" onclick="scrollToSection('#evidence')">View evidence</button>
-                  <button class="diag-btn diag-btn-primary" onclick="scrollToSection('#recommendation')">Fix this →</button>
-                </div>
+              <!-- Diagnosis Action Buttons -->
+              <div class="diag-actions">
+                <button class="diag-btn diag-btn-outline" id="btn-toggle-evidence" onclick="toggleDiagnosisEvidence()">
+                  <span>View evidence breakdown</span> <span id="evidence-btn-arrow">↓</span>
+                </button>
+                <button class="diag-btn diag-btn-primary" onclick="scrollToSection('#recommendation')">Fix this →</button>
               </div>
 
             </div>
           </div>
+
         </div>
       </div>
     </section>
 
 
     <!-- ================================================================
-         RECOMMENDATION
+         RECOMMENDATION & INTERACTIVE RECOVERY SIMULATION
          ================================================================ -->
     <section class="section section-recommendation" id="recommendation">
       <div class="container">
         <div class="rec-wrapper reveal">
           <div class="rec-header">
-            <span class="eyebrow">Recommended Action</span>
-            <h2 class="section-heading" style="margin-top:16px">What should you do?</h2>
+            <span class="eyebrow">✦ Automated Remediation</span>
+            <h2 class="section-heading" style="margin-top:16px">Recommended Action</h2>
           </div>
 
+          <!-- Fix Prescription Box -->
           <div class="rec-fix-box">
-            <div class="rec-fix-label">Recommended Fix</div>
+            <div class="rec-fix-label">RECOMMENDED ACTION</div>
             <p class="rec-fix-text">Roll back deployment <code>#2841</code> and deploy the validation patch to restore Safari checkout functionality.</p>
+            
+            <div class="rec-fix-actions">
+              <button class="btn-simulate-recovery" id="btn-simulate-recovery" onclick="runRecoverySimulation()">
+                <span class="sim-icon">⚡</span> Simulate recovery →
+              </button>
+              <span class="recovery-status-pill" id="recovery-status-pill">
+                <span class="rec-status-dot"></span> RECOVERY PROJECTED
+              </span>
+            </div>
           </div>
 
-          <div class="rec-metrics-grid">
-            <div class="rec-metric">
-              <div class="rec-metric-label">Expected Recovery</div>
-              <div class="rec-metric-value">47% → 66–69%</div>
-              <div class="rec-metric-detail">Checkout conversion</div>
+          <!-- Live Metrics & Simulation Graph Card -->
+          <div class="rec-simulation-card" id="rec-simulation-card">
+            
+            <div class="rec-metrics-grid">
+              <div class="rec-metric">
+                <div class="rec-metric-label">CHECKOUT CONVERSION</div>
+                <div class="rec-metric-value" id="sim-conversion-val">47%</div>
+                <div class="rec-metric-detail" id="sim-conversion-status">Current degraded baseline</div>
+              </div>
+              <div class="rec-metric">
+                <div class="rec-metric-label">ESTIMATED REVENUE RECOVERED</div>
+                <div class="rec-metric-value" id="sim-revenue-val">$0</div>
+                <div class="rec-metric-detail" id="sim-revenue-status">Projected recovery potential</div>
+              </div>
             </div>
-            <div class="rec-metric">
-              <div class="rec-metric-label">Estimated Revenue</div>
-              <div class="rec-metric-value">$38K – $44K</div>
-              <div class="rec-metric-detail">Recovered revenue</div>
+
+            <!-- Recovery Trajectory Sparkline Graph -->
+            <div class="recovery-canvas-wrap">
+              <div class="recovery-canvas-header">
+                <span class="canvas-tag">CONVERSION TRAJECTORY PROJECTION</span>
+                <span class="canvas-legend">47% → 68% RESTORATION</span>
+              </div>
+              <canvas id="recoveryCanvas"></canvas>
             </div>
+
           </div>
+
         </div>
       </div>
     </section>

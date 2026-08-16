@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initSignalNetworkCanvas();
   initEvidenceCanvas();
   initTimelineScroll();
+  initRecoveryCanvas();
   initScanKeyboardAccessibility();
 });
 
@@ -1430,5 +1431,207 @@ function closeNeuralScanAndScroll(selector) {
   setTimeout(() => {
     scrollToSection(selector);
   }, 250);
+}
+
+/* ==========================================================================
+   DIAGNOSIS EVIDENCE DRAWER TOGGLE
+   ========================================================================== */
+function toggleDiagnosisEvidence() {
+  const drawer = document.getElementById("diag-evidence-drawer");
+  const arrow = document.getElementById("evidence-btn-arrow");
+  if (!drawer) return;
+
+  const isExpanded = drawer.classList.contains("expanded");
+  drawer.classList.toggle("expanded", !isExpanded);
+  if (arrow) {
+    arrow.textContent = isExpanded ? "↓" : "↑";
+  }
+}
+
+/* ==========================================================================
+   RECOVERY SIMULATION CONTROLLER & TRAJECTORY GRAPH
+   ========================================================================== */
+let recoverySimulationProgress = 0; // 0 (baseline/drop) -> 1 (recovered)
+let isRecoverySimulating = false;
+let recoveryCanvasAnim = null;
+
+function initRecoveryCanvas() {
+  const canvas = document.getElementById("recoveryCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * (window.devicePixelRatio || 1);
+    canvas.height = rect.height * (window.devicePixelRatio || 1);
+    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function draw() {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const pad = 24;
+    const plotW = w - pad * 2;
+    const plotH = h - pad * 2;
+
+    // Grid baseline
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+
+    // 68% normal baseline line
+    const y68 = pad + plotH * (1 - 0.68);
+    ctx.beginPath();
+    ctx.moveTo(pad, y68);
+    ctx.lineTo(w - pad, y68);
+    ctx.stroke();
+
+    // 47% degraded line
+    const y47 = pad + plotH * (1 - 0.47);
+    ctx.beginPath();
+    ctx.moveTo(pad, y47);
+    ctx.lineTo(w - pad, y47);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // Curve points:
+    // Pt 0: 09:41 (68%)
+    // Pt 1: 10:12 (68%)
+    // Pt 2: 10:18 (52%)
+    // Pt 3: 10:27 (47% - trough)
+    // Pt 4: 10:34 (47% -> 68% based on recoverySimulationProgress)
+    // Pt 5: Recovery (68% based on recoverySimulationProgress)
+
+    const points = [
+      { x: pad, y: y68, label: "09:41" },
+      { x: pad + plotW * 0.25, y: y68, label: "10:12" },
+      { x: pad + plotW * 0.42, y: pad + plotH * (1 - 0.54), label: "10:18" },
+      { x: pad + plotW * 0.6, y: y47, label: "10:27" },
+      { 
+        x: pad + plotW * 0.8, 
+        y: y47 - (y47 - (pad + plotH * (1 - 0.62))) * recoverySimulationProgress, 
+        label: "PATCH" 
+      },
+      { 
+        x: w - pad, 
+        y: y47 - (y47 - y68) * recoverySimulationProgress, 
+        label: "RESTORED" 
+      }
+    ];
+
+    // Fill gradient area under curve
+    const grad = ctx.createLinearGradient(0, pad, 0, h - pad);
+    if (recoverySimulationProgress > 0.5) {
+      grad.addColorStop(0, 'rgba(0, 245, 160, 0.25)');
+      grad.addColorStop(1, 'rgba(0, 245, 160, 0.0)');
+    } else {
+      grad.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
+      grad.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
+    }
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cx = (prev.x + curr.x) / 2;
+      ctx.bezierCurveTo(cx, prev.y, cx, curr.y, curr.x, curr.y);
+    }
+    ctx.lineTo(w - pad, h - pad);
+    ctx.lineTo(pad, h - pad);
+    ctx.closePath();
+    ctx.fill();
+
+    // Draw stroke curve
+    ctx.strokeStyle = recoverySimulationProgress > 0.5 ? '#00F5A0' : '#EF4444';
+    ctx.lineWidth = 2.4;
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = 10;
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cx = (prev.x + curr.x) / 2;
+      ctx.bezierCurveTo(cx, prev.y, cx, curr.y, curr.x, curr.y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Draw key vertices dots
+    points.forEach((pt, idx) => {
+      ctx.fillStyle = (idx >= 4 && recoverySimulationProgress > 0.5) ? '#00F5A0' : (idx >= 2 && idx <= 3 ? '#EF4444' : '#FAFAFA');
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    recoveryCanvasAnim = requestAnimationFrame(draw);
+  }
+
+  draw();
+}
+
+function runRecoverySimulation() {
+  if (isRecoverySimulating) return;
+  isRecoverySimulating = true;
+
+  const btn = document.getElementById("btn-simulate-recovery");
+  const convVal = document.getElementById("sim-conversion-val");
+  const convStatus = document.getElementById("sim-conversion-status");
+  const revVal = document.getElementById("sim-revenue-val");
+  const revStatus = document.getElementById("sim-revenue-status");
+  const statusPill = document.getElementById("recovery-status-pill");
+
+  if (btn) btn.classList.add("is-simulating");
+
+  const startTime = performance.now();
+  const duration = 2000;
+
+  function step(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+
+    recoverySimulationProgress = ease;
+
+    // Conversion rate counter: 47% -> 68%
+    const currentConv = Math.floor(47 + ease * (68 - 47));
+    if (convVal) convVal.textContent = `${currentConv}%`;
+
+    // Revenue recovered counter: $0 -> $42,800
+    const currentRev = Math.floor(ease * 42800);
+    if (revVal) revVal.textContent = `$${currentRev.toLocaleString()}`;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      if (convVal) {
+        convVal.textContent = "68%";
+        convVal.classList.add("recovered");
+      }
+      if (convStatus) convStatus.textContent = "Restored to normal baseline (68%)";
+
+      if (revVal) {
+        revVal.textContent = "$38K – $44K";
+        revVal.classList.add("recovered");
+      }
+      if (revStatus) revStatus.textContent = "$42,800 revenue restored";
+
+      if (statusPill) statusPill.classList.add("visible");
+      if (btn) btn.classList.remove("is-simulating");
+      isRecoverySimulating = false;
+    }
+  }
+
+  requestAnimationFrame(step);
 }
 
