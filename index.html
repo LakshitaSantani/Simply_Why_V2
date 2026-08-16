@@ -348,67 +348,165 @@
 
 
     <!-- ================================================================
-         INCIDENT TIMELINE
+         INCIDENT TIMELINE & SIMULATED SESSION REPLAY
          ================================================================ -->
     <section class="section section-timeline" id="timeline">
       <div class="container">
         <div class="timeline-header reveal">
-          <span class="eyebrow">Incident Timeline</span>
+          <span class="eyebrow">✦ Incident Reconstruction</span>
           <h2 class="section-heading" style="margin-top:16px">See exactly when<br>things went wrong.</h2>
+          <p class="section-sub">Chronological reconstruction of how a single commit cascaded into a 31% revenue drop.</p>
+          
+          <div class="timeline-actions">
+            <button class="btn-replay-incident" id="btn-replay-incident" onclick="replayIncidentSequence()">
+              <span class="play-icon">▶</span> Replay this incident
+            </button>
+          </div>
         </div>
 
-        <div class="timeline-track" id="timeline-track">
-          <div class="timeline-line"></div>
-          <div class="timeline-line-fill" id="timeline-fill"></div>
+        <div class="timeline-split-grid">
+          
+          <!-- Left Column: Chronological Incident Track -->
+          <div class="timeline-track-col reveal">
+            <div class="timeline-track" id="timeline-track">
+              <div class="timeline-line"></div>
+              <div class="timeline-line-fill" id="timeline-fill"></div>
 
-          <div class="timeline-event" data-index="0">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">09:41 AM</div>
-            <div class="timeline-label">Normal conversion rate</div>
-            <div class="timeline-detail">Checkout funnel performing at baseline</div>
+              <div class="timeline-event" data-step="0">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">09:41 AM</div>
+                <div class="timeline-label">Normal conversion rate</div>
+                <div class="timeline-detail">Checkout funnel performing at baseline (68% completion).</div>
+              </div>
+
+              <div class="timeline-event critical" data-step="1">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:12 AM</div>
+                <div class="timeline-label">Deployment #2841</div>
+                <div class="timeline-detail">Payment validation update pushed to production by @payments-core.</div>
+              </div>
+
+              <div class="timeline-event critical" data-step="2">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:18 AM</div>
+                <div class="timeline-label">First Safari failures</div>
+                <div class="timeline-detail">Validation regex loop triggered on Safari native autofill synthetic events.</div>
+              </div>
+
+              <div class="timeline-event critical" data-step="3">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:23 AM</div>
+                <div class="timeline-label">Rage clicks increase (↑ 42%)</div>
+                <div class="timeline-detail">1,842 users repeatedly clicking unresponsive payment submit trigger.</div>
+              </div>
+
+              <div class="timeline-event critical" data-step="4">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:27 AM</div>
+                <div class="timeline-label">Checkout conversion drops</div>
+                <div class="timeline-detail">Funnel conversion plunges from 68% → 47% (-$42.8K GMV run-rate).</div>
+              </div>
+
+              <div class="timeline-event critical" data-step="5">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:31 AM</div>
+                <div class="timeline-label">Support tickets increase (+283)</div>
+                <div class="timeline-detail">Customer complaints flood in: "Payment submit button unresponsive".</div>
+              </div>
+
+              <div class="timeline-event root-cause" data-step="6">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">10:34 AM</div>
+                <div class="timeline-label">SimplyWhy detects correlation</div>
+                <div class="timeline-detail">Cross-stream AI correlates Git #2841 with Safari checkout loop (94% confidence).</div>
+              </div>
+            </div>
+
+            <!-- Moment Product Broke Callout -->
+            <div class="timeline-moment-card" id="timeline-moment-card">
+              <div class="moment-tag">CRITICAL VERDICT</div>
+              <div class="moment-quote">"This is the moment the product broke."</div>
+              <div class="moment-culprit">Deployment #2841 · Pushed at 10:12 AM</div>
+            </div>
           </div>
 
-          <div class="timeline-event critical" data-index="1">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:12 AM</div>
-            <div class="timeline-label">Deployment #2841</div>
-            <div class="timeline-detail">Payment validation update pushed to production</div>
+          <!-- Right Column: Simulated Browser Session Replay -->
+          <div class="session-replay-col reveal-scale">
+            <div class="session-browser-window" id="session-browser-window">
+              <!-- Window Chrome Header -->
+              <div class="browser-chrome">
+                <div class="browser-dots">
+                  <span class="dot dot-red"></span>
+                  <span class="dot dot-amber"></span>
+                  <span class="dot dot-green"></span>
+                </div>
+                <div class="browser-url-bar">
+                  <span class="url-lock">🔒</span> https://store.acme.com/checkout/pay
+                </div>
+                <div class="browser-badge">SESSION #8491</div>
+              </div>
+
+              <!-- Browser Form Viewport -->
+              <div class="browser-viewport" id="browser-viewport">
+                <!-- Virtual Interactive Cursor -->
+                <div class="virtual-cursor" id="virtual-cursor">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 3L18 13L11 15L8 21L4 3Z" fill="#00F5A0" stroke="#000" stroke-width="1.5"/>
+                  </svg>
+                  <div class="cursor-click-pulse" id="cursor-pulse"></div>
+                </div>
+
+                <div class="replay-form-card">
+                  <div class="replay-form-header">
+                    <span class="replay-title">PAYMENT AUTHORIZATION</span>
+                    <span class="replay-total">$149.00 USD</span>
+                  </div>
+
+                  <div class="replay-field">
+                    <label class="replay-label">Card Number</label>
+                    <div class="replay-input">•••• •••• •••• 4218</div>
+                  </div>
+
+                  <div class="replay-row">
+                    <div class="replay-field">
+                      <label class="replay-label">Expiry</label>
+                      <div class="replay-input">09 / 28</div>
+                    </div>
+                    <div class="replay-field">
+                      <label class="replay-label">CVV</label>
+                      <div class="replay-input">•••</div>
+                    </div>
+                  </div>
+
+                  <button class="replay-submit-btn" id="replay-submit-btn" type="button">
+                    <span class="btn-text">COMPLETE PAYMENT</span>
+                    <span class="btn-spinner" id="btn-spinner"></span>
+                  </button>
+
+                  <!-- Rage Click Alert -->
+                  <div class="rage-click-alert" id="rage-click-alert">
+                    <span class="alert-icon">⚠️</span>
+                    <div class="alert-content">
+                      <strong>RAGE CLICK DETECTED</strong>
+                      <span>Button unresponsive after multiple rapid submissions.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Replay Footer Telemetry -->
+              <div class="session-replay-footer">
+                <div class="replay-stat-row">
+                  <span class="stat-icon">👥</span>
+                  <span class="stat-text"><strong>1,842 users</strong> experienced this exact behavior.</span>
+                </div>
+                <button class="btn-trigger-replay" onclick="runSessionReplayAnimation()">
+                  <span>↺</span> Re-run Replay
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div class="timeline-event critical" data-index="2">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:18 AM</div>
-            <div class="timeline-label">First Safari failures</div>
-            <div class="timeline-detail">Validation loop triggered on Safari autofill</div>
-          </div>
-
-          <div class="timeline-event" data-index="3">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:23 AM</div>
-            <div class="timeline-label">Rage clicks ↑ 42%</div>
-            <div class="timeline-detail">Users repeatedly clicking payment submit button</div>
-          </div>
-
-          <div class="timeline-event critical" data-index="4">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:27 AM</div>
-            <div class="timeline-label">Checkout conversion ↓ 31%</div>
-            <div class="timeline-detail">Conversion drops from 68% to 47%</div>
-          </div>
-
-          <div class="timeline-event" data-index="5">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:31 AM</div>
-            <div class="timeline-label">Support tickets ↑ 283</div>
-            <div class="timeline-detail">Users reporting checkout failures</div>
-          </div>
-
-          <div class="timeline-event root-cause" data-index="6">
-            <div class="timeline-dot"></div>
-            <div class="timeline-time">10:34 AM</div>
-            <div class="timeline-label">SimplyWhy detects root cause</div>
-            <div class="timeline-detail">94% confidence — deployment #2841 identified</div>
-          </div>
         </div>
       </div>
     </section>

@@ -977,8 +977,16 @@ function initEvidenceCanvas() {
 }
 
 /* ==========================================================================
-   INCIDENT TIMELINE SCROLL ANIMATION
+   INCIDENT TIMELINE & REPLAY CONTROLLER
    ========================================================================== */
+let incidentReplayTimers = [];
+let isIncidentReplaying = false;
+
+function clearIncidentReplayTimers() {
+  incidentReplayTimers.forEach(t => clearTimeout(t));
+  incidentReplayTimers = [];
+}
+
 function initTimelineScroll() {
   const timeline = document.getElementById("timeline");
   const fill = document.getElementById("timeline-fill");
@@ -992,14 +1000,187 @@ function initTimelineScroll() {
         events.forEach((ev, i) => {
           setTimeout(() => {
             ev.classList.add("visible");
-          }, i * 220);
+          }, i * 200 + 100);
         });
+        
+        // Auto-run session replay once in view
+        setTimeout(() => {
+          runSessionReplayAnimation();
+        }, 1200);
+
         observer.unobserve(timeline);
       }
     });
-  }, { threshold: 0.2 });
+  }, { threshold: 0.15 });
 
   observer.observe(timeline);
+}
+
+function replayIncidentSequence() {
+  if (isIncidentReplaying) return;
+  isIncidentReplaying = true;
+  clearIncidentReplayTimers();
+
+  const btn = document.getElementById("btn-replay-incident");
+  const fill = document.getElementById("timeline-fill");
+  const events = document.querySelectorAll(".timeline-event");
+  const momentCard = document.getElementById("timeline-moment-card");
+
+  if (btn) btn.classList.add("is-replaying");
+  if (momentCard) momentCard.classList.remove("visible");
+
+  events.forEach(ev => {
+    ev.classList.remove("active-step");
+    ev.classList.add("visible");
+  });
+
+  if (fill) fill.style.height = "0%";
+
+  events.forEach((ev, i) => {
+    const t = setTimeout(() => {
+      events.forEach(e => e.classList.remove("active-step"));
+      ev.classList.add("active-step");
+
+      if (fill) {
+        const pct = Math.min((i / (events.length - 1)) * 100, 100);
+        fill.style.height = `${pct}%`;
+      }
+
+      // If at suspect commit #2841 or final step, highlight
+      if (i === 1 || i === 6) {
+        ev.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // At final step
+      if (i === events.length - 1) {
+        if (momentCard) {
+          const tCard = setTimeout(() => {
+            momentCard.classList.add("visible");
+          }, 400);
+          incidentReplayTimers.push(tCard);
+        }
+
+        const tDone = setTimeout(() => {
+          isIncidentReplaying = false;
+          if (btn) btn.classList.remove("is-replaying");
+        }, 3000);
+        incidentReplayTimers.push(tDone);
+      }
+
+    }, i * 750 + 200);
+
+    incidentReplayTimers.push(t);
+  });
+}
+
+/* ==========================================================================
+   SIMULATED BROWSER SESSION REPLAY CONTROLLER
+   ========================================================================== */
+let sessionReplayTimers = [];
+let isSessionReplaying = false;
+
+function clearSessionReplayTimers() {
+  sessionReplayTimers.forEach(t => clearTimeout(t));
+  sessionReplayTimers = [];
+}
+
+function runSessionReplayAnimation() {
+  if (isSessionReplaying) return;
+  isSessionReplaying = true;
+  clearSessionReplayTimers();
+
+  const cursor = document.getElementById("virtual-cursor");
+  const pulse = document.getElementById("cursor-pulse");
+  const btn = document.getElementById("replay-submit-btn");
+  const spinner = document.getElementById("btn-spinner");
+  const alert = document.getElementById("rage-click-alert");
+
+  // Reset state
+  if (cursor) {
+    cursor.style.top = "20px";
+    cursor.style.left = "20px";
+  }
+  if (btn) {
+    btn.className = "replay-submit-btn";
+  }
+  if (spinner) spinner.classList.remove("active");
+  if (alert) alert.classList.remove("visible");
+
+  // Step 1: Cursor moves to submit button
+  const t1 = setTimeout(() => {
+    if (cursor) {
+      cursor.style.top = "248px";
+      cursor.style.left = "180px";
+    }
+
+    // Step 2: 1st Click
+    const t2 = setTimeout(() => {
+      if (pulse) {
+        pulse.classList.remove("pulse-active");
+        void pulse.offsetWidth;
+        pulse.classList.add("pulse-active");
+      }
+      if (btn) btn.classList.add("btn-clicked");
+      if (spinner) spinner.classList.add("active");
+
+      const t2b = setTimeout(() => {
+        if (btn) btn.classList.remove("btn-clicked");
+        if (spinner) spinner.classList.remove("active");
+      }, 500);
+      sessionReplayTimers.push(t2b);
+
+      // Step 3: 2nd Click (Nothing happens)
+      const t3 = setTimeout(() => {
+        if (pulse) {
+          pulse.classList.remove("pulse-active");
+          void pulse.offsetWidth;
+          pulse.classList.add("pulse-active");
+        }
+        if (btn) btn.classList.add("btn-clicked");
+        const t3b = setTimeout(() => {
+          if (btn) btn.classList.remove("btn-clicked");
+        }, 200);
+        sessionReplayTimers.push(t3b);
+
+        // Step 4: Rapid Rage Clicks (3 clicks in rapid succession)
+        const t4 = setTimeout(() => {
+          let count = 0;
+          const rageInterval = setInterval(() => {
+            count++;
+            if (pulse) {
+              pulse.classList.remove("pulse-active");
+              void pulse.offsetWidth;
+              pulse.classList.add("pulse-active");
+            }
+            if (btn) {
+              btn.classList.add("btn-clicked");
+              setTimeout(() => btn.classList.remove("btn-clicked"), 100);
+            }
+
+            if (count >= 3) {
+              clearInterval(rageInterval);
+
+              // Step 5: Rage Click Detected Alert
+              const t5 = setTimeout(() => {
+                if (btn) btn.classList.add("btn-stuck");
+                if (alert) alert.classList.add("visible");
+                isSessionReplaying = false;
+              }, 300);
+              sessionReplayTimers.push(t5);
+            }
+          }, 180);
+
+        }, 700);
+        sessionReplayTimers.push(t4);
+
+      }, 1000);
+      sessionReplayTimers.push(t3);
+
+    }, 800);
+    sessionReplayTimers.push(t2);
+
+  }, 400);
+  sessionReplayTimers.push(t1);
 }
 
 /* ==========================================================================
