@@ -73,10 +73,12 @@ async function handleWaitlistSubmit(e) {
 document.addEventListener("DOMContentLoaded", () => {
   initNavbarScroll();
   initScrollReveals();
+  initProductHealthSparklines();
   initHeroVizCanvas();
   initEvidenceCanvas();
   initTimelineScroll();
   initSignalsInteractivity();
+  initScanKeyboardAccessibility();
 });
 
 /* ---------- NAVBAR SCROLL ---------- */
@@ -118,6 +120,107 @@ function initScrollReveals() {
 }
 
 /* ==========================================================================
+   PRODUCT HEALTH SPARKLINES & INTERACTIVE HOVER
+   ========================================================================== */
+let activeHeroMetric = 'checkout';
+
+function initProductHealthSparklines() {
+  drawSparkline('spark-conv', [22, 21, 20, 19.5, 19, 18.4], '#EF4444');
+  drawSparkline('spark-checkout', [12, 14, 15, 18, 25, 31.2], '#EF4444');
+  drawSparkline('spark-rage', [8, 9, 11, 16, 28, 42.1], '#EF4444');
+}
+
+function drawSparkline(canvasId, dataPoints, strokeColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const width = 90;
+  const height = 24;
+
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const min = Math.min(...dataPoints) * 0.9;
+  const max = Math.max(...dataPoints) * 1.1;
+  const stepX = (width - 8) / (dataPoints.length - 1);
+
+  ctx.clearRect(0, 0, width, height);
+
+  // Gradient fill under line
+  const grad = ctx.createLinearGradient(0, 0, 0, height);
+  grad.addColorStop(0, 'rgba(239, 68, 68, 0.25)');
+  grad.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
+
+  ctx.beginPath();
+  dataPoints.forEach((val, i) => {
+    const x = 4 + i * stepX;
+    const y = height - 4 - ((val - min) / (max - min)) * (height - 8);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  // Stroke line
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+
+  // Fill path
+  ctx.lineTo(4 + (dataPoints.length - 1) * stepX, height);
+  ctx.lineTo(4, height);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Glowing end dot
+  const lastX = 4 + (dataPoints.length - 1) * stepX;
+  const lastY = height - 4 - ((dataPoints[dataPoints.length - 1] - min) / (max - min)) * (height - 8);
+  ctx.fillStyle = strokeColor;
+  ctx.shadowColor = strokeColor;
+  ctx.shadowBlur = 6;
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function handleMetricHover(metricType) {
+  const group = document.getElementById('viz-metrics-group');
+  if (group) group.classList.add('is-hovering');
+
+  const rows = document.querySelectorAll('.viz-metric-row');
+  rows.forEach(row => {
+    const isTarget = row.getAttribute('data-metric') === metricType;
+    row.classList.toggle('is-active', isTarget);
+  });
+
+  activeHeroMetric = metricType;
+
+  // Highlight or expand drilldown panel
+  const drilldown = document.getElementById('viz-drilldown-panel');
+  if (drilldown) {
+    if (metricType === 'checkout') {
+      drilldown.style.borderColor = 'rgba(0, 245, 160, 0.4)';
+      drilldown.style.boxShadow = '0 0 20px rgba(0, 245, 160, 0.15)';
+    } else {
+      drilldown.style.borderColor = 'var(--border)';
+      drilldown.style.boxShadow = 'none';
+    }
+  }
+}
+
+function handleMetricLeave() {
+  const group = document.getElementById('viz-metrics-group');
+  if (group) group.classList.remove('is-hovering');
+
+  const rows = document.querySelectorAll('.viz-metric-row');
+  rows.forEach(row => row.classList.remove('is-active'));
+
+  activeHeroMetric = 'checkout';
+}
+
+/* ==========================================================================
    HERO PRODUCT VISUALIZATION CANVAS
    Shows dynamic graph: Session & Support signals flowing into Correlation -> Deployment -> Root Cause
    ========================================================================== */
@@ -128,8 +231,8 @@ function initHeroVizCanvas() {
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * window.devicePixelRatio || 400;
-    canvas.height = rect.height * window.devicePixelRatio || 180;
+    canvas.width = rect.width * (window.devicePixelRatio || 1) || 400;
+    canvas.height = rect.height * (window.devicePixelRatio || 1) || 150;
     ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
   }
   resize();
@@ -138,34 +241,35 @@ function initHeroVizCanvas() {
   let frame = 0;
 
   function draw() {
-    const w = canvas.getBoundingClientRect().width;
-    const h = canvas.getBoundingClientRect().height;
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    frame += 0.02;
+    frame += 0.025;
 
     // Node coordinates
     const nodes = [
-      { id: 'session', label: 'SESSION', x: w * 0.22, y: 30, color: '#38BDF8' },
-      { id: 'support', label: 'SUPPORT', x: w * 0.78, y: 30, color: '#8B5CF6' },
-      { id: 'corr', label: 'CORRELATION', x: w * 0.5, y: 78, color: '#F59E0B' },
-      { id: 'deploy', label: 'DEPLOY #2841', x: w * 0.5, y: 124, color: '#EF4444' },
-      { id: 'root', label: 'ROOT CAUSE', x: w * 0.5, y: 162, color: '#00F5A0' }
+      { id: 'session', label: 'SESSION', x: w * 0.2, y: 24, color: '#38BDF8' },
+      { id: 'support', label: 'SUPPORT', x: w * 0.8, y: 24, color: '#8B5CF6' },
+      { id: 'corr', label: 'CORRELATION', x: w * 0.5, y: 64, color: '#F59E0B' },
+      { id: 'deploy', label: 'DEPLOY #2841', x: w * 0.5, y: 104, color: '#EF4444' },
+      { id: 'root', label: 'ROOT CAUSE', x: w * 0.5, y: 136, color: '#00F5A0' }
     ];
 
-    // Draw connecting paths
+    // Connecting paths
     ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 4]);
 
     // Session -> Correlation
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
     ctx.beginPath();
     ctx.moveTo(nodes[0].x, nodes[0].y);
     ctx.lineTo(nodes[2].x, nodes[2].y);
     ctx.stroke();
 
     // Support -> Correlation
-    ctx.strokeStyle = 'rgba(139, 92, 246, 0.4)';
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.35)';
     ctx.beginPath();
     ctx.moveTo(nodes[1].x, nodes[1].y);
     ctx.lineTo(nodes[2].x, nodes[2].y);
@@ -218,23 +322,27 @@ function initHeroVizCanvas() {
     ctx.shadowBlur = 0;
 
     // Draw Nodes
-    nodes.forEach((n, i) => {
-      ctx.fillStyle = '#111113';
-      ctx.strokeStyle = n.color;
-      ctx.lineWidth = 1;
+    nodes.forEach((n) => {
+      const isHighlighted = (activeHeroMetric === 'checkout' && (n.id === 'deploy' || n.id === 'root')) ||
+                            (activeHeroMetric === 'conversion' && n.id === 'session') ||
+                            (activeHeroMetric === 'rage' && n.id === 'corr');
+
+      ctx.fillStyle = isHighlighted ? 'rgba(25, 27, 35, 0.95)' : '#111113';
+      ctx.strokeStyle = isHighlighted ? '#00F5A0' : n.color;
+      ctx.lineWidth = isHighlighted ? 1.8 : 1;
       
-      const padX = 10, padY = 4;
-      ctx.font = '600 9px "JetBrains Mono", monospace';
+      const padX = 8, padY = 3;
+      ctx.font = '600 8.5px "JetBrains Mono", monospace';
       const textWidth = ctx.measureText(n.label).width;
       const boxW = textWidth + padX * 2;
-      const boxH = 18;
+      const boxH = 16;
 
       ctx.beginPath();
       ctx.roundRect(n.x - boxW / 2, n.y - boxH / 2, boxW, boxH, 4);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = n.color;
+      ctx.fillStyle = isHighlighted ? '#00F5A0' : n.color;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(n.label, n.x, n.y);
@@ -555,15 +663,46 @@ function initTimelineScroll() {
 }
 
 /* ==========================================================================
-   NEURAL SCAN 5-STAGE STATE MACHINE
+   NEURAL SCAN 5-STAGE STATE MACHINE & MODAL CONTROLLER
    ========================================================================== */
-let scanTimer = null;
+let scanTimeouts = [];
 let scanCanvasAnim = null;
+
+function clearAllScanTimers() {
+  scanTimeouts.forEach(t => clearTimeout(t));
+  scanTimeouts = [];
+  if (scanCanvasAnim) {
+    cancelAnimationFrame(scanCanvasAnim);
+    scanCanvasAnim = null;
+  }
+}
+
+function initScanKeyboardAccessibility() {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const overlay = document.getElementById("neural-scan");
+      if (overlay && overlay.classList.contains("active")) {
+        closeNeuralScan();
+      }
+    }
+  });
+
+  // Close when clicking directly on the backdrop
+  const overlay = document.getElementById("neural-scan");
+  if (overlay) {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        closeNeuralScan();
+      }
+    });
+  }
+}
 
 function openNeuralScan() {
   const overlay = document.getElementById("neural-scan");
   if (!overlay) return;
 
+  clearAllScanTimers();
   overlay.classList.add("active");
   document.body.style.overflow = "hidden";
 
@@ -574,11 +713,9 @@ function closeNeuralScan() {
   const overlay = document.getElementById("neural-scan");
   if (!overlay) return;
 
+  clearAllScanTimers();
   overlay.classList.remove("active");
   document.body.style.overflow = "";
-
-  if (scanTimer) clearTimeout(scanTimer);
-  if (scanCanvasAnim) cancelAnimationFrame(scanCanvasAnim);
 }
 
 function showScanStage(stageNum) {
@@ -589,65 +726,106 @@ function showScanStage(stageNum) {
 }
 
 function runScanSequence() {
-  // STAGE 1: Scanning Signals checklist
-  showScanStage(1);
+  // RESET ALL STAGES STATE
+  for (let i = 1; i <= 5; i++) {
+    const stage = document.getElementById(`scan-stage-${i}`);
+    if (stage) stage.classList.remove("active");
+  }
+
+  // Reset Checklist Items
   const checkItems = document.querySelectorAll(".scan-check-item");
   checkItems.forEach(item => {
     item.className = "scan-check-item";
+    const icon = item.querySelector(".check-icon");
+    if (icon) icon.textContent = "○";
   });
+
+  // Reset Chain Items
+  const chainItems = document.querySelectorAll(".scan-chain-item");
+  const chainArrows = document.querySelectorAll(".scan-chain-arrow");
+  chainItems.forEach(el => el.classList.remove("visible"));
+  chainArrows.forEach(el => el.classList.remove("visible"));
+
+  // Reset Stats
+  ['stat-sessions', 'stat-conversations', 'stat-deploys', 'stat-anomalies'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "0";
+  });
+
+  // ----------------------------------------------------
+  // STATE 1: ANALYZING YOUR PRODUCT...
+  // ----------------------------------------------------
+  showScanStage(1);
 
   checkItems.forEach((item, index) => {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       item.classList.add("scanning");
-      setTimeout(() => {
+      const icon = item.querySelector(".check-icon");
+
+      const t2 = setTimeout(() => {
         item.classList.remove("scanning");
         item.classList.add("checked");
-      }, 350);
-    }, index * 400);
+        if (icon) icon.textContent = "✓";
+      }, 320);
+      scanTimeouts.push(t2);
+
+    }, index * 380 + 100);
+    scanTimeouts.push(t);
   });
 
-  // STAGE 2: Particle Clustering & Stats count up
-  scanTimer = setTimeout(() => {
+  // ----------------------------------------------------
+  // STATE 2: CORRELATING SIGNALS...
+  // ----------------------------------------------------
+  const tState2 = setTimeout(() => {
     showScanStage(2);
     startScanParticleCanvas();
-    animateCounter("stat-sessions", 12481, 1200);
-    animateCounter("stat-conversations", 2341, 1200);
-    animateCounter("stat-deploys", 7, 1000);
-    animateCounter("stat-anomalies", 43, 1100);
 
-    // STAGE 3: Anomaly Detected
-    scanTimer = setTimeout(() => {
+    animateCounter("stat-sessions", 12481, 1400);
+    animateCounter("stat-conversations", 2341, 1400);
+    animateCounter("stat-deploys", 7, 1000);
+    animateCounter("stat-anomalies", 43, 1200);
+
+    // ----------------------------------------------------
+    // STATE 3: ANOMALY DETECTED
+    // ----------------------------------------------------
+    const tState3 = setTimeout(() => {
       showScanStage(3);
 
-      // STAGE 4: Causal Chain
-      scanTimer = setTimeout(() => {
+      // ----------------------------------------------------
+      // STATE 4: CAUSAL PROPAGATION CHAIN
+      // ----------------------------------------------------
+      const tState4 = setTimeout(() => {
         showScanStage(4);
-        const chainItems = document.querySelectorAll(".scan-chain-item");
-        const chainArrows = document.querySelectorAll(".scan-chain-arrow");
 
         chainItems.forEach((el, i) => {
-          setTimeout(() => {
+          const tChain = setTimeout(() => {
             el.classList.add("visible");
             if (chainArrows[i]) chainArrows[i].classList.add("visible");
-          }, i * 380);
+          }, i * 360 + 100);
+          scanTimeouts.push(tChain);
         });
 
-        // STAGE 5: Root Cause Found
-        scanTimer = setTimeout(() => {
+        // ----------------------------------------------------
+        // STATE 5: ROOT CAUSE FOUND
+        // ----------------------------------------------------
+        const tState5 = setTimeout(() => {
           showScanStage(5);
-        }, 2200);
+        }, 2100);
+        scanTimeouts.push(tState5);
 
       }, 1600);
+      scanTimeouts.push(tState4);
 
     }, 2400);
+    scanTimeouts.push(tState3);
 
-  }, 2800);
+  }, 2700);
+  scanTimeouts.push(tState2);
 }
 
 function animateCounter(elemId, targetVal, duration) {
   const el = document.getElementById(elemId);
   if (!el) return;
-  let start = 0;
   const startTime = performance.now();
 
   function step(now) {
@@ -670,18 +848,18 @@ function startScanParticleCanvas() {
   canvas.height = window.innerHeight;
 
   const particles = [];
-  const total = 140;
+  const total = 120;
 
   for (let i = 0; i < total; i++) {
     particles.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      targetX: canvas.width / 2 + (Math.random() - 0.5) * 200,
-      targetY: canvas.height / 2 + (Math.random() - 0.5) * 160,
-      vx: (Math.random() - 0.5) * 1.5,
-      vy: (Math.random() - 0.5) * 1.5,
-      size: Math.random() * 2 + 1,
-      color: Math.random() > 0.6 ? '#00F5A0' : (Math.random() > 0.5 ? '#38BDF8' : '#8B5CF6'),
+      targetX: canvas.width / 2 + (Math.random() - 0.5) * 260,
+      targetY: canvas.height / 2 + (Math.random() - 0.5) * 180,
+      vx: (Math.random() - 0.5) * 1.2,
+      vy: (Math.random() - 0.5) * 1.2,
+      size: Math.random() * 2 + 1.2,
+      color: Math.random() > 0.5 ? '#00F5A0' : (Math.random() > 0.4 ? '#38BDF8' : '#8B5CF6'),
       alpha: Math.random() * 0.7 + 0.3
     });
   }
@@ -690,8 +868,8 @@ function startScanParticleCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach(p => {
-      p.x += (p.targetX - p.x) * 0.02 + p.vx;
-      p.y += (p.targetY - p.y) * 0.02 + p.vy;
+      p.x += (p.targetX - p.x) * 0.025 + p.vx;
+      p.y += (p.targetY - p.y) * 0.025 + p.vy;
 
       ctx.save();
       ctx.globalAlpha = p.alpha;

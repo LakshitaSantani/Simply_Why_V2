@@ -228,24 +228,45 @@ img { max-width: 100%; display: block; }
 }
 .btn-ghost:hover { color: var(--text-primary); }
 
-/* Hero Product Visualization */
+/* ==========================================================================
+   HERO PRODUCT HEALTH VISUALIZATION
+   ========================================================================== */
 .hero-viz {
   position: relative;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 1px 1px var(--border-subtle);
+  transition: border-color var(--t-med) ease, box-shadow var(--t-med) ease;
 }
+.hero-viz:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .viz-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.015);
+}
+.viz-header-left {
+  display: flex; align-items: center; gap: 12px;
 }
 .viz-brand {
-  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600;
+  font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--text-tertiary);
+  color: var(--text-primary);
 }
+.viz-tab {
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-muted); padding: 3px 8px; border-radius: 4px;
+}
+.viz-tab.active {
+  color: var(--accent); background: var(--accent-dim);
+}
+
 .viz-status {
   display: flex; align-items: center; gap: 6px;
   font-family: var(--font-mono); font-size: 0.65rem;
@@ -254,39 +275,130 @@ img { max-width: 100%; display: block; }
 .viz-status-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-.viz-body { padding: 24px 20px; }
+.viz-body { padding: 20px; }
 
-.viz-section-label {
-  font-family: var(--font-mono); font-size: 0.65rem;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: 16px;
+/* Interactive Metrics Group with Hover Dimming */
+.viz-metrics {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 18px;
 }
-.viz-metrics { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
 .viz-metric-row {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; border-radius: var(--radius-sm);
+  padding: 12px 14px; border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  user-select: none;
+}
+.viz-metric-row:hover, .viz-metric-row.is-active {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
+}
+.viz-metric-row.active-highlight {
+  border-color: rgba(244, 63, 94, 0.35);
+  background: rgba(244, 63, 94, 0.04);
+}
+
+/* Dim unrelated metrics when one is hovered */
+.viz-metrics.is-hovering .viz-metric-row:not(.is-active) {
+  opacity: 0.38;
+  filter: grayscale(0.4);
+  transform: scale(0.99);
+}
+
+.viz-metric-info {
+  display: flex; flex-direction: column; gap: 3px;
 }
 .viz-metric-name {
-  font-size: 0.85rem; color: var(--text-secondary);
+  font-size: 0.82rem; font-weight: 500; color: var(--text-secondary);
+}
+.viz-mini-badge {
+  font-family: var(--font-mono); font-size: 0.55rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 3px;
+  background: rgba(244, 63, 94, 0.15); color: #FDA4AF;
+  letter-spacing: 0.06em;
 }
 .viz-metric-val {
-  font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;
+  font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700;
 }
 .viz-metric-val.down { color: var(--red); }
 .viz-metric-val.up { color: var(--red); }
 .viz-metric-val.up-accent { color: var(--accent); }
 
+/* Mini Sparkline Canvas */
+.viz-sparkline-wrap {
+  display: flex; align-items: center; justify-content: flex-end;
+}
+.viz-sparkline {
+  display: block;
+}
+
+/* Drill-Down Root Cause Reveal for Checkout Failures */
+.viz-drilldown {
+  background: rgba(14, 16, 22, 0.85);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  transition: all var(--t-med) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.viz-drilldown::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(to bottom, var(--red), var(--accent));
+}
+.viz-drilldown-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.drill-tag {
+  font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700;
+  color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.drill-status-text {
+  font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600;
+  color: var(--accent);
+}
+
+.viz-drill-chain {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+}
+.drill-node {
+  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 4px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.drill-node.highlight-cyan {
+  border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;
+  background: rgba(56, 189, 248, 0.08);
+}
+.drill-node.highlight-amber {
+  border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;
+  background: rgba(245, 158, 11, 0.08);
+}
+.drill-node.highlight-mint {
+  border-color: rgba(0, 245, 160, 0.45); color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 12px var(--accent-dim);
+}
+.drill-arrow {
+  color: var(--text-muted); font-size: 0.8rem; font-weight: 700;
+}
+
 /* Viz graph area */
 .viz-graph {
   position: relative;
-  height: 180px;
+  height: 150px;
   border-top: 1px solid var(--border);
-  margin-top: 8px; padding-top: 20px;
+  margin-top: 4px; padding-top: 14px;
 }
 .viz-graph canvas { width: 100%; height: 100%; }
 
@@ -295,7 +407,8 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 .neural-scan-overlay {
   position: fixed; inset: 0; z-index: 2000;
-  background: var(--bg-base);
+  background: rgba(9, 9, 11, 0.96);
+  backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
   visibility: hidden;
@@ -307,17 +420,24 @@ img { max-width: 100%; display: block; }
 }
 .neural-scan-close {
   position: absolute; top: 24px; right: 24px;
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
   border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text-tertiary);
   font-size: 1.2rem; cursor: pointer;
   transition: all var(--t-fast) ease;
+  z-index: 100;
 }
 .neural-scan-close:hover {
   border-color: var(--text-secondary);
   color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.05);
+}
+.neural-scan-close:focus-visible {
+  outline: 2px solid var(--accent);
 }
 
 .scan-stage {
@@ -327,17 +447,21 @@ img { max-width: 100%; display: block; }
   text-align: center; padding: 40px;
   opacity: 0; pointer-events: none;
   visibility: hidden;
-  transition: opacity var(--t-slow) var(--ease-smooth), visibility var(--t-slow) var(--ease-smooth);
+  transform: scale(0.96);
+  transition: opacity var(--t-slow) var(--ease-smooth), transform var(--t-slow) var(--ease-smooth), visibility var(--t-slow) var(--ease-smooth);
 }
-.scan-stage.active { opacity: 1; pointer-events: auto; visibility: visible; }
+.scan-stage.active {
+  opacity: 1; pointer-events: auto; visibility: visible;
+  transform: scale(1);
+}
 
-.scan-stage .eyebrow { margin-bottom: 20px; }
+.scan-stage .eyebrow { margin-bottom: 18px; }
 
 .scan-title {
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
   font-weight: 700; letter-spacing: -0.03em;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 .scan-title-huge {
   font-family: var(--font-display);
@@ -346,81 +470,93 @@ img { max-width: 100%; display: block; }
   line-height: 1.1;
 }
 
-/* Scan checklist */
+/* State 1: Scan checklist */
 .scan-checklist {
-  display: flex; flex-direction: column; gap: 14px;
-  text-align: left; max-width: 360px;
+  display: flex; flex-direction: column; gap: 12px;
+  text-align: left; max-width: 380px; width: 100%;
 }
 .scan-check-item {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 14px;
   font-size: 0.95rem; color: var(--text-muted);
-  transition: color var(--t-med) ease;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  transition: all var(--t-med) ease;
 }
-.scan-check-item.checked { color: var(--text-primary); }
 .scan-check-item .check-icon {
-  width: 20px; height: 20px; border-radius: 50%;
+  width: 22px; height: 22px; border-radius: 50%;
   border: 1.5px solid var(--text-muted);
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.7rem; font-weight: 700;
   transition: all var(--t-med) ease;
+}
+.scan-check-item.scanning {
+  color: var(--text-secondary);
+  border-color: rgba(0, 245, 160, 0.3);
+}
+.scan-check-item.scanning .check-icon {
+  border-color: var(--accent); color: var(--accent);
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+.scan-check-item.checked {
+  color: var(--text-primary);
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.04);
 }
 .scan-check-item.checked .check-icon {
   background: var(--accent); border-color: var(--accent); color: var(--bg-base);
-}
-.scan-check-item.scanning { color: var(--text-secondary); }
-.scan-check-item.scanning .check-icon {
-  border-color: var(--accent);
-  animation: pulse-border 1.5s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--accent-dim);
 }
 
-/* Scan stats */
+/* State 2: Scan stats */
 .scan-stats {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
-  max-width: 480px; width: 100%;
+  max-width: 520px; width: 100%;
 }
 .scan-stat {
-  padding: 20px; border-radius: var(--radius-md);
+  padding: 22px; border-radius: var(--radius-md);
   background: var(--bg-card); border: 1px solid var(--border);
   text-align: center;
 }
 .scan-stat-val {
-  font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700;
+  font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
   color: var(--text-primary); display: block;
 }
 .scan-stat-label {
   font-size: 0.75rem; color: var(--text-tertiary);
-  text-transform: uppercase; letter-spacing: 0.05em;
-  margin-top: 4px; display: block;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-top: 6px; display: block;
 }
 
-/* Scan anomaly */
+/* State 3: Scan anomaly */
 .scan-anomaly-metric {
   font-family: var(--font-display);
   font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 800; color: var(--red);
   letter-spacing: -0.04em; line-height: 1;
+  text-shadow: 0 0 60px rgba(239, 68, 68, 0.35);
 }
 .scan-anomaly-label {
   font-size: 1.1rem; color: var(--text-secondary);
-  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
-/* Scan chain */
+/* State 4: Scan chain */
 .scan-chain {
   display: flex; flex-direction: column; align-items: center; gap: 0;
 }
 .scan-chain-item {
-  padding: 14px 32px; border-radius: var(--radius-md);
+  padding: 14px 36px; border-radius: var(--radius-md);
   background: var(--bg-card); border: 1px solid var(--border);
-  font-family: var(--font-mono); font-size: 0.85rem;
+  font-family: var(--font-mono); font-size: 0.9rem;
   color: var(--text-secondary);
-  opacity: 0; transform: translateY(10px);
+  opacity: 0; transform: translateY(12px);
   transition: all var(--t-med) var(--ease-out);
 }
 .scan-chain-item.visible { opacity: 1; transform: translateY(0); }
 .scan-chain-item.highlight {
   border-color: var(--accent); color: var(--accent);
-  box-shadow: 0 0 20px var(--accent-dim);
+  background: var(--accent-dim);
+  box-shadow: 0 0 30px var(--accent-dim);
 }
 .scan-chain-arrow {
   color: var(--text-muted); font-size: 1.2rem;
@@ -429,35 +565,41 @@ img { max-width: 100%; display: block; }
 }
 .scan-chain-arrow.visible { opacity: 1; }
 
-/* Scan result */
+/* State 5: Scan result */
 .scan-result-cause {
-  font-size: 1rem; color: var(--text-secondary);
-  max-width: 520px; line-height: 1.7;
+  font-size: 1.05rem; color: var(--text-secondary);
+  max-width: 540px; line-height: 1.7;
   margin-top: 24px;
 }
 .scan-result-cause code {
   font-family: var(--font-mono);
-  background: var(--bg-card); padding: 2px 8px;
+  background: var(--accent-dim); padding: 3px 8px;
   border-radius: 4px; color: var(--accent);
+  border: 1px solid var(--border-accent);
 }
 .scan-confidence {
   display: inline-flex; align-items: center; gap: 10px;
-  margin-top: 32px; padding: 10px 20px;
+  margin-top: 32px; padding: 10px 24px;
   border-radius: var(--radius-pill);
   background: var(--accent-dim); border: 1px solid var(--border-accent);
-  font-family: var(--font-mono); font-size: 0.85rem;
+  font-family: var(--font-mono); font-size: 0.9rem;
   color: var(--accent); font-weight: 600;
+  box-shadow: 0 0 25px var(--accent-dim);
 }
 .scan-evidence-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 24px; padding: 14px 28px;
+  margin-top: 24px; padding: 14px 32px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary); font-size: 0.9rem; font-weight: 600;
   cursor: pointer; transition: all var(--t-fast) ease;
 }
 .scan-evidence-btn:hover {
   border-color: var(--accent); color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 30px var(--accent-dim);
+  transform: translateY(-2px);
 }
 
 /* Scan canvas for particles */

@@ -54,36 +54,81 @@
           </p>
 
           <div class="hero-actions reveal" style="transition-delay:200ms">
-            <button class="btn-primary" onclick="openNeuralScan()">Run a Neural Scan →</button>
+            <button class="btn-primary" onclick="openNeuralScan()" aria-label="Run a Neural Scan">Run a Neural Scan →</button>
             <a href="#why-section" class="btn-ghost">See how it works ↓</a>
           </div>
         </div>
 
-        <!-- RIGHT: Product Visualization -->
-        <div class="hero-viz reveal-scale" style="transition-delay:300ms">
+        <!-- RIGHT: Interactive Product Health Visualization -->
+        <div class="hero-viz reveal-scale" style="transition-delay:300ms" id="hero-viz-card">
           <div class="viz-header">
-            <span class="viz-brand">SimplyWhy</span>
+            <div class="viz-header-left">
+              <span class="viz-brand">SimplyWhy</span>
+              <span class="viz-tab active">PRODUCT HEALTH</span>
+            </div>
             <span class="viz-status">
               <span class="viz-status-dot"></span>
-              Analyzing
+              LIVE · 8,241 traces/s
             </span>
           </div>
+
           <div class="viz-body">
-            <div class="viz-section-label">Product Health</div>
-            <div class="viz-metrics">
-              <div class="viz-metric-row">
-                <span class="viz-metric-name">Conversion</span>
-                <span class="viz-metric-val down" id="viz-conv">↓ 18.4%</span>
+            <div class="viz-metrics" id="viz-metrics-group">
+              <!-- Metric 1: Conversion -->
+              <div class="viz-metric-row" data-metric="conversion" onmouseenter="handleMetricHover('conversion')" onmouseleave="handleMetricLeave()">
+                <div class="viz-metric-info">
+                  <span class="viz-metric-name">Conversion</span>
+                  <span class="viz-metric-val down">↓ 18.4%</span>
+                </div>
+                <div class="viz-sparkline-wrap">
+                  <canvas class="viz-sparkline" id="spark-conv" width="90" height="24"></canvas>
+                </div>
               </div>
-              <div class="viz-metric-row">
-                <span class="viz-metric-name">Checkout failures</span>
-                <span class="viz-metric-val up" id="viz-checkout">↑ 31.2%</span>
+
+              <!-- Metric 2: Checkout failures (Interactive Drilldown) -->
+              <div class="viz-metric-row active-highlight" data-metric="checkout" id="metric-checkout" onmouseenter="handleMetricHover('checkout')" onmouseleave="handleMetricLeave()">
+                <div class="viz-metric-info">
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <span class="viz-metric-name">Checkout failures</span>
+                    <span class="viz-mini-badge">CORRELATED</span>
+                  </div>
+                  <span class="viz-metric-val up">↑ 31.2%</span>
+                </div>
+                <div class="viz-sparkline-wrap">
+                  <canvas class="viz-sparkline" id="spark-checkout" width="90" height="24"></canvas>
+                </div>
               </div>
-              <div class="viz-metric-row">
-                <span class="viz-metric-name">Rage clicks</span>
-                <span class="viz-metric-val up" id="viz-rage">↑ 42.1%</span>
+
+              <!-- Metric 3: Rage clicks -->
+              <div class="viz-metric-row" data-metric="rage" onmouseenter="handleMetricHover('rage')" onmouseleave="handleMetricLeave()">
+                <div class="viz-metric-info">
+                  <span class="viz-metric-name">Rage clicks</span>
+                  <span class="viz-metric-val up">↑ 42.1%</span>
+                </div>
+                <div class="viz-sparkline-wrap">
+                  <canvas class="viz-sparkline" id="spark-rage" width="90" height="24"></canvas>
+                </div>
               </div>
             </div>
+
+            <!-- Drill-down Root Cause Reveal for Checkout failures -->
+            <div class="viz-drilldown" id="viz-drilldown-panel">
+              <div class="viz-drilldown-header">
+                <span class="drill-tag">ROOT CAUSE CORRELATION</span>
+                <span class="drill-status-text">Potential root cause detected</span>
+              </div>
+              <div class="viz-drill-chain">
+                <div class="drill-node">Checkout failures</div>
+                <span class="drill-arrow">↓</span>
+                <div class="drill-node highlight-cyan">Safari users</div>
+                <span class="drill-arrow">↓</span>
+                <div class="drill-node highlight-amber">Payment form</div>
+                <span class="drill-arrow">↓</span>
+                <div class="drill-node highlight-mint">Deployment #2841</div>
+              </div>
+            </div>
+
+            <!-- Canvas Graph Visualization -->
             <div class="viz-graph">
               <canvas id="vizCanvas"></canvas>
             </div>
@@ -368,46 +413,46 @@
   <!-- ================================================================
        NEURAL SCAN OVERLAY
        ================================================================ -->
-  <div class="neural-scan-overlay" id="neural-scan">
-    <button class="neural-scan-close" onclick="closeNeuralScan()">✕</button>
+  <div class="neural-scan-overlay" id="neural-scan" role="dialog" aria-modal="true" aria-label="Neural Diagnostic Scan">
+    <button class="neural-scan-close" onclick="closeNeuralScan()" aria-label="Close Neural Scan">✕</button>
 
-    <!-- Stage 1: Scanning -->
+    <!-- State 1: Analyzing -->
     <div class="scan-stage" id="scan-stage-1">
-      <span class="eyebrow">Neural Scan</span>
-      <h2 class="scan-title">Analyzing your product</h2>
+      <span class="eyebrow">Neural Core · State 01</span>
+      <h2 class="scan-title">ANALYZING YOUR PRODUCT...</h2>
       <div class="scan-checklist" id="scan-checklist">
         <div class="scan-check-item" data-check="0">
-          <span class="check-icon">✓</span>
-          <span>Session behavior</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Session behavior</span>
         </div>
         <div class="scan-check-item" data-check="1">
-          <span class="check-icon">✓</span>
-          <span>Funnel analytics</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Funnel analytics</span>
         </div>
         <div class="scan-check-item" data-check="2">
-          <span class="check-icon">✓</span>
-          <span>Support conversations</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Support conversations</span>
         </div>
         <div class="scan-check-item" data-check="3">
-          <span class="check-icon">✓</span>
-          <span>Git activity</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Git activity</span>
         </div>
         <div class="scan-check-item" data-check="4">
-          <span class="check-icon">✓</span>
-          <span>Deployments</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Deployments</span>
         </div>
         <div class="scan-check-item" data-check="5">
-          <span class="check-icon">✓</span>
-          <span>Error patterns</span>
+          <span class="check-icon">○</span>
+          <span class="check-label">Error patterns</span>
         </div>
       </div>
     </div>
 
-    <!-- Stage 2: Correlating -->
+    <!-- State 2: Correlating Signals -->
     <div class="scan-stage" id="scan-stage-2">
       <canvas class="scan-canvas" id="scanCanvas"></canvas>
-      <span class="eyebrow">Correlating Signals</span>
-      <h2 class="scan-title" style="margin-bottom:48px">Connecting the dots</h2>
+      <span class="eyebrow">Neural Core · State 02</span>
+      <h2 class="scan-title" style="margin-bottom:48px">CORRELATING SIGNALS...</h2>
       <div class="scan-stats">
         <div class="scan-stat">
           <span class="scan-stat-val" id="stat-sessions">0</span>
@@ -415,7 +460,7 @@
         </div>
         <div class="scan-stat">
           <span class="scan-stat-val" id="stat-conversations">0</span>
-          <span class="scan-stat-label">Conversations</span>
+          <span class="scan-stat-label">Support conversations</span>
         </div>
         <div class="scan-stat">
           <span class="scan-stat-val" id="stat-deploys">0</span>
@@ -428,21 +473,22 @@
       </div>
     </div>
 
-    <!-- Stage 3: Anomaly Detected -->
+    <!-- State 3: Anomaly Detected -->
     <div class="scan-stage" id="scan-stage-3">
-      <span class="eyebrow" style="color:var(--red)">⚠ Anomaly Detected</span>
-      <div style="margin-top:16px">
+      <span class="eyebrow" style="color:var(--red)">⚠ ANOMALY DETECTED</span>
+      <div style="margin-top:20px">
         <div class="scan-anomaly-label">Checkout conversion</div>
         <div class="scan-anomaly-metric">↓ 31.2%</div>
       </div>
     </div>
 
-    <!-- Stage 4: Chain -->
+    <!-- State 4: Causal Propagation Chain -->
     <div class="scan-stage" id="scan-stage-4">
+      <span class="eyebrow" style="margin-bottom:24px">AI Correlation Chain</span>
       <div class="scan-chain" id="scan-chain">
-        <div class="scan-chain-item" data-chain="0">Checkout drop</div>
+        <div class="scan-chain-item" data-chain="0">Safari users</div>
         <div class="scan-chain-arrow">↓</div>
-        <div class="scan-chain-item" data-chain="1">Safari users</div>
+        <div class="scan-chain-item" data-chain="1">Checkout failures</div>
         <div class="scan-chain-arrow">↓</div>
         <div class="scan-chain-item" data-chain="2">Payment validation</div>
         <div class="scan-chain-arrow">↓</div>
@@ -450,14 +496,15 @@
       </div>
     </div>
 
-    <!-- Stage 5: Root Cause Found -->
+    <!-- State 5: Root Cause Found -->
     <div class="scan-stage" id="scan-stage-5">
-      <h2 class="scan-title-huge">ROOT CAUSE<br><span class="text-accent">FOUND.</span></h2>
+      <span class="eyebrow" style="margin-bottom:16px">Diagnostic Complete</span>
+      <h2 class="scan-title-huge">ROOT CAUSE<br><span class="text-accent">FOUND</span></h2>
       <p class="scan-result-cause">
-        Deployment <code>#2841</code> introduced a payment validation loop affecting Safari users, causing checkout failures for 31.2% of transactions.
+        Payment validation loop introduced in deployment <code>#2841</code> is affecting Safari users.
       </p>
       <div class="scan-confidence">94% confidence</div>
-      <button class="scan-evidence-btn" onclick="closeNeuralScanAndScroll('#evidence')">View evidence ↓</button>
+      <button class="scan-evidence-btn" onclick="closeNeuralScanAndScroll('#evidence')">View evidence →</button>
     </div>
   </div>
 
