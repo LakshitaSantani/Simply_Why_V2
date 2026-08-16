@@ -218,46 +218,77 @@
 
 
     <!-- ================================================================
-         SIGNALS — 5 data source cards
+         SIGNAL SOURCES — Interactive Cross-Stream Network Hub
          ================================================================ -->
     <section class="section section-signals" id="signals">
       <div class="container">
         <div class="signals-header reveal">
-          <span class="eyebrow">Signal Sources</span>
+          <span class="eyebrow">✦ Multi-Stream Signal Topology</span>
           <h2 class="section-heading" style="margin-top:16px">Your product is already<br>telling you why.</h2>
-          <p class="section-sub">The problem is that the evidence lives in different places.</p>
+          <p class="section-sub">SimplyWhy connects signals that traditional monitoring keeps completely siloed.</p>
         </div>
 
-        <div class="signals-grid reveal" style="transition-delay:200ms">
-          <div class="signal-card" data-signal="sessions">
-            <span class="signal-type">Session Replays</span>
-            <span class="signal-value">12,481</span>
-            <span class="signal-label">sessions analyzed</span>
-            <span class="signal-change bad">1,842 rage clicks</span>
+        <!-- Interactive Signal Network Container -->
+        <div class="signals-network-card reveal-scale" id="signals-network">
+          <div class="signals-network-toolbar">
+            <div class="signals-status-indicator">
+              <span class="status-pulse-dot"></span>
+              <span class="status-pulse-text">5 TELEMETRY STREAMS ACTIVE</span>
+            </div>
+            <button class="btn-correlate" id="btn-correlate-signals" onclick="triggerSignalCorrelationDemo()">
+              <span class="correlate-icon">✦</span> Auto-Correlate Streams
+            </button>
           </div>
-          <div class="signal-card" data-signal="support">
-            <span class="signal-type">Support</span>
-            <span class="signal-value">283</span>
-            <span class="signal-label">checkout complaints</span>
-            <span class="signal-change bad">↑ 37%</span>
+
+          <!-- Signal Topology Canvas & Grid -->
+          <div class="signals-topology-viewport">
+            <canvas id="signalNetworkCanvas"></canvas>
+            
+            <!-- Network Nodes -->
+            <div class="sig-node-hub sig-hub-core" id="node-core">
+              <div class="core-brand-badge">SIMPLYWHY</div>
+              <div class="core-status" id="core-status-text">INGESTING TELEMETRY</div>
+            </div>
+
+            <!-- Top Node: Support -->
+            <div class="sig-node-hub sig-pos-top" data-source="support" onmouseenter="handleSignalNodeHover('support')" onmouseleave="handleSignalNodeLeave()">
+              <span class="sig-node-tag">SUPPORT</span>
+              <div class="sig-node-val">283 complaints</div>
+              <div class="sig-node-sub bad">↑ 37% volume spike</div>
+            </div>
+
+            <!-- Left Node: Session Replays -->
+            <div class="sig-node-hub sig-pos-left" data-source="session" onmouseenter="handleSignalNodeHover('session')" onmouseleave="handleSignalNodeLeave()">
+              <span class="sig-node-tag">SESSION</span>
+              <div class="sig-node-val">12,481 sessions</div>
+              <div class="sig-node-sub bad">1,842 rage clicks</div>
+            </div>
+
+            <!-- Right Node: Funnel Analytics -->
+            <div class="sig-node-hub sig-pos-right" data-source="funnel" onmouseenter="handleSignalNodeHover('funnel')" onmouseleave="handleSignalNodeLeave()">
+              <span class="sig-node-tag">FUNNEL</span>
+              <div class="sig-node-val">68% → 47%</div>
+              <div class="sig-node-sub bad">↓ 21pts checkout drop</div>
+            </div>
+
+            <!-- Bottom Node: Deployments -->
+            <div class="sig-node-hub sig-pos-bottom-1" data-source="deploys" onmouseenter="handleSignalNodeHover('deploys')" onmouseleave="handleSignalNodeLeave()">
+              <span class="sig-node-tag">DEPLOYMENTS</span>
+              <div class="sig-node-val">#2841</div>
+              <div class="sig-node-sub amber">Payment validation commit</div>
+            </div>
+
+            <!-- Bottom-most Node: Errors -->
+            <div class="sig-node-hub sig-pos-bottom-2" data-source="errors" onmouseenter="handleSignalNodeHover('errors')" onmouseleave="handleSignalNodeLeave()">
+              <span class="sig-node-tag">ERRORS</span>
+              <div class="sig-node-val">Safari validation</div>
+              <div class="sig-node-sub bad">↑ 412% error rate</div>
+            </div>
           </div>
-          <div class="signal-card" data-signal="funnel">
-            <span class="signal-type">Funnel</span>
-            <span class="signal-value">68% → 47%</span>
-            <span class="signal-label">checkout completion</span>
-            <span class="signal-change bad">↓ 21pts</span>
-          </div>
-          <div class="signal-card" data-signal="deploys">
-            <span class="signal-type">Deployments</span>
-            <span class="signal-value">#2841</span>
-            <span class="signal-label">payment validation</span>
-            <span class="signal-change bad">suspect commit</span>
-          </div>
-          <div class="signal-card" data-signal="errors">
-            <span class="signal-type">Errors</span>
-            <span class="signal-value">Safari</span>
-            <span class="signal-label">validation failures</span>
-            <span class="signal-change bad">↑ 412%</span>
+
+          <!-- Bottom Telemetry Banner -->
+          <div class="signals-network-footer" id="signals-footer-banner">
+            <span class="footer-hint">Hover any node to inspect telemetry stream · Click Auto-Correlate to simulate AI root cause synthesis</span>
           </div>
         </div>
       </div>
@@ -265,21 +296,51 @@
 
 
     <!-- ================================================================
-         EVIDENCE GRAPH — Interactive node canvas
+         EVIDENCE GRAPH — Interactive Node Correlation Map
          ================================================================ -->
     <section class="section section-evidence" id="evidence">
       <div class="container">
         <div class="evidence-header reveal">
-          <span class="eyebrow">Evidence Graph</span>
+          <span class="eyebrow">✦ Neural Evidence Graph</span>
           <h2 class="section-heading" style="margin-top:16px">Correlation,<br>not guesswork.</h2>
-          <p class="section-sub">SimplyWhy connects signals that traditional analytics keep separate.</p>
+          <p class="section-sub">Interactive graph connecting telemetry symptoms directly to engineering root causes.</p>
         </div>
 
-        <div class="evidence-canvas-wrap reveal-scale" style="transition-delay:200ms">
-          <canvas id="evidenceCanvas"></canvas>
-          <div class="evidence-tooltip" id="evidence-tooltip">
-            <div class="evidence-tooltip-title" id="tooltip-title"></div>
-            <div id="tooltip-rows"></div>
+        <div class="evidence-interactive-card reveal-scale" style="transition-delay:200ms">
+          <!-- Graph Toolbar -->
+          <div class="evidence-toolbar">
+            <div class="evidence-mode-tabs">
+              <button class="ev-tab active" id="ev-tab-all" onclick="setEvidenceMode('all')">All Signals & Links</button>
+              <button class="ev-tab" id="ev-tab-causal" onclick="setEvidenceMode('causal')">
+                <span class="ev-tab-icon">⚡</span> Isolate Causal Vector
+              </button>
+            </div>
+            <div class="evidence-confidence-banner" id="ev-confidence-badge">
+              <span class="conf-dot"></span>
+              <span class="conf-text">94% ROOT CAUSE CONFIDENCE</span>
+            </div>
+          </div>
+
+          <!-- Graph Canvas Viewport -->
+          <div class="evidence-canvas-wrap">
+            <canvas id="evidenceCanvas"></canvas>
+            
+            <!-- Tooltip -->
+            <div class="evidence-tooltip" id="evidence-tooltip">
+              <div class="evidence-tooltip-title" id="tooltip-title"></div>
+              <div id="tooltip-rows"></div>
+            </div>
+          </div>
+
+          <!-- Interactive Node Detail Drawer -->
+          <div class="evidence-drawer" id="evidence-drawer">
+            <div class="drawer-header">
+              <div class="drawer-title" id="drawer-node-title">DEPLOYMENT #2841</div>
+              <span class="drawer-tag" id="drawer-node-tag">CORRELATED ROOT CAUSE</span>
+            </div>
+            <div class="drawer-body" id="drawer-node-body">
+              Released at 10:12 AM by @payments-core. Introduced regex validation loop on Safari autofill handlers causing +31.2% checkout failures.
+            </div>
           </div>
         </div>
       </div>

@@ -75,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initScrollReveals();
   initProductHealthSparklines();
   initHeroVizCanvas();
+  initSignalNetworkCanvas();
   initEvidenceCanvas();
   initTimelineScroll();
-  initSignalsInteractivity();
   initScanKeyboardAccessibility();
 });
 
@@ -505,22 +505,206 @@ function renderWhyLayer(index) {
 }
 
 /* ==========================================================================
-   SIGNALS INTERACTIVITY
+   SIGNAL SOURCES — INTERACTIVE TOPOLOGY NETWORK
    ========================================================================== */
-function initSignalsInteractivity() {
-  const cards = document.querySelectorAll(".signal-card");
-  cards.forEach(card => {
-    card.addEventListener("mouseenter", () => {
-      cards.forEach(c => c.classList.remove("highlighted"));
-      card.classList.add("highlighted");
-    });
+let activeSignalHover = null;
+let isSignalCorrelating = false;
+
+function handleSignalNodeHover(sourceId) {
+  if (isSignalCorrelating) return;
+  activeSignalHover = sourceId;
+  const hubs = document.querySelectorAll(".sig-node-hub:not(.sig-hub-core)");
+  hubs.forEach(hub => {
+    if (hub.getAttribute("data-source") === sourceId) {
+      hub.classList.add("is-active");
+      hub.classList.remove("is-dimmed");
+    } else {
+      hub.classList.remove("is-active");
+      hub.classList.add("is-dimmed");
+    }
   });
 }
 
+function handleSignalNodeLeave() {
+  if (isSignalCorrelating) return;
+  activeSignalHover = null;
+  const hubs = document.querySelectorAll(".sig-node-hub");
+  hubs.forEach(hub => {
+    hub.classList.remove("is-active");
+    hub.classList.remove("is-dimmed");
+  });
+}
+
+function triggerSignalCorrelationDemo() {
+  if (isSignalCorrelating) return;
+  isSignalCorrelating = true;
+
+  const btn = document.getElementById("btn-correlate-signals");
+  const coreStatus = document.getElementById("core-status-text");
+  const footerHint = document.querySelector(".footer-hint");
+  const hubs = document.querySelectorAll(".sig-node-hub");
+
+  if (btn) btn.classList.add("is-active");
+  if (coreStatus) coreStatus.textContent = "✦ CORRELATING VECTORS...";
+  if (footerHint) footerHint.textContent = "✦ Ingesting telemetry across Sessions, Support, Errors & Deployments...";
+
+  // Highlight suspect nodes: session, support, errors, deploys
+  hubs.forEach(hub => {
+    const src = hub.getAttribute("data-source");
+    if (src === "funnel") {
+      hub.classList.add("is-dimmed");
+    } else {
+      hub.classList.add("is-active");
+    }
+  });
+
+  setTimeout(() => {
+    if (coreStatus) coreStatus.textContent = "✦ ROOT CAUSE IDENTIFIED (94%)";
+    if (footerHint) footerHint.textContent = "✓ Root cause verified: Deployment #2841 introduced payment validation loop on Safari.";
+  }, 1600);
+
+  setTimeout(() => {
+    isSignalCorrelating = false;
+    if (btn) btn.classList.remove("is-active");
+    if (coreStatus) coreStatus.textContent = "INGESTING TELEMETRY";
+    if (footerHint) footerHint.textContent = "Hover any node to inspect telemetry stream · Click Auto-Correlate to simulate AI root cause synthesis";
+    handleSignalNodeLeave();
+  }, 5000);
+}
+
+function initSignalNetworkCanvas() {
+  const canvas = document.getElementById("signalNetworkCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const viewport = canvas.parentElement;
+
+  let animFrame = null;
+  let time = 0;
+
+  function resize() {
+    const rect = viewport.getBoundingClientRect();
+    canvas.width = rect.width * (window.devicePixelRatio || 1);
+    canvas.height = rect.height * (window.devicePixelRatio || 1);
+    ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function getNodeCenter(el) {
+    if (!el) return { x: 0, y: 0 };
+    const rect = el.getBoundingClientRect();
+    const parentRect = viewport.getBoundingClientRect();
+    return {
+      x: rect.left - parentRect.left + rect.width / 2,
+      y: rect.top - parentRect.top + rect.height / 2
+    };
+  }
+
+  function render() {
+    const rect = viewport.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+    time += 0.025;
+
+    const coreEl = document.getElementById("node-core");
+    const supportEl = document.querySelector('[data-source="support"]');
+    const sessionEl = document.querySelector('[data-source="session"]');
+    const funnelEl = document.querySelector('[data-source="funnel"]');
+    const deployEl = document.querySelector('[data-source="deploys"]');
+    const errorEl = document.querySelector('[data-source="errors"]');
+
+    if (!coreEl) return;
+
+    const corePt = getNodeCenter(coreEl);
+    const supportPt = getNodeCenter(supportEl);
+    const sessionPt = getNodeCenter(sessionEl);
+    const funnelPt = getNodeCenter(funnelEl);
+    const deployPt = getNodeCenter(deployEl);
+    const errorPt = getNodeCenter(errorEl);
+
+    const streams = [
+      { id: "support", from: supportPt, to: corePt, color: "#8B5CF6" },
+      { id: "session", from: sessionPt, to: corePt, color: "#38BDF8" },
+      { id: "funnel", from: funnelPt, to: corePt, color: "#F59E0B" },
+      { id: "deploys", from: deployPt, to: corePt, color: "#EF4444" },
+      { id: "errors", from: errorPt, to: deployPt, color: "#EF4444" }
+    ];
+
+    streams.forEach(stream => {
+      const isHovered = activeSignalHover === stream.id;
+      const isSuspect = isSignalCorrelating && stream.id !== "funnel";
+
+      ctx.save();
+      if (isHovered || isSuspect) {
+        ctx.strokeStyle = '#00F5A0';
+        ctx.lineWidth = 2.4;
+        ctx.shadowColor = '#00F5A0';
+        ctx.shadowBlur = 12;
+        ctx.setLineDash([]);
+      } else {
+        ctx.strokeStyle = activeSignalHover ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(stream.from.x, stream.from.y);
+      ctx.lineTo(stream.to.x, stream.to.y);
+      ctx.stroke();
+      ctx.restore();
+
+      // Traveling photon
+      const photonProg = (time + stream.from.x * 0.005) % 1;
+      const px = stream.from.x + (stream.to.x - stream.from.x) * photonProg;
+      const py = stream.from.y + (stream.to.y - stream.from.y) * photonProg;
+
+      ctx.save();
+      ctx.fillStyle = (isHovered || isSuspect) ? '#00F5A0' : stream.color;
+      ctx.shadowColor = ctx.fillStyle;
+      ctx.shadowBlur = (isHovered || isSuspect) ? 14 : 6;
+      ctx.beginPath();
+      ctx.arc(px, py, (isHovered || isSuspect) ? 4 : 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    animFrame = requestAnimationFrame(render);
+  }
+
+  render();
+}
+
 /* ==========================================================================
-   EVIDENCE GRAPH CANVAS
+   EVIDENCE GRAPH — INTERACTIVE NODE CORRELATION MAP
    ========================================================================== */
 let evidenceNodes = [];
+let evidenceMode = 'all'; // 'all' | 'causal'
+let selectedEvidenceNode = 'deploy';
+
+function setEvidenceMode(mode) {
+  evidenceMode = mode;
+  const tabAll = document.getElementById("ev-tab-all");
+  const tabCausal = document.getElementById("ev-tab-causal");
+  if (tabAll && tabCausal) {
+    tabAll.classList.toggle("active", mode === 'all');
+    tabCausal.classList.toggle("active", mode === 'causal');
+  }
+}
+
+function selectEvidenceDrawerNode(nodeId) {
+  selectedEvidenceNode = nodeId;
+  const node = evidenceNodes.find(n => n.id === nodeId);
+  if (!node) return;
+
+  const titleEl = document.getElementById("drawer-node-title");
+  const tagEl = document.getElementById("drawer-node-tag");
+  const bodyEl = document.getElementById("drawer-node-body");
+
+  if (titleEl) titleEl.textContent = node.name;
+  if (tagEl) tagEl.textContent = node.drawerTag || "TELEMETRY EVIDENCE";
+  if (bodyEl) bodyEl.innerHTML = node.drawerBody || Object.entries(node.meta).map(([k, v]) => `<strong>${k}:</strong> ${v}`).join(' · ');
+}
 
 function initEvidenceCanvas() {
   const canvas = document.getElementById("evidenceCanvas");
@@ -544,57 +728,81 @@ function initEvidenceCanvas() {
         id: "support",
         name: "SUPPORT",
         x: w * 0.5,
-        y: h * 0.16,
+        y: h * 0.12,
         color: "#8B5CF6",
-        meta: { "Tickets": "283 complaints", "Spike": "+37%", "Keyword": "Payment stuck" }
+        meta: { "Tickets": "283 complaints", "Trend": "+37%", "Keyword": "Payment stuck" },
+        drawerTag: "CUSTOMER CONVERSATION STREAM",
+        drawerBody: "283 support tickets filed within 40 minutes of deployment #2841 mentioning unresponsive payment submit button on Safari."
       },
       {
         id: "session",
         name: "SESSION",
         x: w * 0.18,
-        y: h * 0.38,
+        y: h * 0.28,
         color: "#38BDF8",
-        meta: { "Sessions": "12,481", "Avg Duration": "1m 12s", "Drop Step": "Payment" }
+        meta: { "Sessions": "12,481 analyzed", "Avg Duration": "1m 12s", "Drop Step": "Payment" },
+        drawerTag: "USER BEHAVIOR TELEMETRY",
+        drawerBody: "12,481 user sessions analyzed. 88% of abandonments isolated to Safari Desktop and iOS checkout runs."
       },
       {
         id: "checkout",
         name: "CHECKOUT",
         x: w * 0.5,
-        y: h * 0.38,
+        y: h * 0.28,
         color: "#F59E0B",
-        meta: { "Conversion": "68% → 47%", "Failure Rate": "31.2%", "Cohort": "Safari Mobile" }
+        meta: { "Conversion": "68% → 47%", "Failure Rate": "+31.2%", "Cohort": "Safari Mobile" },
+        drawerTag: "FUNNEL ANOMALY",
+        drawerBody: "Checkout step completion plunged from 68% to 47%. Form submission listener fails to trigger next state."
       },
       {
         id: "funnel",
         name: "FUNNEL",
         x: w * 0.82,
-        y: h * 0.38,
+        y: h * 0.28,
         color: "#38BDF8",
-        meta: { "Step 1": "94%", "Step 2": "86%", "Step 3 (Pay)": "47%" }
+        meta: { "Step 1 (Cart)": "94%", "Step 2 (Info)": "86%", "Step 3 (Pay)": "47%" },
+        drawerTag: "STEP DROP-OFF",
+        drawerBody: "Top of funnel healthy at 94%. Isolated bottleneck located squarely at Payment Authorization phase."
       },
       {
         id: "rage",
         name: "RAGE CLICKS",
-        x: w * 0.18,
-        y: h * 0.65,
+        x: w * 0.22,
+        y: h * 0.48,
         color: "#EF4444",
-        meta: { "Count": "1,842 clicks", "Element": "#btn-pay-now", "Intensity": "High" }
+        meta: { "Count": "1,842 clicks", "Element": "#btn-pay-now", "Intensity": "High" },
+        drawerTag: "SESSION REPLAY ANOMALY",
+        drawerBody: "1,842 rage clicks detected on primary CTA button '#btn-pay-now' due to silent client-side validation failure."
       },
       {
         id: "deploy",
         name: "DEPLOY #2841",
         x: w * 0.5,
-        y: h * 0.65,
+        y: h * 0.48,
         color: "#EF4444",
-        meta: { "Time": "10:12 AM", "Author": "payments-team", "Impact": "+31% errors", "Correlation": "94%" }
+        meta: { "Released": "10:12 AM", "Checkout failures": "+31%", "Correlation": "94%" },
+        drawerTag: "SUSPECT COMMIT ATTRIBUTION",
+        drawerBody: "Deployment #2841 released at 10:12 AM by @payments-core. Code changes in payment validation regex introduced infinite validation loops on Safari autofill."
       },
       {
         id: "bug",
         name: "PAYMENT BUG",
         x: w * 0.5,
-        y: h * 0.84,
+        y: h * 0.68,
         color: "#00F5A0",
-        meta: { "Type": "Regex Loop", "Target": "Safari Autofill", "Severity": "P0" }
+        meta: { "Type": "Regex Loop", "Target": "Safari Autofill", "Severity": "P0 Critical" },
+        drawerTag: "ROOT CAUSE MECHANISM",
+        drawerBody: "Infinite regex recursion triggered whenever Safari native autofill dispatches non-standard synthetic input events."
+      },
+      {
+        id: "risk",
+        name: "$42.8K AT RISK",
+        x: w * 0.5,
+        y: h * 0.86,
+        color: "#00F5A0",
+        meta: { "Projected Loss": "$42,800", "Affected Users": "1,842", "Remediation": "Rollback #2841" },
+        drawerTag: "BUSINESS IMPACT & ACTION",
+        drawerBody: "Estimated $42,800 GMV at risk. Recommended immediate rollback to commit #b7a8 to recover 98% of lost conversions."
       }
     ];
   }
@@ -605,7 +813,7 @@ function initEvidenceCanvas() {
   let hoveredNode = null;
   let animTime = 0;
 
-  // Mouse hover detection
+  // Mouse hover & click detection
   canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
@@ -614,7 +822,7 @@ function initEvidenceCanvas() {
     let found = null;
     evidenceNodes.forEach(node => {
       const dist = Math.hypot(node.x - mx, node.y - my);
-      if (dist < 42) {
+      if (dist < 46) {
         found = node;
       }
     });
@@ -631,12 +839,25 @@ function initEvidenceCanvas() {
           </div>
         `).join("");
 
-      tooltip.style.left = `${Math.min(found.x + 15, rect.width - 220)}px`;
-      tooltip.style.top = `${Math.max(found.y - 40, 10)}px`;
+      tooltip.style.left = `${Math.min(found.x + 15, rect.width - 240)}px`;
+      tooltip.style.top = `${Math.max(found.y - 45, 10)}px`;
       tooltip.classList.add("visible");
     } else if (tooltip) {
       tooltip.classList.remove("visible");
     }
+  });
+
+  canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    evidenceNodes.forEach(node => {
+      const dist = Math.hypot(node.x - mx, node.y - my);
+      if (dist < 46) {
+        selectEvidenceDrawerNode(node.id);
+      }
+    });
   });
 
   canvas.addEventListener("mouseleave", () => {
@@ -658,54 +879,80 @@ function initEvidenceCanvas() {
       ["session", "checkout"],
       ["funnel", "checkout"],
       ["session", "rage"],
+      ["rage", "deploy"],
       ["checkout", "deploy"],
-      ["deploy", "bug"]
+      ["deploy", "bug"],
+      ["bug", "risk"]
     ];
+
+    const causalPath = ["session", "checkout", "deploy", "bug", "risk"];
 
     links.forEach(([fromId, toId]) => {
       const from = evidenceNodes.find(n => n.id === fromId);
       const to = evidenceNodes.find(n => n.id === toId);
       if (!from || !to) return;
 
-      const isHigh = hoveredNode && (hoveredNode.id === fromId || hoveredNode.id === toId);
+      const isCausalLink = (fromId === "session" && toId === "checkout") ||
+                          (fromId === "checkout" && toId === "deploy") ||
+                          (fromId === "deploy" && toId === "bug") ||
+                          (fromId === "bug" && toId === "risk");
 
-      ctx.strokeStyle = isHigh ? 'rgba(0, 245, 160, 0.8)' : 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = isHigh ? 2 : 1;
-      ctx.setLineDash(isHigh ? [] : [6, 4]);
+      const isDirectHover = hoveredNode && (hoveredNode.id === fromId || hoveredNode.id === toId);
+      const isHighlighted = (evidenceMode === 'causal' && isCausalLink) || isDirectHover;
+
+      ctx.save();
+      if (isHighlighted) {
+        ctx.strokeStyle = '#00F5A0';
+        ctx.lineWidth = 2.2;
+        ctx.shadowColor = '#00F5A0';
+        ctx.shadowBlur = 10;
+        ctx.setLineDash([]);
+      } else {
+        ctx.strokeStyle = (evidenceMode === 'causal' || hoveredNode) ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+      }
 
       ctx.beginPath();
       ctx.moveTo(from.x, from.y);
       ctx.lineTo(to.x, to.y);
       ctx.stroke();
+      ctx.restore();
 
       // Traveling pulse
       const pulseProg = (animTime + from.x * 0.01) % 1;
       const px = from.x + (to.x - from.x) * pulseProg;
       const py = from.y + (to.y - from.y) * pulseProg;
 
-      ctx.fillStyle = isHigh ? '#00F5A0' : from.color;
-      ctx.shadowBlur = isHigh ? 10 : 4;
+      ctx.save();
+      ctx.fillStyle = isHighlighted ? '#00F5A0' : from.color;
+      ctx.shadowBlur = isHighlighted ? 12 : 4;
       ctx.shadowColor = ctx.fillStyle;
       ctx.beginPath();
-      ctx.arc(px, py, isHigh ? 3.5 : 2.5, 0, Math.PI * 2);
+      ctx.arc(px, py, isHighlighted ? 3.5 : 2.5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
+      ctx.restore();
     });
-
-    ctx.setLineDash([]);
 
     // Draw Nodes
     evidenceNodes.forEach(node => {
       const isHovered = hoveredNode && hoveredNode.id === node.id;
-      const boxW = 120;
+      const isSelected = selectedEvidenceNode === node.id;
+      const isCausalNode = causalPath.includes(node.id);
+      const isDimmed = (evidenceMode === 'causal' && !isCausalNode) ||
+                       (hoveredNode && !isHovered && !links.some(([f, t]) => (f === hoveredNode.id && t === node.id) || (t === hoveredNode.id && f === node.id)));
+
+      const boxW = 126;
       const boxH = 34;
 
       ctx.save();
-      ctx.fillStyle = isHovered ? 'rgba(30, 32, 40, 0.95)' : 'rgba(17, 17, 19, 0.9)';
-      ctx.strokeStyle = isHovered ? '#00F5A0' : (node.color || 'rgba(255, 255, 255, 0.2)');
-      ctx.lineWidth = isHovered ? 2 : 1;
+      ctx.globalAlpha = isDimmed ? 0.22 : 1;
 
-      if (isHovered) {
+      ctx.fillStyle = (isHovered || isSelected) ? 'rgba(26, 32, 44, 0.96)' : 'rgba(17, 17, 19, 0.9)';
+      ctx.strokeStyle = (isHovered || isSelected || (evidenceMode === 'causal' && isCausalNode)) ? '#00F5A0' : (node.color || 'rgba(255, 255, 255, 0.2)');
+      ctx.lineWidth = (isHovered || isSelected) ? 2 : 1;
+
+      if (isHovered || isSelected || (evidenceMode === 'causal' && isCausalNode)) {
         ctx.shadowColor = '#00F5A0';
         ctx.shadowBlur = 16;
       }
@@ -714,13 +961,13 @@ function initEvidenceCanvas() {
       ctx.roundRect(node.x - boxW / 2, node.y - boxH / 2, boxW, boxH, 8);
       ctx.fill();
       ctx.stroke();
-      ctx.restore();
 
-      ctx.font = '600 11px "JetBrains Mono", monospace';
-      ctx.fillStyle = isHovered ? '#00F5A0' : '#FAFAFA';
+      ctx.font = '700 10.5px "JetBrains Mono", monospace';
+      ctx.fillStyle = (isHovered || isSelected || (evidenceMode === 'causal' && isCausalNode)) ? '#00F5A0' : '#FAFAFA';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(node.name, node.x, node.y);
+      ctx.restore();
     });
 
     requestAnimationFrame(render);
