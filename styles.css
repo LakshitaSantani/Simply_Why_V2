@@ -357,27 +357,28 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   2. CINEMATIC STICKY PRODUCT DEMO SECTION
+   2. CINEMATIC PRODUCT DEMO SECTION
    ========================================================================== */
 .section-cinematic {
-  padding: 60px 0 80px;
+  padding: 50px 0 80px;
   position: relative;
 }
 .cinematic-intro-text {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 }
 
-/* Multi-Step Scroll Container */
+/* Multi-Step Container */
 .cinematic-scroll-container {
   position: relative;
-  min-height: 2600px; /* Provides scroll track length for 5 steps */
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-/* Sticky Frame Wrapper */
+/* Frame Wrapper */
 .sticky-frame-wrapper {
-  position: sticky;
-  top: 76px;
+  position: relative;
   z-index: 50;
   width: 100%;
   display: flex;
@@ -388,7 +389,6 @@ img { max-width: 100%; display: block; }
 .cinema-app-frame {
   width: min(1140px, 94vw);
   min-height: 560px;
-  max-height: calc(100vh - 100px);
   background: #0C0D12;
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -740,20 +740,23 @@ img { max-width: 100%; display: block; }
   padding: 10px 20px; background: rgba(0, 0, 0, 0.4);
   border-top: 1px solid var(--border);
   font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-tertiary);
+  flex-wrap: wrap; gap: 10px;
 }
-
-/* Scroll Milestones Track */
-.scroll-milestones-track {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none;
+.frame-auto-controls {
+  display: flex; align-items: center; gap: 12px;
 }
-.scroll-milestone {
-  height: 520px; /* Each milestone corresponds to ~520px of scroll */
-  position: relative;
+.btn-demo-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: var(--radius-pill);
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700;
+  cursor: pointer; transition: all var(--t-fast) ease;
 }
-.milestone-indicator {
-  position: absolute; left: 24px; top: 20%;
-  display: none; /* Invisible to keep design clean and focused on frame */
+.btn-demo-toggle:hover {
+  border-color: var(--accent); color: var(--accent);
+}
+.btn-demo-toggle.is-paused {
+  background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
 }
 
 /* ==========================================================================

@@ -232,11 +232,56 @@ function scrollToInvestigation() {
 }
 
 /* ==========================================================================
-   2. CINEMATIC STICKY SCROLL ENGINE & FRAME CONTROLLER
+   2. CINEMATIC AUTONOMOUS FLOW & STEP CONTROLLER
    ========================================================================== */
 let currentCinemaStep = 0;
+let isDemoAutoplaying = true;
+let demoAutoplayTimeout = null;
+const DEMO_STEP_DURATIONS = [4500, 3800, 5000, 4800, 6000];
 
-function setCinematicStep(stepIndex) {
+function startDemoAutoplay() {
+  isDemoAutoplaying = true;
+  updateDemoToggleButton();
+  scheduleNextDemoStep();
+}
+
+function pauseDemoAutoplay() {
+  isDemoAutoplaying = false;
+  clearTimeout(demoAutoplayTimeout);
+  updateDemoToggleButton();
+}
+
+function toggleDemoAutoplay() {
+  if (isDemoAutoplaying) {
+    pauseDemoAutoplay();
+  } else {
+    startDemoAutoplay();
+  }
+}
+
+function updateDemoToggleButton() {
+  const icon = document.getElementById("demo-play-icon");
+  const label = document.getElementById("demo-play-label");
+  const btn = document.getElementById("btn-demo-autoplay");
+  if (btn) btn.classList.toggle("is-paused", !isDemoAutoplaying);
+  if (icon) icon.textContent = isDemoAutoplaying ? "⏸" : "▶";
+  if (label) label.textContent = isDemoAutoplaying ? "Auto-playing" : "Play demo";
+}
+
+function scheduleNextDemoStep() {
+  clearTimeout(demoAutoplayTimeout);
+  if (!isDemoAutoplaying) return;
+
+  const duration = DEMO_STEP_DURATIONS[currentCinemaStep] || 4500;
+  demoAutoplayTimeout = setTimeout(() => {
+    if (!isDemoAutoplaying) return;
+    const nextStep = (currentCinemaStep + 1) % 5;
+    setCinematicStep(nextStep, false);
+    scheduleNextDemoStep();
+  }, duration);
+}
+
+function setCinematicStep(stepIndex, isUserClick = true) {
   currentCinemaStep = stepIndex;
 
   const frame = document.getElementById("cinema-app-frame");
@@ -255,8 +300,11 @@ function setCinematicStep(stepIndex) {
   if (stepIndex === 0) {
     // 01: Full Session Replay Focus
     frame.classList.remove("view-split", "view-verdict");
+    const banner = document.getElementById("rage-click-banner");
+    if (banner) banner.classList.remove("visible");
     if (urlText) urlText.textContent = "store.acme.com/checkout/pay";
     if (statusText) statusText.textContent = "Step 1/5: Session playback active";
+    playSessionReplayLoop();
   } else if (stepIndex === 1) {
     // 02: Anomaly & Rage Click Freeze
     frame.classList.remove("view-split", "view-verdict");
@@ -285,26 +333,16 @@ function setCinematicStep(stepIndex) {
     if (statusText) statusText.textContent = "Step 5/5: Remediation projected (+21.0 pts conversion)";
     if (typeof animateRecoveryCurve === 'function') animateRecoveryCurve();
   }
+
+  // If the user manually clicked a step, reset the timer to keep the flow alive from that point
+  if (isUserClick && isDemoAutoplaying) {
+    scheduleNextDemoStep();
+  }
 }
 
-/* Scroll Listener for Milestone Progression */
 function initCinematicScrollEngine() {
-  const container = document.getElementById("cinematic-container");
-  if (!container) return;
-
-  window.addEventListener("scroll", () => {
-    const rect = container.getBoundingClientRect();
-    const totalHeight = rect.height - window.innerHeight;
-    if (totalHeight <= 0) return;
-
-    // Relative scroll progress through the container: 0 to 1
-    const progress = Math.max(0, Math.min(1, -rect.top / totalHeight));
-
-    const stepIndex = Math.min(4, Math.floor(progress * 5));
-    if (stepIndex !== currentCinemaStep) {
-      setCinematicStep(stepIndex);
-    }
-  }, { passive: true });
+  // Start autonomous playback loop
+  startDemoAutoplay();
 }
 
 /* ==========================================================================

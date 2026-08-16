@@ -380,7 +380,7 @@
 
             </div>
 
-            <!-- Frame Bottom Status -->
+            <!-- Frame Bottom Bar with Autonomous Flow Controls -->
             <div class="frame-bottom-bar">
               <div class="frame-stat-item">
                 <span>Traces analyzed: <strong>12,481 sessions</strong></span>
@@ -388,45 +388,14 @@
               <div class="frame-stat-item hide-mobile">
                 <span>Signal sources: <strong>6 connected</strong></span>
               </div>
-              <div class="frame-stat-item">
+              <div class="frame-auto-controls">
+                <button class="btn-demo-toggle" id="btn-demo-autoplay" onclick="toggleDemoAutoplay()" title="Toggle Auto-Play">
+                  <span id="demo-play-icon">⏸</span> <span id="demo-play-label">Auto-playing</span>
+                </button>
                 <span class="text-accent" id="frame-status-text">Step 1/5: Session playback active</span>
               </div>
             </div>
 
-          </div>
-        </div>
-
-        <!-- Scroll Milestones (Invisible scroll triggers that drive the sticky frame) -->
-        <div class="scroll-milestones-track">
-          <div class="scroll-milestone" data-milestone="0">
-            <div class="milestone-indicator">
-              <span class="milestone-num">01</span>
-              <span class="milestone-label">User experiences checkout freeze on Safari</span>
-            </div>
-          </div>
-          <div class="scroll-milestone" data-milestone="1">
-            <div class="milestone-indicator">
-              <span class="milestone-num">02</span>
-              <span class="milestone-label">Rage clicks detected & recording freezes</span>
-            </div>
-          </div>
-          <div class="scroll-milestone" data-milestone="2">
-            <div class="milestone-indicator">
-              <span class="milestone-num">03</span>
-              <span class="milestone-label">SimplyWhy connects session to Git deployment</span>
-            </div>
-          </div>
-          <div class="scroll-milestone" data-milestone="3">
-            <div class="milestone-indicator">
-              <span class="milestone-num">04</span>
-              <span class="milestone-label">Root cause identified with 94% confidence</span>
-            </div>
-          </div>
-          <div class="scroll-milestone" data-milestone="4">
-            <div class="milestone-indicator">
-              <span class="milestone-num">05</span>
-              <span class="milestone-label">Recovery trajectory projected: 47% → 68%</span>
-            </div>
           </div>
         </div>
 
