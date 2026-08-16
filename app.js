@@ -1,6 +1,6 @@
 /**
  * SIMPLYWHY — ROOT CAUSE INTELLIGENCE
- * Visual-First Product Demo, Autonomous Scroll Controller & Visualizations
+ * Intelligence Core Centerpiece, Causal Graph & Investigation Engine
  */
 
 /* ---------- SUPABASE INITIALIZATION ---------- */
@@ -74,9 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavbarScroll();
   initScrollReveals();
   initProductHealthSparklines();
-  initHeroVizCanvas();
+  initHeroIntelligenceCoreCanvas();
   initCinemaEvidenceCanvas();
   initCinemaRecoveryCanvas();
+  initConvergenceCanvas();
   initLiveTelemetryTicker();
   setBrainState("STANDBY");
   initCinematicScrollEngine();
@@ -106,10 +107,8 @@ function initScrollReveals() {
 }
 
 /* ==========================================================================
-   1. HERO PRODUCT HEALTH SPARKLINES & VIZ
+   1. HERO PRODUCT HEALTH & HERO INTELLIGENCE CORE
    ========================================================================== */
-let activeHeroMetric = 'checkout';
-
 function initProductHealthSparklines() {
   drawSparkline('spark-conv', [22, 21, 20, 19.5, 19, 18.4], '#EF4444');
   drawSparkline('spark-checkout', [12, 14, 15, 18, 25, 31.2], '#EF4444');
@@ -169,15 +168,15 @@ function handleMetricHover(metricType) {
   rows.forEach(row => {
     row.classList.toggle('active-highlight', row.getAttribute('data-metric') === metricType);
   });
-  activeHeroMetric = metricType;
 }
 
 function handleMetricLeave() {
   handleMetricHover('checkout');
 }
 
-function initHeroVizCanvas() {
-  const canvas = document.getElementById("vizCanvas");
+/* HERO INTELLIGENCE CORE CANVAS (5 Streams -> Central Processor) */
+function initHeroIntelligenceCoreCanvas() {
+  const canvas = document.getElementById("heroCoreCanvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   let t = 0;
@@ -192,35 +191,69 @@ function initHeroVizCanvas() {
   resize();
   window.addEventListener("resize", resize);
 
+  const streams = [
+    { name: 'BEHAVIOR', x: 0.10, y: 0.25, color: '#22D3EE' },
+    { name: 'SUPPORT', x: 0.30, y: 0.20, color: '#F59E0B' },
+    { name: 'PRODUCT', x: 0.50, y: 0.18, color: '#3B82F6' },
+    { name: 'ENGINEERING', x: 0.70, y: 0.20, color: '#00F5A0' },
+    { name: 'CONTEXT', x: 0.90, y: 0.25, color: '#EF4444' }
+  ];
+
   function draw() {
     const rect = canvas.getBoundingClientRect();
     const w = rect.width;
     const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    // Baseline grid lines
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
-    ctx.lineWidth = 1;
-    for (let y = 15; y < h; y += 20) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
+    const coreX = w * 0.5;
+    const coreY = h * 0.65;
 
-    // Telemetry wave
+    // Draw Stream Lines to Core
+    streams.forEach((s, idx) => {
+      const sx = s.x * w;
+      const sy = s.y * h;
+
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.quadraticCurveTo(sx, coreY, coreX, coreY);
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.07)`;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Traveling Data Particles
+      const progress = (t * 0.8 + idx * 0.2) % 1;
+      // Quadratic bezier calculation
+      const px = (1 - progress) * (1 - progress) * sx + 2 * (1 - progress) * progress * sx + progress * progress * coreX;
+      const py = (1 - progress) * (1 - progress) * sy + 2 * (1 - progress) * progress * coreY + progress * progress * coreY;
+
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.shadowColor = s.color;
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    // Draw Central Processor Core
+    const pulse = Math.sin(t * 3) * 2;
     ctx.beginPath();
-    for (let x = 0; x <= w; x += 3) {
-      const dropWeight = x > w * 0.5 ? Math.sin((x - w * 0.5) / (w * 0.5) * Math.PI) * 16 : 0;
-      const y = h * 0.5 + Math.sin((x * 0.04) + t) * 8 + dropWeight;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = "rgba(239, 68, 68, 0.7)";
-    ctx.lineWidth = 2;
+    ctx.arc(coreX, coreY, 14 + pulse, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0, 245, 160, 0.12)";
+    ctx.strokeStyle = "rgba(0, 245, 160, 0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.fill();
     ctx.stroke();
 
-    t += 0.04;
+    ctx.beginPath();
+    ctx.arc(coreX, coreY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = "#00F5A0";
+    ctx.shadowColor = "#00F5A0";
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    t += 0.02;
     requestAnimationFrame(draw);
   }
   draw();
@@ -232,15 +265,15 @@ function scrollToInvestigation() {
 }
 
 /* ==========================================================================
-   2. CINEMATIC AUTONOMOUS FLOW & NEURAL BRAIN ENGINE
+   2. CINEMATIC AUTONOMOUS INVESTIGATION ENGINE (CENTERPIECE)
    ========================================================================== */
 let currentCinemaStep = 0;
 let isDemoAutoplaying = true;
 let demoAutoplayTimeout = null;
 let isInvestigationInView = false;
-let neuralBrainState = "STANDBY"; // STANDBY, INGESTING, PROCESSING, CORRELATING, FILTERING, RESOLVED
+let neuralBrainState = "STANDBY";
 
-const DEMO_STEP_DURATIONS = [4500, 3800, 5200, 5000, 6000];
+const DEMO_STEP_DURATIONS = [4500, 4800, 5200, 5000, 6000];
 
 /* Brain State Labels & UI Updates */
 function setBrainState(state) {
@@ -257,32 +290,27 @@ function setBrainState(state) {
   switch (state) {
     case "STANDBY":
       dot.classList.add("dot-standby");
-      label.textContent = "NEURAL CORE · STANDBY";
-      if (activityText) activityText.textContent = "IDLE";
+      label.textContent = "SIMPLYWHY ENGINE · STANDBY";
+      if (activityText) activityText.textContent = "Waiting for investigation...";
       break;
     case "INGESTING":
       dot.classList.add("dot-ingesting");
-      label.textContent = "INGESTING SIGNALS (5/5)";
+      label.textContent = "RECEIVING SIGNALS (5/5)";
       if (activityText) activityText.textContent = "INGESTING";
       break;
-    case "PROCESSING":
+    case "ANALYZING":
       dot.classList.add("dot-processing");
-      label.textContent = "NEURAL CORE · PROCESSING";
-      if (activityText) activityText.textContent = "REASONING";
+      label.textContent = "ANALYZING & TESTING HYPOTHESES";
+      if (activityText) activityText.textContent = "EVALUATING";
       break;
     case "CORRELATING":
       dot.classList.add("dot-correlating");
-      label.textContent = "CROSS-STREAM CORRELATING";
-      if (activityText) activityText.textContent = "SYNCHRONIZING";
-      break;
-    case "FILTERING":
-      dot.classList.add("dot-filtering");
-      label.textContent = "FILTERING NOISE (94% CONF)";
-      if (activityText) activityText.textContent = "ISOLATING";
+      label.textContent = "ISOLATING CAUSAL VECTOR";
+      if (activityText) activityText.textContent = "CAUSAL GRAPH";
       break;
     case "RESOLVED":
       dot.classList.add("dot-resolved");
-      label.textContent = "ROOT CAUSE ISOLATED";
+      label.textContent = "ROOT CAUSE FOUND";
       if (activityText) activityText.textContent = "94% CONFIDENCE";
       break;
   }
@@ -337,6 +365,9 @@ function setCinematicStep(stepIndex, isUserClick = true) {
   const scrubSteps = document.querySelectorAll(".scrub-step");
   const urlText = document.getElementById("frame-url-text");
   const statusText = document.getElementById("frame-status-text");
+  const hypoPanel = document.getElementById("hypothesis-eval-panel");
+  const canvasBox = document.getElementById("graph-canvas-box");
+  const causalChain = document.getElementById("graph-causal-chain");
 
   // Update Scrubber Pills
   scrubSteps.forEach((step, idx) => {
@@ -345,39 +376,43 @@ function setCinematicStep(stepIndex, isUserClick = true) {
 
   if (!frame) return;
 
-  // Step 0: Session Replay
+  // Step 0: Signals Arrive & Replay
   if (stepIndex === 0) {
     frame.classList.remove("view-split", "view-verdict");
     const banner = document.getElementById("rage-click-banner");
     if (banner) banner.classList.remove("visible");
     if (urlText) urlText.textContent = "store.acme.com/checkout/pay";
-    if (statusText) statusText.textContent = "Step 1/5: Session playback active";
-    setBrainState("STANDBY");
+    if (statusText) statusText.textContent = "Step 1/5: Receiving signals & session playback";
+    setBrainState("INGESTING");
     playSessionReplayLoop();
   }
-  // Step 1: Anomaly & Signal Ejection
+  // Step 1: Hypothesis Testing & Elimination
   else if (stepIndex === 1) {
-    frame.classList.remove("view-split", "view-verdict");
-    const banner = document.getElementById("rage-click-banner");
-    if (banner) banner.classList.add("visible");
-    if (urlText) urlText.textContent = "simplywhy.ai/anomaly-alert/SAFARI-CHK";
-    if (statusText) statusText.textContent = "Step 2/5: Rage clicks detected · Signal dispatched to Neural Core";
-    setBrainState("INGESTING");
-    launchFlyingSignalParticle();
+    frame.classList.add("view-split");
+    frame.classList.remove("view-verdict");
+    if (hypoPanel) hypoPanel.style.display = "flex";
+    if (canvasBox) canvasBox.style.display = "none";
+    if (causalChain) causalChain.style.display = "none";
+
+    if (urlText) urlText.textContent = "simplywhy.ai/hypotheses/INC-2841";
+    if (statusText) statusText.textContent = "Step 2/5: Evaluating evidence & eliminating weak causes";
+    setBrainState("ANALYZING");
+    runHypothesisEliminationSequence();
   }
-  // Step 2: Causal Evidence & Neural Processing
+  // Step 2: Causal Graph Construction
   else if (stepIndex === 2) {
     frame.classList.add("view-split");
     frame.classList.remove("view-verdict");
+    if (hypoPanel) hypoPanel.style.display = "none";
+    if (canvasBox) canvasBox.style.display = "block";
+    if (causalChain) causalChain.style.display = "flex";
+
     if (urlText) urlText.textContent = "simplywhy.ai/causal-graph/INC-2841";
-    if (statusText) statusText.textContent = "Step 3/5: Neural Core filtering noise & isolating cause";
-    setBrainState("PROCESSING");
-    setTimeout(() => {
-      if (currentCinemaStep === 2) setBrainState("FILTERING");
-    }, 2200);
+    if (statusText) statusText.textContent = "Step 3/5: Dynamic Causal Graph isolating root cause";
+    setBrainState("CORRELATING");
     if (typeof resizeCinemaEvidence === 'function') resizeCinemaEvidence();
   }
-  // Step 3: Root Cause Isolated
+  // Step 3: Root Cause Found
   else if (stepIndex === 3) {
     frame.classList.remove("view-split");
     frame.classList.add("view-verdict");
@@ -400,7 +435,25 @@ function setCinematicStep(stepIndex, isUserClick = true) {
   }
 }
 
-/* Flying Signal Particle Animation (Session Replay -> Neural Core) */
+/* Hypothesis Elimination Animation */
+function runHypothesisEliminationSequence() {
+  const hNet = document.getElementById("hypo-net");
+  const hDb = document.getElementById("hypo-db");
+  const hPay = document.getElementById("hypo-pay");
+  const hBrowser = document.getElementById("hypo-browser");
+  const hDeploy = document.getElementById("hypo-deploy");
+
+  // Reset
+  [hNet, hDb, hPay].forEach(el => { if (el) el.classList.remove("hypo-eliminated"); });
+  if (hDeploy) hDeploy.classList.remove("hypo-confirmed");
+
+  setTimeout(() => { if (hNet) hNet.classList.add("hypo-eliminated"); }, 600);
+  setTimeout(() => { if (hDb) hDb.classList.add("hypo-eliminated"); }, 1200);
+  setTimeout(() => { if (hPay) hPay.classList.add("hypo-eliminated"); }, 1800);
+  setTimeout(() => { if (hDeploy) hDeploy.classList.add("hypo-confirmed"); }, 2400);
+}
+
+/* Flying Signal Particle Animation */
 function launchFlyingSignalParticle() {
   const particle = document.getElementById("flying-signal-particle");
   const payBtn = document.getElementById("demo-pay-btn");
@@ -410,16 +463,14 @@ function launchFlyingSignalParticle() {
   const btnRect = payBtn.getBoundingClientRect();
   const boxRect = canvasBox.getBoundingClientRect();
 
-  // Position at button
   particle.style.transition = 'none';
   particle.style.left = `${btnRect.left - boxRect.left + btnRect.width / 2}px`;
   particle.style.top = `${btnRect.top - boxRect.top + btnRect.height / 2}px`;
   particle.style.opacity = '1';
 
-  // Animate towards Neural Core center
   requestAnimationFrame(() => {
     particle.style.transition = 'all 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
-    particle.style.left = '45%';
+    particle.style.left = '50%';
     particle.style.top = '40%';
     setTimeout(() => {
       particle.style.opacity = '0';
@@ -427,7 +478,7 @@ function launchFlyingSignalParticle() {
   });
 }
 
-/* Viewport-Triggered Initialization with IntersectionObserver */
+/* Viewport-Triggered Initialization */
 function initCinematicScrollEngine() {
   const investigationSection = document.getElementById("investigation");
   if (!investigationSection) return;
@@ -437,8 +488,7 @@ function initCinematicScrollEngine() {
       if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
         if (!isInvestigationInView) {
           isInvestigationInView = true;
-          // Wake up the Neural Core & start autonomous flow
-          setBrainState("STANDBY");
+          setBrainState("INGESTING");
           startDemoAutoplay();
         }
       } else if (!entry.isIntersecting) {
@@ -452,7 +502,7 @@ function initCinematicScrollEngine() {
 }
 
 /* ==========================================================================
-   REALISTIC SIMULATED BROWSER SESSION REPLAY
+   SIMULATED BROWSER SESSION REPLAY
    ========================================================================== */
 function playSessionReplayLoop() {
   const cursor = document.getElementById("virtual-cursor");
@@ -465,7 +515,6 @@ function playSessionReplayLoop() {
 
   if (!cursor || !btn) return;
 
-  // Reset initial positions
   cursor.style.top = "50px";
   cursor.style.left = "40px";
   btn.classList.remove("btn-stuck", "btn-clicked");
@@ -474,7 +523,6 @@ function playSessionReplayLoop() {
   if (playhead) playhead.style.left = "15%";
   if (progress) progress.style.width = "15%";
 
-  // Step 1: Glide cursor towards payment button
   setTimeout(() => {
     cursor.style.top = `${btn.offsetTop + 14}px`;
     cursor.style.left = `${btn.offsetLeft + btn.offsetWidth / 2}px`;
@@ -482,7 +530,6 @@ function playSessionReplayLoop() {
     if (progress) progress.style.width = "45%";
   }, 600);
 
-  // Step 2: First click on payment button
   setTimeout(() => {
     if (pulse) {
       pulse.classList.remove("pulse-active");
@@ -493,7 +540,6 @@ function playSessionReplayLoop() {
     if (spinner) spinner.style.display = "inline-block";
   }, 1400);
 
-  // Step 3: Button unresponsiveness & rapid frustrated clicks
   setTimeout(() => {
     btn.classList.add("btn-stuck");
     if (pulse) {
@@ -512,6 +558,7 @@ function playSessionReplayLoop() {
     if (banner) banner.classList.add("visible");
     if (playhead) playhead.style.left = "75%";
     if (progress) progress.style.width = "75%";
+    launchFlyingSignalParticle();
   }, 2600);
 }
 
@@ -520,46 +567,28 @@ function replaySessionAnimation() {
 }
 
 /* ==========================================================================
-   ADVANCED NEURAL CORE & COMPUTATIONAL BRAIN CANVAS
+   ANIMATED CAUSAL GRAPH CANVAS (NODE-BY-NODE CONSTRUCTION)
    ========================================================================== */
 let resizeCinemaEvidence = null;
 
-// Multi-layered Neural Brain Network Nodes
-const neuralNodes = [
-  // Layer 0: Input Streams (Left)
-  { id: 'session', label: 'Session Replays', x: 0.12, y: 0.22, radius: 14, color: '#22D3EE', isCausal: true, isInput: true },
-  { id: 'errors', label: 'Error Logs', x: 0.12, y: 0.44, radius: 13, color: '#EF4444', isCausal: false, isInput: true },
-  { id: 'support', label: 'Support Tickets', x: 0.12, y: 0.64, radius: 13, color: '#F59E0B', isCausal: false, isInput: true },
-  { id: 'deploy', label: 'Git Deploy #2841', x: 0.12, y: 0.84, radius: 14, color: '#00F5A0', isCausal: true, isInput: true },
-
-  // Layer 1: Hidden Processing Synapses (Center-Left)
-  { id: 'h_safari', label: 'Safari 17.2 Check', x: 0.38, y: 0.26, radius: 16, color: '#22D3EE', isCausal: true },
-  { id: 'h_auth', label: 'Auth Token TTL', x: 0.36, y: 0.50, radius: 10, color: '#71717A', isCausal: false },
-  { id: 'h_db', label: 'DB Latency Spike', x: 0.38, y: 0.74, radius: 10, color: '#71717A', isCausal: false },
-
-  // Layer 2: Hidden Reasoning Clusters (Center-Right)
-  { id: 'h_checkout', label: 'Checkout Failure', x: 0.62, y: 0.36, radius: 18, color: '#EF4444', isCausal: true },
-  { id: 'h_cart', label: 'Cart Hydration', x: 0.62, y: 0.68, radius: 10, color: '#71717A', isCausal: false },
-
-  // Layer 3: Causal Output Verdict (Right)
-  { id: 'h_validation', label: 'Validation Loop', x: 0.86, y: 0.42, radius: 20, color: '#00F5A0', isCausal: true }
+const causalNodes = [
+  { id: 'safari', label: 'Safari 17.2', x: 0.12, y: 0.35, radius: 14, color: '#22D3EE', isCausal: true },
+  { id: 'btn', label: 'Payment Button', x: 0.30, y: 0.35, radius: 14, color: '#EF4444', isCausal: true },
+  { id: 'err', label: 'Validation Error', x: 0.50, y: 0.35, radius: 16, color: '#F59E0B', isCausal: true },
+  { id: 'drop', label: 'Checkout Drop', x: 0.70, y: 0.35, radius: 16, color: '#EF4444', isCausal: true },
+  { id: 'deploy', label: 'Deploy #2841', x: 0.88, y: 0.35, radius: 18, color: '#00F5A0', isCausal: true },
+  // Unrelated / Noise Nodes
+  { id: 'auth', label: 'Auth Token TTL', x: 0.40, y: 0.75, radius: 9, color: '#71717A', isCausal: false },
+  { id: 'db', label: 'DB Query Index', x: 0.60, y: 0.75, radius: 9, color: '#71717A', isCausal: false }
 ];
 
-// Synaptic Connections
-const neuralEdges = [
-  // Causal Vector Connections (Primary)
-  { from: 'session', to: 'h_safari', isCausal: true },
-  { from: 'h_safari', to: 'h_checkout', isCausal: true },
-  { from: 'h_checkout', to: 'h_validation', isCausal: true },
-  { from: 'deploy', to: 'h_validation', isCausal: true },
-
-  // Background / Noise Connections (Filtered out in later steps)
-  { from: 'errors', to: 'h_auth', isCausal: false },
-  { from: 'support', to: 'h_checkout', isCausal: false },
-  { from: 'support', to: 'h_cart', isCausal: false },
-  { from: 'deploy', to: 'h_db', isCausal: false },
-  { from: 'h_auth', to: 'h_cart', isCausal: false },
-  { from: 'h_db', to: 'h_validation', isCausal: false }
+const causalEdges = [
+  { from: 'safari', to: 'btn', isCausal: true },
+  { from: 'btn', to: 'err', isCausal: true },
+  { from: 'err', to: 'drop', isCausal: true },
+  { from: 'drop', to: 'deploy', isCausal: true },
+  { from: 'auth', to: 'db', isCausal: false },
+  { from: 'db', to: 'deploy', isCausal: false }
 ];
 
 function initCinemaEvidenceCanvas() {
@@ -588,18 +617,12 @@ function initCinemaEvidenceCanvas() {
     ctx.clearRect(0, 0, w, h);
 
     const isStandby = (neuralBrainState === "STANDBY");
-    const isProcessing = (neuralBrainState === "PROCESSING" || neuralBrainState === "INGESTING");
-    const isFiltering = (neuralBrainState === "FILTERING");
-    const isResolved = (neuralBrainState === "RESOLVED");
+    const isCorrelating = (neuralBrainState === "CORRELATING");
 
-    // Dynamic Alpha for Noise vs Causal Paths
-    const noiseAlpha = isStandby ? 0.08 : (isProcessing ? 0.4 : (isFiltering ? 0.06 : 0.02));
-    const causalAlpha = isStandby ? 0.25 : (isProcessing ? 0.8 : 1.0);
-
-    // Draw Synaptic Links
-    neuralEdges.forEach((edge, idx) => {
-      const src = neuralNodes.find(n => n.id === edge.from);
-      const dst = neuralNodes.find(n => n.id === edge.to);
+    // Draw Edges
+    causalEdges.forEach((edge, idx) => {
+      const src = causalNodes.find(n => n.id === edge.from);
+      const dst = causalNodes.find(n => n.id === edge.to);
       if (!src || !dst) return;
 
       const sx = src.x * w;
@@ -607,72 +630,142 @@ function initCinemaEvidenceCanvas() {
       const dx = dst.x * w;
       const dy = dst.y * h;
 
-      const alpha = edge.isCausal ? causalAlpha : noiseAlpha;
-      if (alpha <= 0.01) return;
+      const alpha = edge.isCausal ? (isStandby ? 0.25 : 0.85) : (isCorrelating ? 0.05 : 0.2);
 
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.lineTo(dx, dy);
       ctx.strokeStyle = edge.isCausal 
-        ? `rgba(0, 245, 160, ${alpha * 0.7})` 
-        : `rgba(161, 161, 170, ${alpha * 0.4})`;
+        ? `rgba(0, 245, 160, ${alpha})` 
+        : `rgba(161, 161, 170, ${alpha})`;
       ctx.lineWidth = edge.isCausal ? 2.2 : 1;
       ctx.stroke();
 
-      // Photon packet propagation along the synapse
-      if (!isStandby && (edge.isCausal || isProcessing)) {
-        const speed = edge.isCausal ? 1.2 : 0.7;
-        const progress = ((t * speed + idx * 0.2) % 1);
+      if (edge.isCausal && !isStandby) {
+        const progress = ((t * 1.2 + idx * 0.25) % 1);
         const px = sx + (dx - sx) * progress;
         const py = sy + (dy - sy) * progress;
 
         ctx.beginPath();
-        ctx.arc(px, py, edge.isCausal ? 3 : 2, 0, Math.PI * 2);
-        ctx.fillStyle = edge.isCausal ? "#00F5A0" : "#38BDF8";
-        ctx.shadowColor = edge.isCausal ? "#00F5A0" : "#38BDF8";
-        ctx.shadowBlur = edge.isCausal ? 8 : 4;
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "#00F5A0";
+        ctx.shadowColor = "#00F5A0";
+        ctx.shadowBlur = 8;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
     });
 
-    // Draw Neural Nodes & Processing Clusters
-    neuralNodes.forEach(n => {
+    // Draw Nodes
+    causalNodes.forEach(n => {
       const x = n.x * w;
       const y = n.y * h;
+      const alpha = n.isCausal ? 1.0 : (isCorrelating ? 0.08 : 0.3);
 
-      const alpha = n.isCausal ? causalAlpha : noiseAlpha;
-      if (alpha <= 0.01) return;
+      const pulse = n.isCausal ? Math.sin(t * 3 + n.x * 5) * 2 : 0;
+      const r = n.radius + pulse;
 
-      // Pulse wave for active nodes
-      const pulseSize = (!isStandby && n.isCausal) ? Math.sin(t * 3 + n.x * 10) * 3 : 0;
-      const currentRadius = n.radius + pulseSize;
-
-      // Node background
       ctx.beginPath();
-      ctx.arc(x, y, currentRadius, 0, Math.PI * 2);
+      ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(10, 12, 16, ${0.9 * alpha})`;
-      ctx.strokeStyle = n.isCausal ? (isResolved ? "#00F5A0" : n.color) : `rgba(113, 113, 122, ${alpha})`;
+      ctx.strokeStyle = n.isCausal ? "#00F5A0" : `rgba(113, 113, 122, ${alpha})`;
       ctx.lineWidth = n.isCausal ? 2 : 1;
       ctx.fill();
       ctx.stroke();
 
-      // Center core light
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI * 2);
       ctx.fillStyle = n.isCausal ? "#00F5A0" : `rgba(161, 161, 170, ${alpha})`;
       ctx.fill();
 
-      // Node Label
-      if (alpha > 0.3 || n.isCausal) {
+      if (alpha > 0.2) {
         ctx.fillStyle = n.isCausal ? "#FAFAFA" : `rgba(161, 161, 170, ${alpha})`;
-        ctx.font = "8.5px JetBrains Mono, monospace";
+        ctx.font = "8px JetBrains Mono, monospace";
         ctx.textAlign = "center";
-        ctx.fillText(n.label, x, y + currentRadius + 11);
+        ctx.fillText(n.label, x, y + r + 11);
       }
     });
 
-    t += (isStandby ? 0.006 : 0.018);
+    t += (isStandby ? 0.008 : 0.02);
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ==========================================================================
+   CONVERGENCE CANVAS (FIVE SIGNALS CONVERGING INTO CORE)
+   ========================================================================== */
+function initConvergenceCanvas() {
+  const canvas = document.getElementById("convergenceCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let t = 0;
+
+  function resize() {
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    const rect = parent.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function draw() {
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w * 0.5;
+    const cy = h * 0.45;
+
+    // Concentric neural rings
+    for (let r = 20; r <= 55; r += 15) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(0, 245, 160, ${0.15 - r * 0.002})`;
+      ctx.setLineDash([4, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Rotating orbital satellites
+    const satCount = 6;
+    for (let i = 0; i < satCount; i++) {
+      const angle = t + (i * Math.PI * 2) / satCount;
+      const orbitR = 40 + Math.sin(t * 2 + i) * 6;
+      const sx = cx + Math.cos(angle) * orbitR;
+      const sy = cy + Math.sin(angle) * orbitR;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(sx, sy);
+      ctx.strokeStyle = "rgba(0, 245, 160, 0.25)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#00F5A0";
+      ctx.shadowColor = "#00F5A0";
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Central core glowing nucleus
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10 + Math.sin(t * 3) * 2, 0, Math.PI * 2);
+    ctx.fillStyle = "#00F5A0";
+    ctx.shadowColor = "#00F5A0";
+    ctx.shadowBlur = 14;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    t += 0.02;
     requestAnimationFrame(draw);
   }
   draw();
@@ -802,7 +895,7 @@ function selectUseCase(key) {
 }
 
 /* ==========================================================================
-   FLOATING SIMPLYWHY AI CO-PILOT ASSISTANT
+   INTERACTIVE COPILOT ASSISTANT WITH MINI-INVESTIGATION FLOW
    ========================================================================== */
 function toggleAIAssistant() {
   const win = document.getElementById("ai-assistant-window");
@@ -810,16 +903,43 @@ function toggleAIAssistant() {
 }
 
 function askAIAssistant(prompt) {
-  const text = document.getElementById("ai-response-text");
-  if (!text) return;
+  const progressBox = document.getElementById("ai-mini-progress");
+  const stepMsg = document.getElementById("ai-step-msg");
+  const barFill = document.getElementById("ai-bar-fill");
+  const responseArea = document.getElementById("ai-response-area");
+  const responseText = document.getElementById("ai-response-text");
 
-  if (prompt.includes("conversion")) {
-    text.textContent = "Checkout conversion dropped 18.4% after deployment #2841. 78% of affected users are on Safari. Session replays show repeated clicks on the payment button without a successful response.";
-  } else if (prompt.includes("today")) {
-    text.textContent = "7 deployments pushed across core services. 3 correlated anomalies detected: checkout payment loop, OAuth whitelist mismatch, and invite token expiration.";
-  } else {
-    text.textContent = "Watch the live investigation above. SimplyWhy has already isolated the culprit to deployment #2841 with 94% attribution confidence.";
-  }
+  if (!progressBox || !responseText) return;
+
+  // Show Mini-Investigation Simulation
+  progressBox.style.display = "flex";
+  if (responseArea) responseArea.style.display = "none";
+
+  if (stepMsg) stepMsg.textContent = "Ingesting 5 telemetry streams...";
+  if (barFill) barFill.style.width = "25%";
+
+  setTimeout(() => {
+    if (stepMsg) stepMsg.textContent = "SimplyWhy Core processing evidence...";
+    if (barFill) barFill.style.width = "60%";
+  }, 450);
+
+  setTimeout(() => {
+    if (stepMsg) stepMsg.textContent = "Isolating causal vector...";
+    if (barFill) barFill.style.width = "90%";
+  }, 900);
+
+  setTimeout(() => {
+    progressBox.style.display = "none";
+    if (responseArea) responseArea.style.display = "block";
+
+    if (prompt.includes("conversion")) {
+      responseText.textContent = "ROOT CAUSE: Payment validation loop in deployment #2841 (94% confidence). 78% of affected checkout drops are isolated to Safari 17.2 WebKit regex handler.";
+    } else if (prompt.includes("today")) {
+      responseText.textContent = "7 deployments pushed across core services. 1 active critical anomaly: checkout validation loop (#2841). Recommended action: Rollback commit #2841.";
+    } else {
+      responseText.textContent = "Priority investigation: Checkout Conversion drop (-18.4%). Causal vector resolved to deployment #2841 with 94% attribution confidence.";
+    }
+  }, 1350);
 }
 
 function closeAIAndScroll(targetSelector) {

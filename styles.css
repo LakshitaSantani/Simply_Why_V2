@@ -101,7 +101,7 @@ img { max-width: 100%; display: block; }
 }
 .section-sub {
   font-size: 1.05rem; color: var(--text-secondary);
-  line-height: 1.7; max-width: 600px; margin: 12px auto 0;
+  line-height: 1.7; max-width: 620px; margin: 12px auto 0;
 }
 .text-accent { color: var(--accent); }
 .text-red { color: var(--red); }
@@ -296,7 +296,7 @@ img { max-width: 100%; display: block; }
 }
 
 .viz-body { padding: 20px 22px; }
-.viz-metrics { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.viz-metrics { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 .viz-metric-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; border-radius: var(--radius-md);
@@ -325,12 +325,34 @@ img { max-width: 100%; display: block; }
 .viz-sparkline-wrap { width: 90px; height: 24px; }
 .viz-sparkline { width: 100%; height: 100%; display: block; }
 
-.viz-graph {
-  height: 90px; background: rgba(0, 0, 0, 0.4);
-  border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);
-  overflow: hidden; margin-bottom: 16px;
+/* Hero Intelligence Core Box */
+.viz-hero-core-box {
+  height: 105px;
+  background: #07080B;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 16px;
 }
-#vizCanvas { width: 100%; height: 100%; display: block; }
+#heroCoreCanvas { width: 100%; height: 100%; display: block; }
+
+.hero-core-stream-labels {
+  position: absolute;
+  top: 6px; left: 10px; right: 10px;
+  display: flex; justify-content: space-between;
+  pointer-events: none;
+}
+.stream-pill {
+  font-family: var(--font-mono); font-size: 0.55rem; font-weight: 800;
+  padding: 1px 5px; border-radius: 3px; background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-subtle); color: var(--text-tertiary);
+}
+.stream-behavior { color: var(--cyan); }
+.stream-support { color: var(--amber); }
+.stream-product { color: var(--blue); }
+.stream-eng { color: var(--accent); }
+.stream-context { color: var(--red); }
 
 .hero-viz-footer {
   display: flex; align-items: center; justify-content: space-between;
@@ -357,7 +379,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   2. CINEMATIC PRODUCT DEMO SECTION
+   2. CINEMATIC PRODUCT DEMO SECTION (INVESTIGATION CENTERPIECE)
    ========================================================================== */
 .section-cinematic {
   padding: 50px 0 80px;
@@ -385,7 +407,7 @@ img { max-width: 100%; display: block; }
   justify-content: center;
 }
 
-/* The Cinema Application Frame (Never cropped) */
+/* The Cinema Application Frame */
 .cinema-app-frame {
   width: min(1140px, 94vw);
   min-height: 560px;
@@ -465,7 +487,7 @@ img { max-width: 100%; display: block; }
   transition: all var(--t-med) var(--ease-smooth);
 }
 
-/* In Step 2 & 3 (Split Replay + Graph View) */
+/* Split View State */
 .cinema-app-frame.view-split .frame-stage-viewport {
   grid-template-columns: 1.05fr 1fr;
 }
@@ -624,7 +646,7 @@ img { max-width: 100%; display: block; }
 }
 .btn-mini-replay:hover { color: var(--accent); }
 
-/* Panel 2: Evidence Graph */
+/* Panel 2: Evidence Graph & Hypothesis Evaluation */
 .panel-evidence-graph {
   display: none;
 }
@@ -663,6 +685,36 @@ img { max-width: 100%; display: block; }
   font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800;
   color: var(--accent);
 }
+
+/* Hypothesis Evaluation Sub-Panel */
+.hypothesis-eval-panel {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #090A0E;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  flex: 1;
+}
+.evidence-checklist {
+  display: flex; flex-direction: column; gap: 4px;
+  font-family: var(--font-mono); font-size: 0.62rem; color: var(--accent);
+  padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);
+}
+.check-item { display: flex; align-items: center; gap: 6px; }
+
+.hypothesis-ranking-list { display: flex; flex-direction: column; gap: 8px; }
+.hypo-row { display: flex; flex-direction: column; gap: 3px; font-family: var(--font-mono); font-size: 0.64rem; }
+.hypo-meta { display: flex; justify-content: space-between; color: var(--text-secondary); }
+.hypo-bar { height: 4px; background: rgba(255, 255, 255, 0.06); border-radius: 2px; overflow: hidden; }
+.hypo-fill { height: 100%; background: var(--text-tertiary); border-radius: 2px; transition: width 0.4s ease; }
+.hypo-fill.fill-amber { background: var(--amber); }
+.hypo-fill.fill-mint { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+.hypo-row.hypo-eliminated { opacity: 0.35; text-decoration: line-through; }
+.hypo-row.hypo-confirmed { opacity: 1; }
+.hypo-row.hypo-confirmed .hypo-meta { color: var(--accent); font-weight: 800; }
 
 .graph-canvas-box {
   flex: 1; min-height: 230px; position: relative;
@@ -791,39 +843,119 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   3. HOW SIMPLYWHY THINKS — SYSTEM ARCHITECTURE
+   3. FIVE SIGNAL SOURCES & SYSTEM ARCHITECTURE
    ========================================================================= */
-.section-how { padding: 100px 0; background: var(--bg-surface); }
-.how-header { text-align: center; margin-bottom: 48px; }
+.section-how { padding: 90px 0; background: var(--bg-surface); }
+.how-header { text-align: center; margin-bottom: 40px; }
 
-.how-formula-banner {
-  display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;
-  margin-top: 18px; padding: 8px 18px; border-radius: var(--radius-pill);
-  background: var(--bg-card); border: 1px solid var(--border);
+/* 5-Stream Convergence Architecture Layout */
+.convergence-topology-wrapper {
+  max-width: 960px;
+  margin: 0 auto 60px;
 }
-.f-pill { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); }
-.f-pill.highlight { color: var(--accent); font-weight: 800; }
-.f-op { color: var(--text-muted); font-size: 0.75rem; }
+.convergence-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
 
-.signals-pillars-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+.conv-node { width: 100%; max-width: 280px; }
+.conv-top { display: flex; justify-content: center; }
+
+.conv-middle-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 24px;
+  align-items: center;
+  width: 100%;
 }
-.pillar-card {
-  padding: 22px 18px; border-radius: var(--radius-lg);
+.conv-bottom-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+}
+
+.conv-card {
+  padding: 18px 16px; border-radius: var(--radius-md);
   background: var(--bg-card); border: 1px solid var(--border-subtle);
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column; gap: 4px;
   transition: all var(--t-fast) ease;
 }
-.pillar-card:hover {
+.conv-card:hover {
   background: var(--bg-card-hover); border-color: var(--border); transform: translateY(-2px);
 }
-.pillar-icon { font-size: 1.4rem; margin-bottom: 2px; }
+.pillar-icon { font-size: 1.3rem; margin-bottom: 2px; }
 .pillar-tag {
   font-family: var(--font-mono); font-size: 0.62rem; font-weight: 800;
   letter-spacing: 0.08em; color: var(--accent);
 }
-.pillar-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-.pillar-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.conv-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.conv-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; }
+
+/* Central Core Processor Card */
+.conv-center-core {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.core-processor-card {
+  width: 100%;
+  height: 170px;
+  background: #08090D;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 40px var(--accent-dim);
+  position: relative;
+  overflow: hidden;
+}
+#convergenceCanvas { width: 100%; height: 100%; display: block; }
+.core-label-overlay {
+  position: absolute;
+  bottom: 8px; left: 0; right: 0;
+  text-align: center;
+  display: flex; flex-direction: column;
+  pointer-events: none;
+}
+.core-brand-name {
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 800; color: var(--text-primary);
+}
+.core-status-text {
+  font-family: var(--font-mono); font-size: 0.55rem; font-weight: 700; color: var(--accent);
+}
+
+/* 5-Phase "How SimplyWhy Thinks" Framework */
+.how-thinks-container {
+  padding-top: 40px; border-top: 1px solid var(--border-subtle);
+}
+.how-thinks-header { text-align: center; margin-bottom: 28px; }
+.how-thinks-title {
+  font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+  margin-top: 8px; color: var(--text-primary);
+}
+
+.how-thinks-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+}
+.thinks-step-card {
+  padding: 18px 14px; border-radius: var(--radius-md);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.thinks-step-num {
+  font-family: var(--font-mono); font-size: 1.1rem; font-weight: 800; color: var(--accent);
+}
+.thinks-step-tag {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 800; color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+}
+.thinks-step-title {
+  font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;
+}
+.thinks-step-desc {
+  font-size: 0.75rem; color: var(--text-secondary); line-height: 1.45;
+}
 
 /* ==========================================================================
    4. WHY SIMPLYWHY — PRODUCT DIFFERENTIATION
@@ -1025,6 +1157,17 @@ img { max-width: 100%; display: block; }
   color: var(--text-secondary); font-size: 0.76rem; cursor: pointer; transition: all var(--t-fast) ease;
 }
 .ai-chip:hover { background: var(--bg-surface); border-color: var(--accent); color: var(--accent); }
+
+/* Mini Progress for Copilot */
+.ai-mini-progress {
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: rgba(0, 245, 160, 0.04); border: 1px solid var(--border-accent);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.ai-step-msg { font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent); font-weight: 700; }
+.ai-bar-track { height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 2px; overflow: hidden; }
+.ai-bar-fill { height: 100%; width: 30%; background: var(--accent); transition: width 0.4s ease; }
+
 .ai-response-box {
   display: flex; gap: 10px; background: rgba(0, 245, 160, 0.04);
   border: 1px solid var(--border-accent); border-radius: var(--radius-sm); padding: 12px;
@@ -1064,7 +1207,9 @@ img { max-width: 100%; display: block; }
    ========================================================================== */
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; gap: 48px; }
-  .signals-pillars-grid { grid-template-columns: repeat(3, 1fr); }
+  .conv-middle-row { grid-template-columns: 1fr; }
+  .conv-bottom-row { flex-direction: column; align-items: center; }
+  .how-thinks-grid { grid-template-columns: repeat(3, 1fr); }
   .diff-comparison-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .cinema-app-frame.view-split .frame-stage-viewport { grid-template-columns: 1fr; }
@@ -1078,7 +1223,7 @@ img { max-width: 100%; display: block; }
   .hero-actions { flex-wrap: wrap; }
   .cinema-app-frame { width: calc(100vw - 32px); min-height: 520px; }
   .frame-stage-viewport { padding: 16px; }
-  .signals-pillars-grid { grid-template-columns: 1fr 1fr; }
+  .how-thinks-grid { grid-template-columns: 1fr 1fr; }
   .proof-stats-row { grid-template-columns: 1fr; }
   .diag-split-grid { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; gap: 32px; }
@@ -1090,7 +1235,7 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 480px) {
-  .signals-pillars-grid { grid-template-columns: 1fr; }
+  .how-thinks-grid { grid-template-columns: 1fr; }
   .checkout-demo-card { padding: 12px; }
   .mini-browser-content { padding: 12px; min-height: 250px; }
   .frame-timeline-scrubber { padding: 6px 12px; }

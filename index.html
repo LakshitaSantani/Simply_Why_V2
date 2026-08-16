@@ -54,7 +54,7 @@
   <main>
 
     <!-- ================================================================
-         1. HERO — "SOMETHING IS WRONG" (SYMPTOMS ONLY, NO SPOILERS)
+         1. HERO — "DON'T JUST FIND THE PROBLEM. FIND THE WHY."
          ================================================================ -->
     <section class="section hero" id="hero">
       <div class="container hero-grid">
@@ -79,7 +79,7 @@
           </div>
         </div>
 
-        <!-- RIGHT: Clean Symptom Health Visualization -->
+        <!-- RIGHT: Product Health + Hero Intelligence Core Visualization -->
         <div class="hero-viz reveal-scale" style="transition-delay:300ms" id="hero-viz-card">
           <div class="viz-header">
             <div class="viz-header-left">
@@ -134,9 +134,16 @@
               </div>
             </div>
 
-            <!-- Canvas Graph Visualization -->
-            <div class="viz-graph">
-              <canvas id="vizCanvas"></canvas>
+            <!-- Hero Intelligence Core: Streams entering Central Processor -->
+            <div class="viz-hero-core-box">
+              <canvas id="heroCoreCanvas"></canvas>
+              <div class="hero-core-stream-labels">
+                <span class="stream-pill stream-behavior">BEHAVIOR</span>
+                <span class="stream-pill stream-support">SUPPORT</span>
+                <span class="stream-pill stream-product">PRODUCT</span>
+                <span class="stream-pill stream-eng">ENGINEERING</span>
+                <span class="stream-pill stream-context">CONTEXT</span>
+              </div>
             </div>
 
             <!-- Bottom Symptom Callout & Trigger -->
@@ -157,21 +164,21 @@
 
 
     <!-- ================================================================
-         2. CINEMATIC STICKY PRODUCT DEMO — "WATCH IT FIND THE WHY"
+         2. INVESTIGATION SECTION — THE INTELLIGENCE CENTERPIECE
          ================================================================ -->
     <section class="section section-cinematic" id="investigation">
       
-      <!-- Section Intro (Minimal text) -->
+      <!-- Section Intro -->
       <div class="container cinematic-intro-text reveal">
-        <span class="eyebrow">✦ Autonomous Investigation</span>
+        <span class="eyebrow">✦ Autonomous Investigation Engine</span>
         <h2 class="section-heading" style="margin-top:12px">Watch SimplyWhy find the why.</h2>
-        <p class="section-sub">Scroll to follow the investigation from live user frustration to root cause attribution and recovery.</p>
+        <p class="section-sub">Follow the live investigation from user frustration to hypothesis elimination, causal graphing, and recovery.</p>
       </div>
 
-      <!-- Cinematic Multi-Step Scroll Experience -->
+      <!-- Cinematic Multi-Step Container -->
       <div class="cinematic-scroll-container" id="cinematic-container">
         
-        <!-- STICKY SCREEN APPLICATION FRAME -->
+        <!-- APPLICATION SCREEN FRAME -->
         <div class="sticky-frame-wrapper" id="sticky-frame-wrapper">
           <div class="cinema-app-frame" id="cinema-app-frame">
             
@@ -195,15 +202,15 @@
             <!-- Frame Stepper Navigation Scrubber -->
             <div class="frame-timeline-scrubber" id="frame-scrubber">
               <button class="scrub-step active" data-step="0" onclick="setCinematicStep(0)">
-                <span class="step-idx">01</span> SESSION REPLAY
+                <span class="step-idx">01</span> SIGNALS ARRIVE
               </button>
               <span class="scrub-arrow">→</span>
               <button class="scrub-step" data-step="1" onclick="setCinematicStep(1)">
-                <span class="step-idx">02</span> ANOMALY & MORPH
+                <span class="step-idx">02</span> HYPOTHESIS TESTING
               </button>
               <span class="scrub-arrow">→</span>
               <button class="scrub-step" data-step="2" onclick="setCinematicStep(2)">
-                <span class="step-idx">03</span> CAUSAL EVIDENCE
+                <span class="step-idx">03</span> CAUSAL GRAPH
               </button>
               <span class="scrub-arrow">→</span>
               <button class="scrub-step" data-step="3" onclick="setCinematicStep(3)">
@@ -296,22 +303,57 @@
                 </div>
               </div>
 
-              <!-- RIGHT / SECONDARY: Neural Core & Computational Brain Canvas -->
+              <!-- RIGHT / SECONDARY: Intelligence Core, Hypothesis Testing & Causal Graph -->
               <div class="stage-sub-panel panel-evidence-graph" id="panel-evidence">
                 <div class="evidence-graph-card">
                   <div class="graph-card-header">
                     <div class="graph-header-title">
                       <div class="brain-status-pill" id="brain-status-pill">
-                        <span class="brain-status-dot"></span>
-                        <span id="brain-status-label">NEURAL CORE · STANDBY</span>
+                        <span class="brain-status-dot dot-standby"></span>
+                        <span id="brain-status-label">SIMPLYWHY ENGINE · STANDBY</span>
                       </div>
                     </div>
                     <div class="graph-header-conf" id="graph-conf-badge">
-                      <span id="neural-activity-text">STANDBY</span>
+                      <span id="neural-activity-text">Waiting for investigation...</span>
                     </div>
                   </div>
 
-                  <div class="graph-canvas-box">
+                  <!-- Hypothesis Testing Sub-Panel (Active during Step 1) -->
+                  <div class="hypothesis-eval-panel" id="hypothesis-eval-panel">
+                    <div class="evidence-checklist" id="evidence-checklist">
+                      <div class="check-item checked">✓ Detected conversion anomaly (18.4% drop)</div>
+                      <div class="check-item checked">✓ Correlated affected sessions (Safari 17.2)</div>
+                      <div class="check-item checked">✓ Found matching error spike (422 Unprocessable)</div>
+                      <div class="check-item checked">✓ Compared recent deployments (#2841 at 10:12)</div>
+                      <div class="check-item checked">✓ Cross-referenced support complaints (283 tickets)</div>
+                    </div>
+                    
+                    <div class="hypothesis-ranking-list" id="hypothesis-ranking-list">
+                      <div class="hypo-row hypo-eliminated" id="hypo-net">
+                        <div class="hypo-meta"><span>Network failure</span> <span class="hypo-pct">12%</span></div>
+                        <div class="hypo-bar"><div class="hypo-fill" style="width:12%"></div></div>
+                      </div>
+                      <div class="hypo-row hypo-eliminated" id="hypo-db">
+                        <div class="hypo-meta"><span>Database latency</span> <span class="hypo-pct">24%</span></div>
+                        <div class="hypo-bar"><div class="hypo-fill" style="width:24%"></div></div>
+                      </div>
+                      <div class="hypo-row hypo-eliminated" id="hypo-pay">
+                        <div class="hypo-meta"><span>Payment gateway outage</span> <span class="hypo-pct">35%</span></div>
+                        <div class="hypo-bar"><div class="hypo-fill" style="width:35%"></div></div>
+                      </div>
+                      <div class="hypo-row hypo-active" id="hypo-browser">
+                        <div class="hypo-meta"><span>Browser incompatibility (WebKit)</span> <span class="hypo-pct">68%</span></div>
+                        <div class="hypo-bar"><div class="hypo-fill fill-amber" style="width:68%"></div></div>
+                      </div>
+                      <div class="hypo-row hypo-active hypo-confirmed" id="hypo-deploy">
+                        <div class="hypo-meta"><span>Deploy #2841 validation regression</span> <span class="hypo-pct">94%</span></div>
+                        <div class="hypo-bar"><div class="hypo-fill fill-mint" style="width:94%"></div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Dynamic Animated Causal Graph (Active during Step 2) -->
+                  <div class="graph-canvas-box" id="graph-canvas-box">
                     <canvas id="cinemaEvidenceCanvas"></canvas>
                     <div class="flying-signal-particle" id="flying-signal-particle"></div>
                   </div>
@@ -319,9 +361,11 @@
                   <div class="graph-causal-chain" id="graph-causal-chain">
                     <div class="chain-node active" id="c-node-safari">Safari 17.2</div>
                     <span class="chain-arrow">→</span>
-                    <div class="chain-node active" id="c-node-checkout">Checkout Failure</div>
+                    <div class="chain-node active" id="c-node-btn">Payment Button</div>
                     <span class="chain-arrow">→</span>
-                    <div class="chain-node active" id="c-node-validation">Validation Loop</div>
+                    <div class="chain-node active" id="c-node-err">Validation Error</div>
+                    <span class="chain-arrow">→</span>
+                    <div class="chain-node active" id="c-node-checkout">Checkout Drop</div>
                     <span class="chain-arrow">→</span>
                     <div class="chain-node culprit" id="c-node-deploy">Deploy #2841</div>
                   </div>
@@ -409,68 +453,123 @@
 
 
     <!-- ================================================================
-         3. HOW SIMPLYWHY THINKS — SYSTEM ARCHITECTURE
+         3. FIVE SIGNAL SOURCES & HOW SIMPLYWHY THINKS
          ================================================================ -->
     <section class="section section-how" id="how-it-works">
       <div class="container">
         
         <div class="how-header reveal">
-          <span class="eyebrow">✦ Cross-Stream Causal Engine</span>
+          <span class="eyebrow">✦ Cross-Stream Intelligence Engine</span>
           <h2 class="section-heading" style="margin-top:14px">Five signals. One answer.</h2>
-          <div class="how-formula-banner">
-            <span class="f-pill">BEHAVIOR</span>
-            <span class="f-op">+</span>
-            <span class="f-pill">SUPPORT</span>
-            <span class="f-op">+</span>
-            <span class="f-pill">PRODUCT</span>
-            <span class="f-op">+</span>
-            <span class="f-pill">ENGINEERING</span>
-            <span class="f-op">+</span>
-            <span class="f-pill">CONTEXT</span>
-            <span class="f-op">=</span>
-            <span class="f-pill highlight">WHY</span>
+          <p class="section-sub">SimplyWhy connects evidence across systems rather than forcing engineers to manually correlate disconnected tools.</p>
+        </div>
+
+        <!-- Interactive 5-Stream Convergence Architecture -->
+        <div class="convergence-topology-wrapper reveal" style="transition-delay:100ms">
+          <div class="convergence-grid">
+            <!-- Top: Support -->
+            <div class="conv-node conv-top" id="conv-support">
+              <div class="conv-card">
+                <div class="pillar-icon">💬</div>
+                <div class="pillar-tag">SUPPORT</div>
+                <div class="conv-title">What users said</div>
+                <div class="conv-desc">283 checkout tickets & complaints</div>
+              </div>
+            </div>
+
+            <!-- Middle Row: Behavior -> [ CORE ] <- Engineering -->
+            <div class="conv-middle-row">
+              <div class="conv-node conv-left" id="conv-behavior">
+                <div class="conv-card">
+                  <div class="pillar-icon">👤</div>
+                  <div class="pillar-tag">USER BEHAVIOR</div>
+                  <div class="conv-title">What users did</div>
+                  <div class="conv-desc">Session replays, 1,842 rage clicks & stalls</div>
+                </div>
+              </div>
+
+              <!-- Central SimplyWhy Core Processor -->
+              <div class="conv-center-core" id="conv-core">
+                <div class="core-processor-card">
+                  <canvas id="convergenceCanvas"></canvas>
+                  <div class="core-label-overlay">
+                    <span class="core-brand-name">SIMPLYWHY CORE</span>
+                    <span class="core-status-text">CORRELATING EVIDENCE</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="conv-node conv-right" id="conv-engineering">
+                <div class="conv-card">
+                  <div class="pillar-icon">⚡</div>
+                  <div class="pillar-tag">ENGINEERING</div>
+                  <div class="conv-title">What deployed</div>
+                  <div class="conv-desc">Git commit #2841, PR metadata, CI/CD timing</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Row: Product & Context -->
+            <div class="conv-bottom-row">
+              <div class="conv-node conv-bottom-left" id="conv-product">
+                <div class="conv-card">
+                  <div class="pillar-icon">📊</div>
+                  <div class="pillar-tag">PRODUCT</div>
+                  <div class="conv-title">What changed</div>
+                  <div class="conv-desc">Funnel dropoff & conversion cohorts</div>
+                </div>
+              </div>
+
+              <div class="conv-node conv-bottom-right" id="conv-context">
+                <div class="conv-card">
+                  <div class="pillar-icon">🌐</div>
+                  <div class="pillar-tag">CONTEXT</div>
+                  <div class="conv-title">What broke</div>
+                  <div class="conv-desc">WebKit regex engine & 422 HTTP stack trace</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="signals-pillars-grid reveal" style="transition-delay:100ms">
-          <!-- Pillar 1 -->
-          <div class="pillar-card">
-            <div class="pillar-icon">👤</div>
-            <div class="pillar-tag">USER BEHAVIOR</div>
-            <h4 class="pillar-title">What users did</h4>
-            <p class="pillar-desc">Session replays, rage clicks, cursor stalls, and dropoffs.</p>
+        <!-- 5-Phase "How SimplyWhy Thinks" Framework -->
+        <div class="how-thinks-container reveal" style="transition-delay:200ms">
+          <div class="how-thinks-header">
+            <span class="eyebrow">✦ The Causal Reasoning Pipeline</span>
+            <h3 class="how-thinks-title">How SimplyWhy thinks</h3>
           </div>
 
-          <!-- Pillar 2 -->
-          <div class="pillar-card">
-            <div class="pillar-icon">💬</div>
-            <div class="pillar-tag">SUPPORT</div>
-            <h4 class="pillar-title">What users said</h4>
-            <p class="pillar-desc">Customer complaints, tickets, and recurring frustration keywords.</p>
-          </div>
-
-          <!-- Pillar 3 -->
-          <div class="pillar-card">
-            <div class="pillar-icon">📊</div>
-            <div class="pillar-tag">PRODUCT</div>
-            <h4 class="pillar-title">What changed</h4>
-            <p class="pillar-desc">Funnel conversion dropoffs and cohort anomalies.</p>
-          </div>
-
-          <!-- Pillar 4 -->
-          <div class="pillar-card">
-            <div class="pillar-icon">⚡</div>
-            <div class="pillar-tag">ENGINEERING</div>
-            <h4 class="pillar-title">What deployed</h4>
-            <p class="pillar-desc">Git commits, pull requests, release metadata, and CI/CD timings.</p>
-          </div>
-
-          <!-- Pillar 5 -->
-          <div class="pillar-card">
-            <div class="pillar-icon">🌐</div>
-            <div class="pillar-tag">CONTEXT</div>
-            <h4 class="pillar-title">What broke</h4>
-            <p class="pillar-desc">Error stack traces, browser engines, and third-party APIs.</p>
+          <div class="how-thinks-grid">
+            <div class="thinks-step-card">
+              <div class="thinks-step-num">01</div>
+              <div class="thinks-step-tag">DETECT</div>
+              <h4 class="thinks-step-title">Find abnormal behavior</h4>
+              <p class="thinks-step-desc">Identifies metric dips, rage clicks, and unexpected cohort anomalies in real time.</p>
+            </div>
+            <div class="thinks-step-card">
+              <div class="thinks-step-num">02</div>
+              <div class="thinks-step-tag">CORRELATE</div>
+              <h4 class="thinks-step-title">Connect signals across systems</h4>
+              <p class="thinks-step-desc">Maps telemetry from Datadog, Mixpanel, Zendesk, FullStory, and GitHub into one graph.</p>
+            </div>
+            <div class="thinks-step-card">
+              <div class="thinks-step-num">03</div>
+              <div class="thinks-step-tag">TEST</div>
+              <h4 class="thinks-step-title">Evaluate possible causes</h4>
+              <p class="thinks-step-desc">Eliminates noise and runs deterministic validation across multiple candidate hypotheses.</p>
+            </div>
+            <div class="thinks-step-card">
+              <div class="thinks-step-num">04</div>
+              <div class="thinks-step-tag">ATTRIBUTE</div>
+              <h4 class="thinks-step-title">Isolate root cause</h4>
+              <p class="thinks-step-desc">Pinpoints the exact code change, PR, or configuration error with 90%+ confidence.</p>
+            </div>
+            <div class="thinks-step-card">
+              <div class="thinks-step-num">05</div>
+              <div class="thinks-step-tag">ACT</div>
+              <h4 class="thinks-step-title">Recommend remediation</h4>
+              <p class="thinks-step-desc">Generates immediate rollback or patch instructions with projected recovery impact.</p>
+            </div>
           </div>
         </div>
 
@@ -501,6 +600,7 @@
               <div class="silo-item"><span class="silo-icon">✕</span> <span>Mixpanel shows conversion dropped</span></div>
               <div class="silo-item"><span class="silo-icon">✕</span> <span>Zendesk logs customer complaints</span></div>
               <div class="silo-item"><span class="silo-icon">✕</span> <span>FullStory captures rage clicks</span></div>
+              <div class="silo-item"><span class="silo-icon">✕</span> <span>GitHub shows recent pull requests</span></div>
             </div>
 
             <div class="diff-verdict text-muted">
@@ -519,6 +619,7 @@
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>Automatic symptom-to-code correlation</span></div>
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>Pinpoints exact PR & commit responsible</span></div>
               <div class="silo-item success"><span class="silo-icon">✓</span> <span>Instant remediation prescription</span></div>
+              <div class="silo-item success"><span class="silo-icon">✓</span> <span>Automated recovery projection</span></div>
             </div>
 
             <div class="diff-verdict text-accent">
@@ -672,7 +773,7 @@
         <div class="ai-intro-msg">
           <span class="ai-avatar">✦</span>
           <div class="ai-bubble">
-            Ask me why something changed or click a live telemetry query below:
+            Ask me why something changed or select a live investigation below:
           </div>
         </div>
 
@@ -681,6 +782,12 @@
           <button class="ai-chip" onclick="askAIAssistant('Why did conversion drop?')">Why did conversion drop?</button>
           <button class="ai-chip" onclick="askAIAssistant('What changed today?')">What changed today?</button>
           <button class="ai-chip" onclick="askAIAssistant('What should I investigate?')">What should I investigate?</button>
+        </div>
+
+        <!-- Mini Investigation Progress Indicator -->
+        <div class="ai-mini-progress" id="ai-mini-progress" style="display:none;">
+          <div class="ai-step-msg" id="ai-step-msg">Collecting cross-stream signals...</div>
+          <div class="ai-bar-track"><div class="ai-bar-fill" id="ai-bar-fill"></div></div>
         </div>
 
         <!-- Response Container -->
@@ -692,7 +799,7 @@
             </div>
           </div>
           <div class="ai-action-row">
-            <button class="btn-ai-evidence" onclick="closeAIAndScroll('#investigation')">Watch live demo →</button>
+            <button class="btn-ai-evidence" onclick="closeAIAndScroll('#investigation')">Watch full investigation →</button>
           </div>
         </div>
       </div>
