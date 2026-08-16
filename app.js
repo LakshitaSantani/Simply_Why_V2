@@ -75,11 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
   initScrollReveals();
   initProductHealthSparklines();
   initHeroVizCanvas();
-  initCinematicScrollEngine();
   initCinemaEvidenceCanvas();
   initCinemaRecoveryCanvas();
   initLiveTelemetryTicker();
-  playSessionReplayLoop();
+  setBrainState("STANDBY");
+  initCinematicScrollEngine();
 });
 
 /* ---------- NAVBAR SCROLL ---------- */
@@ -232,12 +232,61 @@ function scrollToInvestigation() {
 }
 
 /* ==========================================================================
-   2. CINEMATIC AUTONOMOUS FLOW & STEP CONTROLLER
+   2. CINEMATIC AUTONOMOUS FLOW & NEURAL BRAIN ENGINE
    ========================================================================== */
 let currentCinemaStep = 0;
 let isDemoAutoplaying = true;
 let demoAutoplayTimeout = null;
-const DEMO_STEP_DURATIONS = [4500, 3800, 5000, 4800, 6000];
+let isInvestigationInView = false;
+let neuralBrainState = "STANDBY"; // STANDBY, INGESTING, PROCESSING, CORRELATING, FILTERING, RESOLVED
+
+const DEMO_STEP_DURATIONS = [4500, 3800, 5200, 5000, 6000];
+
+/* Brain State Labels & UI Updates */
+function setBrainState(state) {
+  neuralBrainState = state;
+  const pill = document.getElementById("brain-status-pill");
+  const dot = pill ? pill.querySelector(".brain-status-dot") : null;
+  const label = document.getElementById("brain-status-label");
+  const activityText = document.getElementById("neural-activity-text");
+
+  if (!label || !dot) return;
+
+  dot.className = "brain-status-dot";
+
+  switch (state) {
+    case "STANDBY":
+      dot.classList.add("dot-standby");
+      label.textContent = "NEURAL CORE · STANDBY";
+      if (activityText) activityText.textContent = "IDLE";
+      break;
+    case "INGESTING":
+      dot.classList.add("dot-ingesting");
+      label.textContent = "INGESTING SIGNALS (5/5)";
+      if (activityText) activityText.textContent = "INGESTING";
+      break;
+    case "PROCESSING":
+      dot.classList.add("dot-processing");
+      label.textContent = "NEURAL CORE · PROCESSING";
+      if (activityText) activityText.textContent = "REASONING";
+      break;
+    case "CORRELATING":
+      dot.classList.add("dot-correlating");
+      label.textContent = "CROSS-STREAM CORRELATING";
+      if (activityText) activityText.textContent = "SYNCHRONIZING";
+      break;
+    case "FILTERING":
+      dot.classList.add("dot-filtering");
+      label.textContent = "FILTERING NOISE (94% CONF)";
+      if (activityText) activityText.textContent = "ISOLATING";
+      break;
+    case "RESOLVED":
+      dot.classList.add("dot-resolved");
+      label.textContent = "ROOT CAUSE ISOLATED";
+      if (activityText) activityText.textContent = "94% CONFIDENCE";
+      break;
+  }
+}
 
 function startDemoAutoplay() {
   isDemoAutoplaying = true;
@@ -270,11 +319,11 @@ function updateDemoToggleButton() {
 
 function scheduleNextDemoStep() {
   clearTimeout(demoAutoplayTimeout);
-  if (!isDemoAutoplaying) return;
+  if (!isDemoAutoplaying || !isInvestigationInView) return;
 
   const duration = DEMO_STEP_DURATIONS[currentCinemaStep] || 4500;
   demoAutoplayTimeout = setTimeout(() => {
-    if (!isDemoAutoplaying) return;
+    if (!isDemoAutoplaying || !isInvestigationInView) return;
     const nextStep = (currentCinemaStep + 1) % 5;
     setCinematicStep(nextStep, false);
     scheduleNextDemoStep();
@@ -296,60 +345,115 @@ function setCinematicStep(stepIndex, isUserClick = true) {
 
   if (!frame) return;
 
-  // State Transitions
+  // Step 0: Session Replay
   if (stepIndex === 0) {
-    // 01: Full Session Replay Focus
     frame.classList.remove("view-split", "view-verdict");
     const banner = document.getElementById("rage-click-banner");
     if (banner) banner.classList.remove("visible");
     if (urlText) urlText.textContent = "store.acme.com/checkout/pay";
     if (statusText) statusText.textContent = "Step 1/5: Session playback active";
+    setBrainState("STANDBY");
     playSessionReplayLoop();
-  } else if (stepIndex === 1) {
-    // 02: Anomaly & Rage Click Freeze
+  }
+  // Step 1: Anomaly & Signal Ejection
+  else if (stepIndex === 1) {
     frame.classList.remove("view-split", "view-verdict");
     const banner = document.getElementById("rage-click-banner");
     if (banner) banner.classList.add("visible");
     if (urlText) urlText.textContent = "simplywhy.ai/anomaly-alert/SAFARI-CHK";
-    if (statusText) statusText.textContent = "Step 2/5: Rage clicks detected · Freezing session";
-  } else if (stepIndex === 2) {
-    // 03: Split Replay + Neural Causal Graph
+    if (statusText) statusText.textContent = "Step 2/5: Rage clicks detected · Signal dispatched to Neural Core";
+    setBrainState("INGESTING");
+    launchFlyingSignalParticle();
+  }
+  // Step 2: Causal Evidence & Neural Processing
+  else if (stepIndex === 2) {
     frame.classList.add("view-split");
     frame.classList.remove("view-verdict");
     if (urlText) urlText.textContent = "simplywhy.ai/causal-graph/INC-2841";
-    if (statusText) statusText.textContent = "Step 3/5: Cross-stream causal vector isolated";
+    if (statusText) statusText.textContent = "Step 3/5: Neural Core filtering noise & isolating cause";
+    setBrainState("PROCESSING");
+    setTimeout(() => {
+      if (currentCinemaStep === 2) setBrainState("FILTERING");
+    }, 2200);
     if (typeof resizeCinemaEvidence === 'function') resizeCinemaEvidence();
-  } else if (stepIndex === 3) {
-    // 04: Root Cause Found
+  }
+  // Step 3: Root Cause Isolated
+  else if (stepIndex === 3) {
     frame.classList.remove("view-split");
     frame.classList.add("view-verdict");
     if (urlText) urlText.textContent = "simplywhy.ai/diagnosis/INC-2841";
     if (statusText) statusText.textContent = "Step 4/5: Root cause identified with 94% confidence";
-  } else if (stepIndex === 4) {
-    // 05: Projected Recovery
+    setBrainState("RESOLVED");
+  }
+  // Step 4: Projected Recovery
+  else if (stepIndex === 4) {
     frame.classList.remove("view-split");
     frame.classList.add("view-verdict");
     if (urlText) urlText.textContent = "simplywhy.ai/recovery-projection/INC-2841";
     if (statusText) statusText.textContent = "Step 5/5: Remediation projected (+21.0 pts conversion)";
+    setBrainState("RESOLVED");
     if (typeof animateRecoveryCurve === 'function') animateRecoveryCurve();
   }
 
-  // If the user manually clicked a step, reset the timer to keep the flow alive from that point
   if (isUserClick && isDemoAutoplaying) {
     scheduleNextDemoStep();
   }
 }
 
+/* Flying Signal Particle Animation (Session Replay -> Neural Core) */
+function launchFlyingSignalParticle() {
+  const particle = document.getElementById("flying-signal-particle");
+  const payBtn = document.getElementById("demo-pay-btn");
+  const canvasBox = document.querySelector(".graph-canvas-box");
+  if (!particle || !payBtn || !canvasBox) return;
+
+  const btnRect = payBtn.getBoundingClientRect();
+  const boxRect = canvasBox.getBoundingClientRect();
+
+  // Position at button
+  particle.style.transition = 'none';
+  particle.style.left = `${btnRect.left - boxRect.left + btnRect.width / 2}px`;
+  particle.style.top = `${btnRect.top - boxRect.top + btnRect.height / 2}px`;
+  particle.style.opacity = '1';
+
+  // Animate towards Neural Core center
+  requestAnimationFrame(() => {
+    particle.style.transition = 'all 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+    particle.style.left = '45%';
+    particle.style.top = '40%';
+    setTimeout(() => {
+      particle.style.opacity = '0';
+    }, 650);
+  });
+}
+
+/* Viewport-Triggered Initialization with IntersectionObserver */
 function initCinematicScrollEngine() {
-  // Start autonomous playback loop
-  startDemoAutoplay();
+  const investigationSection = document.getElementById("investigation");
+  if (!investigationSection) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
+        if (!isInvestigationInView) {
+          isInvestigationInView = true;
+          // Wake up the Neural Core & start autonomous flow
+          setBrainState("STANDBY");
+          startDemoAutoplay();
+        }
+      } else if (!entry.isIntersecting) {
+        isInvestigationInView = false;
+        clearTimeout(demoAutoplayTimeout);
+      }
+    });
+  }, { threshold: [0, 0.2, 0.5] });
+
+  observer.observe(investigationSection);
 }
 
 /* ==========================================================================
    REALISTIC SIMULATED BROWSER SESSION REPLAY
    ========================================================================== */
-let replayTimer = null;
-
 function playSessionReplayLoop() {
   const cursor = document.getElementById("virtual-cursor");
   const pulse = document.getElementById("cursor-pulse");
@@ -416,21 +520,46 @@ function replaySessionAnimation() {
 }
 
 /* ==========================================================================
-   NEURAL EVIDENCE GRAPH CANVAS
+   ADVANCED NEURAL CORE & COMPUTATIONAL BRAIN CANVAS
    ========================================================================== */
 let resizeCinemaEvidence = null;
 
-const cinemaNodes = [
-  { id: 'safari', label: 'Safari 17.2', x: 0.18, y: 0.35, radius: 18, color: '#22D3EE', isCausal: true },
-  { id: 'checkout', label: 'Checkout Failures', x: 0.45, y: 0.45, radius: 22, color: '#EF4444', isCausal: true },
-  { id: 'validation', label: 'Validation Loop', x: 0.72, y: 0.45, radius: 24, color: '#F59E0B', isCausal: true },
-  { id: 'deploy', label: 'Deploy #2841', x: 0.90, y: 0.75, radius: 20, color: '#00F5A0', isCausal: true }
+// Multi-layered Neural Brain Network Nodes
+const neuralNodes = [
+  // Layer 0: Input Streams (Left)
+  { id: 'session', label: 'Session Replays', x: 0.12, y: 0.22, radius: 14, color: '#22D3EE', isCausal: true, isInput: true },
+  { id: 'errors', label: 'Error Logs', x: 0.12, y: 0.44, radius: 13, color: '#EF4444', isCausal: false, isInput: true },
+  { id: 'support', label: 'Support Tickets', x: 0.12, y: 0.64, radius: 13, color: '#F59E0B', isCausal: false, isInput: true },
+  { id: 'deploy', label: 'Git Deploy #2841', x: 0.12, y: 0.84, radius: 14, color: '#00F5A0', isCausal: true, isInput: true },
+
+  // Layer 1: Hidden Processing Synapses (Center-Left)
+  { id: 'h_safari', label: 'Safari 17.2 Check', x: 0.38, y: 0.26, radius: 16, color: '#22D3EE', isCausal: true },
+  { id: 'h_auth', label: 'Auth Token TTL', x: 0.36, y: 0.50, radius: 10, color: '#71717A', isCausal: false },
+  { id: 'h_db', label: 'DB Latency Spike', x: 0.38, y: 0.74, radius: 10, color: '#71717A', isCausal: false },
+
+  // Layer 2: Hidden Reasoning Clusters (Center-Right)
+  { id: 'h_checkout', label: 'Checkout Failure', x: 0.62, y: 0.36, radius: 18, color: '#EF4444', isCausal: true },
+  { id: 'h_cart', label: 'Cart Hydration', x: 0.62, y: 0.68, radius: 10, color: '#71717A', isCausal: false },
+
+  // Layer 3: Causal Output Verdict (Right)
+  { id: 'h_validation', label: 'Validation Loop', x: 0.86, y: 0.42, radius: 20, color: '#00F5A0', isCausal: true }
 ];
 
-const cinemaEdges = [
-  { from: 'safari', to: 'checkout' },
-  { from: 'checkout', to: 'validation' },
-  { from: 'validation', to: 'deploy' }
+// Synaptic Connections
+const neuralEdges = [
+  // Causal Vector Connections (Primary)
+  { from: 'session', to: 'h_safari', isCausal: true },
+  { from: 'h_safari', to: 'h_checkout', isCausal: true },
+  { from: 'h_checkout', to: 'h_validation', isCausal: true },
+  { from: 'deploy', to: 'h_validation', isCausal: true },
+
+  // Background / Noise Connections (Filtered out in later steps)
+  { from: 'errors', to: 'h_auth', isCausal: false },
+  { from: 'support', to: 'h_checkout', isCausal: false },
+  { from: 'support', to: 'h_cart', isCausal: false },
+  { from: 'deploy', to: 'h_db', isCausal: false },
+  { from: 'h_auth', to: 'h_cart', isCausal: false },
+  { from: 'h_db', to: 'h_validation', isCausal: false }
 ];
 
 function initCinemaEvidenceCanvas() {
@@ -458,10 +587,19 @@ function initCinemaEvidenceCanvas() {
     const h = rect.height;
     ctx.clearRect(0, 0, w, h);
 
-    // Draw Causal Links
-    cinemaEdges.forEach((edge, idx) => {
-      const src = cinemaNodes.find(n => n.id === edge.from);
-      const dst = cinemaNodes.find(n => n.id === edge.to);
+    const isStandby = (neuralBrainState === "STANDBY");
+    const isProcessing = (neuralBrainState === "PROCESSING" || neuralBrainState === "INGESTING");
+    const isFiltering = (neuralBrainState === "FILTERING");
+    const isResolved = (neuralBrainState === "RESOLVED");
+
+    // Dynamic Alpha for Noise vs Causal Paths
+    const noiseAlpha = isStandby ? 0.08 : (isProcessing ? 0.4 : (isFiltering ? 0.06 : 0.02));
+    const causalAlpha = isStandby ? 0.25 : (isProcessing ? 0.8 : 1.0);
+
+    // Draw Synaptic Links
+    neuralEdges.forEach((edge, idx) => {
+      const src = neuralNodes.find(n => n.id === edge.from);
+      const dst = neuralNodes.find(n => n.id === edge.to);
       if (!src || !dst) return;
 
       const sx = src.x * w;
@@ -469,47 +607,72 @@ function initCinemaEvidenceCanvas() {
       const dx = dst.x * w;
       const dy = dst.y * h;
 
+      const alpha = edge.isCausal ? causalAlpha : noiseAlpha;
+      if (alpha <= 0.01) return;
+
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.lineTo(dx, dy);
-      ctx.strokeStyle = "rgba(0, 245, 160, 0.4)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = edge.isCausal 
+        ? `rgba(0, 245, 160, ${alpha * 0.7})` 
+        : `rgba(161, 161, 170, ${alpha * 0.4})`;
+      ctx.lineWidth = edge.isCausal ? 2.2 : 1;
       ctx.stroke();
 
-      // Traveling photon particle along link
-      const progress = ((t * 0.8 + idx * 0.3) % 1);
-      const px = sx + (dx - sx) * progress;
-      const py = sy + (dy - sy) * progress;
+      // Photon packet propagation along the synapse
+      if (!isStandby && (edge.isCausal || isProcessing)) {
+        const speed = edge.isCausal ? 1.2 : 0.7;
+        const progress = ((t * speed + idx * 0.2) % 1);
+        const px = sx + (dx - sx) * progress;
+        const py = sy + (dy - sy) * progress;
 
-      ctx.beginPath();
-      ctx.arc(px, py, 3, 0, Math.PI * 2);
-      ctx.fillStyle = "#00F5A0";
-      ctx.shadowColor = "#00F5A0";
-      ctx.shadowBlur = 8;
-      ctx.fill();
-      ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.arc(px, py, edge.isCausal ? 3 : 2, 0, Math.PI * 2);
+        ctx.fillStyle = edge.isCausal ? "#00F5A0" : "#38BDF8";
+        ctx.shadowColor = edge.isCausal ? "#00F5A0" : "#38BDF8";
+        ctx.shadowBlur = edge.isCausal ? 8 : 4;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
     });
 
-    // Draw Nodes
-    cinemaNodes.forEach(n => {
+    // Draw Neural Nodes & Processing Clusters
+    neuralNodes.forEach(n => {
       const x = n.x * w;
       const y = n.y * h;
 
+      const alpha = n.isCausal ? causalAlpha : noiseAlpha;
+      if (alpha <= 0.01) return;
+
+      // Pulse wave for active nodes
+      const pulseSize = (!isStandby && n.isCausal) ? Math.sin(t * 3 + n.x * 10) * 3 : 0;
+      const currentRadius = n.radius + pulseSize;
+
+      // Node background
       ctx.beginPath();
-      ctx.arc(x, y, n.radius, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(14, 16, 22, 0.9)";
-      ctx.strokeStyle = n.color;
-      ctx.lineWidth = 2;
+      ctx.arc(x, y, currentRadius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(10, 12, 16, ${0.9 * alpha})`;
+      ctx.strokeStyle = n.isCausal ? (isResolved ? "#00F5A0" : n.color) : `rgba(113, 113, 122, ${alpha})`;
+      ctx.lineWidth = n.isCausal ? 2 : 1;
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = "#FAFAFA";
-      ctx.font = "9px JetBrains Mono, monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(n.label, x, y + n.radius + 12);
+      // Center core light
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = n.isCausal ? "#00F5A0" : `rgba(161, 161, 170, ${alpha})`;
+      ctx.fill();
+
+      // Node Label
+      if (alpha > 0.3 || n.isCausal) {
+        ctx.fillStyle = n.isCausal ? "#FAFAFA" : `rgba(161, 161, 170, ${alpha})`;
+        ctx.font = "8.5px JetBrains Mono, monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(n.label, x, y + currentRadius + 11);
+      }
     });
 
-    t += 0.015;
+    t += (isStandby ? 0.006 : 0.018);
     requestAnimationFrame(draw);
   }
   draw();

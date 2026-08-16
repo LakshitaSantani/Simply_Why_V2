@@ -296,29 +296,34 @@
                 </div>
               </div>
 
-              <!-- RIGHT / SECONDARY: Neural Evidence & Causal Vector Graph -->
+              <!-- RIGHT / SECONDARY: Neural Core & Computational Brain Canvas -->
               <div class="stage-sub-panel panel-evidence-graph" id="panel-evidence">
                 <div class="evidence-graph-card">
                   <div class="graph-card-header">
                     <div class="graph-header-title">
-                      <span class="pulse-dot-cyan"></span>
-                      <span>CAUSAL VECTOR ISOLATION</span>
+                      <div class="brain-status-pill" id="brain-status-pill">
+                        <span class="brain-status-dot"></span>
+                        <span id="brain-status-label">NEURAL CORE · STANDBY</span>
+                      </div>
                     </div>
-                    <div class="graph-header-conf" id="graph-conf-badge">94% CONFIDENCE</div>
+                    <div class="graph-header-conf" id="graph-conf-badge">
+                      <span id="neural-activity-text">STANDBY</span>
+                    </div>
                   </div>
 
                   <div class="graph-canvas-box">
                     <canvas id="cinemaEvidenceCanvas"></canvas>
+                    <div class="flying-signal-particle" id="flying-signal-particle"></div>
                   </div>
 
-                  <div class="graph-causal-chain">
-                    <div class="chain-node active">Safari 17.2</div>
+                  <div class="graph-causal-chain" id="graph-causal-chain">
+                    <div class="chain-node active" id="c-node-safari">Safari 17.2</div>
                     <span class="chain-arrow">→</span>
-                    <div class="chain-node active">Checkout Failure</div>
+                    <div class="chain-node active" id="c-node-checkout">Checkout Failure</div>
                     <span class="chain-arrow">→</span>
-                    <div class="chain-node active">Validation Loop</div>
+                    <div class="chain-node active" id="c-node-validation">Validation Loop</div>
                     <span class="chain-arrow">→</span>
-                    <div class="chain-node culprit">Deploy #2841</div>
+                    <div class="chain-node culprit" id="c-node-deploy">Deploy #2841</div>
                   </div>
                 </div>
               </div>
