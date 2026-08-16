@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTimelineScroll();
   initRecoveryCanvas();
   initScanKeyboardAccessibility();
+  initLiveTelemetryTicker();
 });
 
 /* ---------- NAVBAR SCROLL ---------- */
@@ -1603,28 +1604,38 @@ function runRecoverySimulation() {
 
     recoverySimulationProgress = ease;
 
-    // Conversion rate counter: 47% -> 68%
-    const currentConv = Math.floor(47 + ease * (68 - 47));
+    const scen = INCIDENT_SCENARIOS[currentScenarioKey] || INCIDENT_SCENARIOS.checkout;
+
+    // Conversion rate counter
+    const startC = parseInt(scen.initialConv) || 47;
+    const endC = parseInt(scen.restoredConv) || 68;
+    const currentConv = Math.floor(startC + ease * (endC - startC));
     if (convVal) convVal.textContent = `${currentConv}%`;
 
-    // Revenue recovered counter: $0 -> $42,800
-    const currentRev = Math.floor(ease * 42800);
-    if (revVal) revVal.textContent = `$${currentRev.toLocaleString()}`;
+    // Revenue recovered counter
+    if (scen.id === "INC-2835") {
+      const currentSeats = Math.floor(ease * 1450);
+      if (revVal) revVal.textContent = `${currentSeats.toLocaleString()} Seats`;
+    } else {
+      const maxRev = scen.id === "INC-2839" ? 58000 : 42800;
+      const currentRev = Math.floor(ease * maxRev);
+      if (revVal) revVal.textContent = `$${currentRev.toLocaleString()}`;
+    }
 
     if (progress < 1) {
       requestAnimationFrame(step);
     } else {
       if (convVal) {
-        convVal.textContent = "68%";
+        convVal.textContent = scen.restoredConv;
         convVal.classList.add("recovered");
       }
-      if (convStatus) convStatus.textContent = "Restored to normal baseline (68%)";
+      if (convStatus) convStatus.textContent = `Restored to normal baseline (${scen.restoredConv})`;
 
       if (revVal) {
-        revVal.textContent = "$38K – $44K";
+        revVal.textContent = scen.recoveredRev;
         revVal.classList.add("recovered");
       }
-      if (revStatus) revStatus.textContent = "$42,800 revenue restored";
+      if (revStatus) revStatus.textContent = "Remediation projected successfully";
 
       if (statusPill) statusPill.classList.add("visible");
       if (btn) btn.classList.remove("is-simulating");
@@ -1633,5 +1644,231 @@ function runRecoverySimulation() {
   }
 
   requestAnimationFrame(step);
+}
+
+/* ==========================================================================
+   LIVE TELEMETRY TICKER
+   ========================================================================== */
+function initLiveTelemetryTicker() {
+  const scanTimeEl = document.getElementById("live-scan-time");
+  if (!scanTimeEl) return;
+
+  let seconds = 2.4;
+  setInterval(() => {
+    seconds += 0.8;
+    if (seconds > 8.0) {
+      seconds = 1.1;
+    }
+    scanTimeEl.textContent = `${seconds.toFixed(1)}s ago`;
+  }, 1200);
+}
+
+/* ==========================================================================
+   MULTI-SCENARIO INCIDENT SYSTEM
+   ========================================================================== */
+const INCIDENT_SCENARIOS = {
+  checkout: {
+    id: "INC-2841",
+    name: "Checkout dropped",
+    icon: "💳",
+    heroMetricLabel: "Conversion",
+    heroMetricVal: "↓ 18.4%",
+    heroMetricSub: "Checkout failures ↑ 31.2% · Rage clicks ↑ 42.1%",
+    incidentTitle: "CHECKOUT CONVERSION DROP",
+    rootCause: "Payment validation loop introduced in deployment <code>#2841</code>",
+    confidence: "94%",
+    confidenceVal: 94,
+    impact: "$42,800 revenue at risk",
+    reasoning: '"The failure began 6 minutes after deployment #2841, is concentrated among Safari users, appears in session replays, and matches a 412% increase in validation errors."',
+    recommendation: 'Roll back deployment <code>#2841</code> and deploy the validation patch to restore Safari checkout functionality.',
+    breakdown: [
+      { label: "Session correlation", val: "+31%", width: "31%" },
+      { label: "Support correlation", val: "+26%", width: "26%" },
+      { label: "Deployment timing", val: "+22%", width: "22%" },
+      { label: "Error correlation", val: "+15%", width: "15%" }
+    ],
+    initialConv: "47%",
+    restoredConv: "68%",
+    recoveredRev: "$38K – $44K",
+    aiResponses: {
+      "Why did conversion drop?": "Checkout conversion dropped 18.4% after deployment #2841. 78% of affected users are on Safari. Session replays show repeated clicks on the payment button without a successful response.",
+      "Why are users leaving?": "Safari users trigger an infinite validation recursion on form submit due to synthetic autofill events introduced in #2841. 1,842 users experienced rage clicks.",
+      "What changed today?": "Deployment #2841 was pushed at 10:12 AM by @payments-core containing a regex validation overhaul for credit card inputs."
+    }
+  },
+  signups: {
+    id: "INC-2839",
+    name: "Signups disappeared",
+    icon: "👤",
+    heroMetricLabel: "Signups",
+    heroMetricVal: "↓ 28.4%",
+    heroMetricSub: "OAuth failures ↑ 64.2% · Form dropoff ↑ 51.0%",
+    incidentTitle: "SIGNUP CONVERSION DROP",
+    rootCause: "OAuth callback whitelist mismatch introduced in deployment <code>#2839</code>",
+    confidence: "96%",
+    confidenceVal: 96,
+    impact: "4,200 lost signups / week ($58,000 ARR)",
+    reasoning: '"Signup drops occurred within 90 seconds of deployment #2839. 92% of failed registrations originated from Google/GitHub OAuth redirect timeouts."',
+    recommendation: 'Revert OAuth client configuration in deployment <code>#2839</code> and refresh Google/GitHub callback domain whitelist.',
+    breakdown: [
+      { label: "OAuth telemetry correlation", val: "+38%", width: "38%" },
+      { label: "Git timing attribution", val: "+28%", width: "28%" },
+      { label: "Session dropoff vector", val: "+18%", width: "18%" },
+      { label: "Error log clustering", val: "+12%", width: "12%" }
+    ],
+    initialConv: "32%",
+    restoredConv: "64%",
+    recoveredRev: "$52K – $58K",
+    aiResponses: {
+      "Why did conversion drop?": "Signup conversion dropped 28.4% immediately following deployment #2839 due to an invalid OAuth redirect URI matching policy.",
+      "Why are users leaving?": "Users clicking 'Sign in with Google' receive a 400 redirect_uri_mismatch error and bounce before reaching onboarding.",
+      "What changed today?": "Deployment #2839 updated identity authentication services at 08:30 AM without syncing staging and production OAuth client secrets."
+    }
+  },
+  support: {
+    id: "INC-2835",
+    name: "Support tickets exploded",
+    icon: "🎫",
+    heroMetricLabel: "Support Volume",
+    heroMetricVal: "↑ 410%",
+    heroMetricSub: "Onboarding tickets ↑ 520% · CSAT ↓ 1.8pts",
+    incidentTitle: "SUPPORT TICKET SURGE",
+    rootCause: "Broken workspace onboarding token expiration in deployment <code>#2835</code>",
+    confidence: "92%",
+    confidenceVal: 92,
+    impact: "1,450 blocked enterprise seats",
+    reasoning: '"Support ticket volume spiked 410% within 15 minutes of deployment #2835. 89% of tickets specifically contain the phrase \'Invalid invitation link\'."',
+    recommendation: 'Deploy hotfix <code>#2836</code> to repair email token signature verification on team invitation acceptances.',
+    breakdown: [
+      { label: "Ticket keyword clustering", val: "+35%", width: "35%" },
+      { label: "Auth token stack traces", val: "+27%", width: "27%" },
+      { label: "Deployment timing correlation", val: "+20%", width: "20%" },
+      { label: "Enterprise cohort isolation", val: "+10%", width: "10%" }
+    ],
+    initialConv: "19%",
+    restoredConv: "84%",
+    recoveredRev: "1,450 Seats",
+    aiResponses: {
+      "Why did conversion drop?": "Support tickets increased by 410% because invited workspace members are receiving 'Token Expired' errors on fresh invitation links.",
+      "Why are users leaving?": "Invited team members cannot join enterprise organizations, stalling active user growth across 42 enterprise accounts.",
+      "What changed today?": "Deployment #2835 pushed a JWT token expiration change from 7 days to 7 minutes by mistake in the invitation worker service."
+    }
+  }
+};
+
+let currentScenarioKey = "checkout";
+
+function switchIncidentScenario(scenarioKey) {
+  const scen = INCIDENT_SCENARIOS[scenarioKey];
+  if (!scen) return;
+  currentScenarioKey = scenarioKey;
+
+  // 1. Update Scenario Buttons UI
+  document.querySelectorAll(".scenario-btn").forEach(btn => btn.classList.remove("active"));
+  const activeBtn = document.getElementById(`btn-scenario-${scenarioKey}`);
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // 2. Update Hero Metrics
+  const heroH1 = document.querySelector(".hero-h1");
+  const heroMetricVal = document.querySelector(".hero-metric-val");
+  const heroMetricSub = document.querySelector(".hero-metric-sub");
+  if (heroMetricVal) heroMetricVal.textContent = scen.heroMetricVal;
+  if (heroMetricSub) heroMetricSub.textContent = scen.heroMetricSub;
+
+  // 3. Update Diagnosis Card
+  const diagId = document.querySelector(".diag-id-tag");
+  const diagTitle = document.querySelector(".diag-title");
+  const diagValue = document.querySelector(".diag-value");
+  const confScore = document.getElementById("diag-confidence-score");
+  const confFill = document.getElementById("confidence-fill");
+  const reasoningText = document.querySelector(".reasoning-text");
+  const impactText = document.querySelector(".diag-impact");
+
+  if (diagId) diagId.textContent = `INCIDENT #${scen.id}`;
+  if (diagTitle) diagTitle.textContent = scen.incidentTitle;
+  if (diagValue) diagValue.innerHTML = scen.rootCause;
+  if (confScore) confScore.textContent = scen.confidence;
+  if (confFill) confFill.style.width = `${scen.confidenceVal}%`;
+  if (reasoningText) reasoningText.textContent = scen.reasoning;
+  if (impactText) impactText.textContent = scen.impact;
+
+  // 4. Update Breakdown Weights
+  const weightRows = document.querySelector(".evidence-weight-rows");
+  if (weightRows && scen.breakdown) {
+    weightRows.innerHTML = scen.breakdown.map(b => `
+      <div class="weight-row">
+        <span class="weight-label">${b.label}</span>
+        <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width: ${b.width};"></div></div>
+        <span class="weight-val">${b.val}</span>
+      </div>
+    `).join("");
+  }
+
+  // 5. Update Recommendation & Reset Recovery Simulation
+  const recFixText = document.querySelector(".rec-fix-text");
+  const simConvVal = document.getElementById("sim-conversion-val");
+  const simConvStatus = document.getElementById("sim-conversion-status");
+  const simRevVal = document.getElementById("sim-revenue-val");
+  const simRevStatus = document.getElementById("sim-revenue-status");
+  const statusPill = document.getElementById("recovery-status-pill");
+  const btnSim = document.getElementById("btn-simulate-recovery");
+
+  if (recFixText) recFixText.innerHTML = scen.recommendation;
+  if (simConvVal) {
+    simConvVal.textContent = scen.initialConv;
+    simConvVal.classList.remove("recovered");
+  }
+  if (simConvStatus) simConvStatus.textContent = "Current degraded baseline";
+  if (simRevVal) {
+    simRevVal.textContent = "$0";
+    simRevVal.classList.remove("recovered");
+  }
+  if (simRevStatus) simRevStatus.textContent = "Projected recovery potential";
+  if (statusPill) statusPill.classList.remove("visible");
+  if (btnSim) btnSim.className = "btn-simulate-recovery";
+
+  recoverySimulationProgress = 0;
+
+  // 6. Update AI Assistant Default Response
+  const aiRespText = document.getElementById("ai-response-text");
+  if (aiRespText) {
+    aiRespText.textContent = scen.aiResponses["Why did conversion drop?"];
+  }
+
+  // Smoothly scroll to diagnosis so user sees the change
+  const diagCard = document.getElementById("diagnosis");
+  if (diagCard) {
+    diagCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+/* ==========================================================================
+   SIMPLYWHY AI FLOATING ASSISTANT CONTROLLER
+   ========================================================================== */
+function toggleAIAssistant() {
+  const windowEl = document.getElementById("ai-assistant-window");
+  if (!windowEl) return;
+  windowEl.classList.toggle("open");
+}
+
+function askAIAssistant(promptText) {
+  const scen = INCIDENT_SCENARIOS[currentScenarioKey] || INCIDENT_SCENARIOS.checkout;
+  const answer = scen.aiResponses[promptText] || scen.reasoning;
+  const contentEl = document.getElementById("ai-response-text");
+  if (!contentEl) return;
+
+  contentEl.style.opacity = "0.4";
+  setTimeout(() => {
+    contentEl.textContent = answer;
+    contentEl.style.opacity = "1";
+  }, 180);
+}
+
+function closeAIAndScroll(selector) {
+  const windowEl = document.getElementById("ai-assistant-window");
+  if (windowEl) windowEl.classList.remove("open");
+  setTimeout(() => {
+    scrollToSection(selector);
+  }, 200);
 }
 

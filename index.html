@@ -15,6 +15,25 @@
 </head>
 <body>
 
+  <!-- ============ TOP LIVE TELEMETRY BAR ============ -->
+  <div class="top-telemetry-bar">
+    <div class="container telemetry-inner">
+      <div class="telemetry-item">
+        <span class="telemetry-live-dot"></span>
+        <span class="telemetry-label">SIMPLYWHY ENGINE:</span> <strong class="text-accent">ONLINE</strong>
+      </div>
+      <div class="telemetry-item hide-mobile">
+        <span>Last scan: <strong id="live-scan-time">2.4s ago</strong></span>
+      </div>
+      <div class="telemetry-item hide-mobile">
+        <span>Signals monitored: <strong>24,381 traces/s</strong></span>
+      </div>
+      <div class="telemetry-item">
+        <span>Active anomalies: <strong class="text-amber" id="live-anomaly-count">3 detected</strong></span>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ NAVBAR ============ -->
   <header class="nav" id="main-nav">
     <div class="container nav-inner">
@@ -24,6 +43,7 @@
           <li><a href="#signals">Product</a></li>
           <li><a href="#evidence">How it works</a></li>
           <li><a href="#why-section">Use cases</a></li>
+          <li><a href="#scenarios">Scenarios</a></li>
           <li><a href="#cta">Pricing</a></li>
         </ul>
       </nav>
@@ -688,6 +708,31 @@
       </div>
     </section>
 
+    <!-- ================================================================
+         INCIDENT INVESTIGATOR — SCENARIO SWITCHER
+         ================================================================ -->
+    <section class="section section-scenarios" id="scenarios">
+      <div class="container">
+        <div class="scenarios-header reveal">
+          <span class="eyebrow">✦ Multi-Incident Diagnostic Engine</span>
+          <h2 class="section-heading" style="margin-top:16px">Want to investigate<br>another problem?</h2>
+          <p class="section-sub">Select an active incident scenario to test how SimplyWhy correlates completely different failure modes across your stack.</p>
+          
+          <div class="scenario-buttons-row">
+            <button class="scenario-btn active" id="btn-scenario-checkout" onclick="switchIncidentScenario('checkout')">
+              <span class="scen-icon">💳</span> Checkout dropped
+            </button>
+            <button class="scenario-btn" id="btn-scenario-signups" onclick="switchIncidentScenario('signups')">
+              <span class="scen-icon">👤</span> Signups disappeared
+            </button>
+            <button class="scenario-btn" id="btn-scenario-support" onclick="switchIncidentScenario('support')">
+              <span class="scen-icon">🎫</span> Support tickets exploded
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <!-- ================================================================
          FINAL CTA + WAITLIST
@@ -712,6 +757,60 @@
     </section>
 
   </main>
+
+
+  <!-- ================================================================
+       SIMPLYWHY AI CO-PILOT (FLOATING ASSISTANT)
+       ================================================================ -->
+  <div class="simplywhy-ai-assistant" id="simplywhy-ai">
+    <!-- Minimized Pill -->
+    <button class="ai-pill-trigger" id="ai-pill-trigger" onclick="toggleAIAssistant()" aria-label="Open SimplyWhy AI Assistant">
+      <span class="ai-status-dot"></span>
+      <span class="ai-pill-title">SIMPLYWHY AI</span>
+      <span class="ai-pill-sub">"Ask me why something changed"</span>
+    </button>
+
+    <!-- Expanded Interactive Window -->
+    <div class="ai-assistant-window" id="ai-assistant-window">
+      <div class="ai-window-header">
+        <div class="ai-header-brand">
+          <span class="ai-brand-dot"></span>
+          <span class="ai-brand-text">SIMPLYWHY CO-PILOT</span>
+          <span class="ai-engine-tag">ONLINE</span>
+        </div>
+        <button class="ai-close-btn" onclick="toggleAIAssistant()" aria-label="Close Assistant">✕</button>
+      </div>
+
+      <div class="ai-window-body">
+        <div class="ai-intro-msg">
+          <span class="ai-avatar">✦</span>
+          <div class="ai-bubble">
+            Ask me why something changed or click a live telemetry query below:
+          </div>
+        </div>
+
+        <!-- Prompt Suggestions -->
+        <div class="ai-prompt-chips">
+          <button class="ai-chip" onclick="askAIAssistant('Why did conversion drop?')">Why did conversion drop?</button>
+          <button class="ai-chip" onclick="askAIAssistant('Why are users leaving?')">Why are users leaving?</button>
+          <button class="ai-chip" onclick="askAIAssistant('What changed today?')">What changed today?</button>
+        </div>
+
+        <!-- Response Container -->
+        <div class="ai-response-area" id="ai-response-area">
+          <div class="ai-response-box" id="ai-response-box">
+            <span class="ai-avatar">✦</span>
+            <div class="ai-response-content" id="ai-response-text">
+              Checkout conversion dropped 18.4% after deployment #2841. 78% of affected users are on Safari. Session replays show repeated clicks on the payment button without a successful response.
+            </div>
+          </div>
+          <div class="ai-action-row">
+            <button class="btn-ai-evidence" onclick="closeAIAndScroll('#evidence')">Show evidence →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- ================================================================
